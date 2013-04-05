@@ -33,6 +33,10 @@ class Entry {
 		$this->id = $id;
 	}
 	
+	function get_id(){
+		return $this->id;
+	}
+	
 	//------------------------------------------------
 	// headword management
 	//------------------------------------------------
@@ -80,8 +84,8 @@ class Entry {
 			' ORDER BY `order`'.
 			';';
 		$senses_result = $this->database->query($query);
-		Debugger::dump($query);
-		Debugger::dump($senses_result);
+		//Debugger::dump($query);
+		//Debugger::dump($senses_result);
 		
 		// adding senses (currently only two levels)
 		

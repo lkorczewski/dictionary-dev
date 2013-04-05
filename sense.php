@@ -39,6 +39,10 @@ class Sense {
 		$this->id = $id;
 	}
 	
+	function get_id(){
+		return $this->id;
+	}
+	
 	//------------------------------------------------
 	// label management
 	//------------------------------------------------
@@ -101,20 +105,21 @@ class Sense {
 		
 		$query = "SELECT * FROM translations WHERE sense_id = {$this->id} ORDER BY `order`;";
 		$translations_result = $this->database->query($query);
-		Debugger::dump($query);
-		Debugger::dump($translations_result);
+		//Debugger::dump($query);
+		//Debugger::dump($translations_result);
 		
 		foreach($translations_result as $translation_result){
 			$translation = $this->add_translation();
-			$translation->set($translation_result['text']);
+			$translation->set_id($translation_result['translation_id']);
+			$translation->set_text($translation_result['text']);
 		}
 		
 		// subsenses
 		
 		$query = "SELECT * FROM senses WHERE parent_sense_id = {$this->id} ORDER BY `order`;";
 		$subsenses_result = $this->database->query($query);
-		Debugger::dump($query);
-		Debugger::dump($subsenses_result);
+		//Debugger::dump($query);
+		//Debugger::dump($subsenses_result);
 		
 		foreach($subsenses_result as $subsense_result){
 			$subsense = $this->add_sense();

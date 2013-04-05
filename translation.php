@@ -5,6 +5,7 @@ require_once __DIR__.'/dictionary.php';
 class Translation {
 	private $dictionary;
 	
+	private $id;	
 	private $text;
 	
 	//------------------------------------------------
@@ -18,14 +19,27 @@ class Translation {
 	}
 	
 	//------------------------------------------------
+	// id management
+	//------------------------------------------------
+	
+	function set_id($id){
+		$this->id = $id;
+	}
+	
+	function get_id(){
+		return $this->id;
+	}
+	
+	
+	//------------------------------------------------
 	// setting value
 	//------------------------------------------------
 	
-	function set($text){
+	function set_text($text){
 		$this->text = $text;
 	}
 	
-	function get(){
+	function get_text(){
 		return $this->text;
 	}
 }
