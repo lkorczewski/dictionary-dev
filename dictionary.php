@@ -2,21 +2,33 @@
 
 //require_once 'debugger/debugger.php';
 require_once 'database/database.php';
+require_once __DIR__.'/data.php';
 require_once __DIR__.'/entry.php';
 
 class Dictionary {
 	private $database;  // initialized database object
 	
+/*
 	function __construct($database){
 		$this->database = $database;
+	}
+*/
+	
+	function __construct(Data $data){
+		$this->data = $data;
+		$this->database = $data->database;
 	}
 	
 	function get_database(){
 		return $this->database;
 	}
 	
+	function get_data(){
+		return $this->data;
+	}
+	
 	function get_entry($headword){
-		// to do: only the first headword is all are the same
+		// to do: only the first headword if all are the same
 		
 		$entry = new Entry($this);
 		
