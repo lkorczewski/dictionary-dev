@@ -1,10 +1,12 @@
 <?php
 
+//require_once __DIR__.'/data.php';
 require_once __DIR__.'/dictionary.php';
 require_once __DIR__.'/translation.php';
 
 class Sense {
 	private $dictionary;
+	private $data;
 	private $databaase;
 	
 	private $label;
@@ -22,6 +24,7 @@ class Sense {
 	
 	function __construct(Dictionary $dictionary){
 		$this->dictionary = $dictionary;
+		$this->data = $dictionary->get_data();
 		$this->database = $dictionary->get_database();
 		
 		$this->translations = array();
@@ -93,40 +96,6 @@ class Sense {
 		$this->sense_iterator++;
 		
 		return $sense;
-	}
-	
-	//------------------------------------------------
-	// database interface
-	//------------------------------------------------
-	
-	function pull(){
-		
-		// translations
-		
-		$query = "SELECT * FROM translations WHERE sense_id = {$this->id} ORDER BY `order`;";
-		$translations_result = $this->database->query($query);
-		//Debugger::dump($query);
-		//Debugger::dump($translations_result);
-		
-		foreach($translations_result as $translation_result){
-			$translation = $this->add_translation();
-			$translation->set_id($translation_result['translation_id']);
-			$translation->set_text($translation_result['text']);
-		}
-		
-		// subsenses
-		
-		$query = "SELECT * FROM senses WHERE parent_sense_id = {$this->id} ORDER BY `order`;";
-		$subsenses_result = $this->database->query($query);
-		//Debugger::dump($query);
-		//Debugger::dump($subsenses_result);
-		
-		foreach($subsenses_result as $subsense_result){
-			$subsense = $this->add_sense();
-			$subsense->set_id($subsense_result['sense_id']);
-			$subsense->set_label($subsense_result['label']);
-			$subsense->pull();
-		}
 	}
 	
 }

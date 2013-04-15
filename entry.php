@@ -1,5 +1,6 @@
 <?php
 
+//require_once __DIR__.'/data.php';
 require_once __DIR__.'/dictionary.php';
 require_once __DIR__.'/sense.php';
 
@@ -69,33 +70,6 @@ class Entry {
 		return $sense;
 	}
 	
-	//------------------------------------------------
-	// database interface
-	//------------------------------------------------
-	
-	function pull(){
-		
-		// senses
-		
-		$query =
-			'SELECT *'.
-			' FROM senses'.
-			" WHERE entry_id = {$this->id} AND parent_sense_id IS NULL".
-			' ORDER BY `order`'.
-			';';
-		$senses_result = $this->database->query($query);
-		//Debugger::dump($query);
-		//Debugger::dump($senses_result);
-		
-		// adding senses (currently only two levels)
-		
-		foreach($senses_result as $sense_result){
-			$sense = $this->add_sense();
-			$sense->set_id($sense_result['sense_id']);
-			$sense->set_label($sense_result['label']);
-			$sense->pull();
-		}
-	}
 }
 
 ?>
