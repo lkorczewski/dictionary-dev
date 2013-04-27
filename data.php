@@ -10,6 +10,10 @@ interface Data {
 	
 	// atomic operations
 	
+	// entries
+	function add_entry($headword = '');
+	function update_entry($entry_id, $headword);
+	
 	// senses
 	function move_sense_up($sense_id);
 	function move_sense_down($sense_id);

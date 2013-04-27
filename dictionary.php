@@ -1,13 +1,15 @@
 <?php
 
-//require_once 'debugger/debugger.php';
 require_once 'database/database.php';
 require_once __DIR__.'/data.php';
 require_once __DIR__.'/entry.php';
 
 class Dictionary {
+	
 	private $data;
 	private $database;
+	
+	private $sources;
 	
 	//------------------------------------------------
 	// constructor

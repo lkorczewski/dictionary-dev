@@ -24,9 +24,10 @@ class MySQL_Data implements Data {
 	//------------------------------------------------------------------
 	// pulling list of headwords
 	//------------------------------------------------------------------
+	
 	function pull_headwords(){
 		
-		$query = 'SELECT `headword` FROM `entries`;';
+		$query = 'SELECT `headword` FROM `entries` ORDER BY `headword`;';
 		$result = $this->database->query($query);
 		
 		$headwords = array();
@@ -50,6 +51,7 @@ class MySQL_Data implements Data {
 		$entry_result = $this->database->query($query);
 		
 		$entry->set_id($entry_result[0]['entry_id']);
+		$entry->set_node_id($entry_result[0]['node_id']);
 		$entry->set_headword($entry_result[0]['headword']);
 		
 		$this->pull_entry_children($entry);
@@ -63,17 +65,37 @@ class MySQL_Data implements Data {
 	
 	private function pull_entry_children(Entry $entry){
 		
+		// forms
+		
+		$query = 
+			'SELECT *' .
+			' FROM forms' .
+			" WHERE parent_node_id = {$entry->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
+		$forms_result = $this->database->query($query);
+		
+		foreach($forms_result as $form_result){
+			$form = $entry->add_form();
+			$form->set_id($form_result['form_id']);
+			$form->set_label($form_result['label']);
+			$form->set_form($form_result['form']);
+		}
+		
+		// senses
+		
 		$query =
-			'SELECT *'.
-			' FROM senses'.
-			" WHERE entry_id = {$entry->get_id()} AND parent_sense_id IS NULL".
-			' ORDER BY `order`'.
+			'SELECT *' .
+			' FROM senses' .
+			" WHERE parent_node_id = {$entry->get_node_id()}" .
+			' ORDER BY `order`' .
 			';';
 		$senses_result = $this->database->query($query);
 		
 		foreach($senses_result as $sense_result){
 			$sense = $entry->add_sense();
 			$sense->set_id($sense_result['sense_id']);
+			$sense->set_node_id($sense_result['node_id']);
 			$sense->set_label($sense_result['label']);
 			$this->pull_sense_children($sense);
 		}
@@ -83,14 +105,19 @@ class MySQL_Data implements Data {
 	}
 	
 	//------------------------------------------------------------------
-	// filling sense children from database
+	// pulling sense children from database
 	//------------------------------------------------------------------
 	
 	private function pull_sense_children(Sense $sense){
 		
 		// translations
 		
-		$query = "SELECT * FROM translations WHERE sense_id = {$sense->get_id()} ORDER BY `order`;";
+		$query =
+			'SELECT *' .
+			' FROM translations' .
+			" WHERE parent_node_id = {$sense->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
 		$translations_result = $this->database->query($query);
 		
 		foreach($translations_result as $translation_result){
@@ -99,19 +126,171 @@ class MySQL_Data implements Data {
 			$translation->set_text($translation_result['text']);
 		}
 		
+		// phrases
+		
+		$query =
+			'SELECT *' .
+			' FROM phrases' .
+			" WHERE parent_node_id = {$sense->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
+		$phrases_result = $this->database->query($query);
+		
+		foreach($phrases_result as $phrase_result){
+			$phrase = $sense->add_phrase();
+			$phrase->set_id($phrase_result['phrase_id']);
+			$phrase->set_node_id($phrase_result['node_id']);
+			$phrase->set($phrase_result['phrase']);
+			$this->pull_phrase_children($phrase);
+		}
+		
 		// subsenses
 		
-		$query = "SELECT * FROM senses WHERE parent_sense_id = {$sense->get_id()} ORDER BY `order`;";
+		$query =
+			'SELECT *' .
+			' FROM senses' .
+			" WHERE parent_node_id = {$sense->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
 		$subsenses_result = $this->database->query($query);
 		
 		foreach($subsenses_result as $subsense_result){
-			$subsense = $this->add_sense();
+			$subsense = $sense->add_sense();
 			$subsense->set_id($subsense_result['sense_id']);
+			$subsense->set_node_id($subsense_result['node_id']);
 			$subsense->set_label($subsense_result['label']);
-			$subsense->pull();
+			$this->pull_sense_children($subsense);
 		}
 		
 		return $sense;
+		
+	}
+	
+	//------------------------------------------------------------------
+	// pulling sense children from database
+	//------------------------------------------------------------------
+	
+	private function pull_phrase_children(Phrase $phrase){
+		
+		// translations
+		
+		$query =
+			'SELECT *' .
+			' FROM translations' .
+			" WHERE parent_node_id = {$phrase->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
+		$translations_result = $this->database->query($query);
+		
+		foreach($translations_result as $translation_result){
+			$translation = $phrase->add_translation();
+			$translation->set_id($translation_result['translation_id']);
+			$translation->set_text($translation_result['text']);
+		}
+		
+	}
+	
+	//==================================================================
+	// auxiliary functions
+	//==================================================================
+	
+	//------------------------------------------------------------------
+	// adding node
+	//------------------------------------------------------------------
+	
+	private function add_node(){
+		
+		// inserting new node
+
+		$query = 'INSERT nodes () VALUES ();';
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		// obtaining node id
+		
+		$query = 'SELECT last_insert_id() AS node_id;';
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		$node_id = $result[0]['node_id'];
+		
+		return $node_id;
+		
+	}
+	
+	//==================================================================
+	// atomic operations: entries
+	//==================================================================
+	
+	//------------------------------------------------------------------
+	// adding entry
+	//------------------------------------------------------------------
+	
+	function add_entry($headword = ''){
+		
+		// strarting transaction
+		
+		$this->database->start_transaction();
+		
+		// inserting new node
+		
+		$node_id = $this->add_node();
+		
+		if($node_id === false) return false;
+		
+		// inserting new entry
+		
+		$query =
+			'INSERT entries (node_id, headword)' .
+			' SELECT ' .
+			'last_insert_id() AS node_id,' .
+			"'$headword' AS headword" .
+			';';
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+				
+		// commiting transaction
+		
+		$this->database->commit_transaction();
+		
+		return $node_id;
+		
+	}
+	
+	//------------------------------------------------------------------
+	// updating entry
+	//------------------------------------------------------------------
+	
+	function update_entry($entry_id, $headword){
+		
+		$query =
+			'UPDATE entry' .
+			" SET headword = '$headword'" .
+			" WHERE entry_id = $entry_id" .
+			';';
+		if($result === false) return false;
+		
+		return true;
+		
+	}
+	
+	//------------------------------------------------------------------
+	// deleting entry
+	//------------------------------------------------------------------
+	
+	function delete_entry($entry_id){
+		
+		$query =
+			'DELETE FROM entries' .
+			" WHERE entry_id = {$entry_id}" .
+			';';
+		$result = $database->query($query);
+		if($result === false) return false;
+		
+		return true;
 		
 	}
 	
@@ -120,10 +299,56 @@ class MySQL_Data implements Data {
 	//==================================================================
 	
 	//------------------------------------------------------------------
+	// adding sense
+	//------------------------------------------------------------------
+	
+	function add_sense($parent_node_id, $label = ''){
+		
+		// strarting transaction
+		
+		$this->database->start_transaction();
+		
+		// inserting new node
+		
+		$node_id = $this->add_node();
+		
+		if($node_id === false) return false;
+		
+		// inserting new entry
+		
+		$query =
+			'INSERT senses (node_id, parent_node_id, `order`, label)' .
+			' SELECT ' .
+			'  last_insert_id() AS node_id,' .
+			"  $parent_node_id AS parent_node_id," .
+			'  MAX(new_order) AS `order`,' .
+			" '$label' AS label" .
+			' FROM (' .
+			'  SELECT MAX(`order`) + 1 AS new_order' .
+			'   FROM senses' .
+			"   WHERE parent_node_id = $parent_node_id" .
+			'   GROUP BY parent_node_id' .
+			'  UNION SELECT 1 AS new_order' .
+			' ) s' .
+			';';
+		
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		// commiting transaction
+		
+		$this->database->commit_transaction();
+		
+		return $node_id;
+		
+	}
+	
+	//------------------------------------------------------------------
 	// moving sense up
 	//------------------------------------------------------------------
 
-	function move_sense_up($sense_id){
+	function move_sense_up($node_id){
 		
 		$query =
 			'UPDATE senses s1, senses s2' .
@@ -132,15 +357,13 @@ class MySQL_Data implements Data {
 			'  s2.order = s1.order,' .
 			'  s1.label = s2.label,' .
 			'  s2.label = s1.label' .
-			" WHERE s1.sense_id = $sense_id" .
+			" WHERE s1.node_id = $node_id" .
 			'  AND s1.parent_node_id = s2.parent_node_id' .
 			'  AND s1.order = s2.order + 1' .
 			';';
 		$result = $this->database->query($query);
 		
-		if($result === false){
-			return false;
-		}
+		if($result === false) return false;
 		
 		$affected_rows = $this->database->get_affected_rows();
 		
@@ -152,7 +375,7 @@ class MySQL_Data implements Data {
 	// moving translation down
 	//------------------------------------------------------------------
 	
-	function move_sense_down($sense_id){
+	function move_sense_down($node_id){
 		
 		$query =
 			'UPDATE senses s1, senses s2' .
@@ -161,20 +384,221 @@ class MySQL_Data implements Data {
 			'  s2.order = s1.order,' .
 			'  s1.label = s2.label,' .
 			'  s2.label = s1.label' .
-			" WHERE s1.sense_id = $sense_id" .
+			" WHERE s1.node_id = $node_id" .
 			'  AND s1.parent_node_id = s2.parent_node_id' .
 			'  AND s1.order = s2.order - 1' .
 			';';
 		$result = $this->database->query($query);
 		
-		if($result === false){
-			return false;
-		}
+		if($result === false) return false;
 		
 		$affected_rows = $this->database->get_affected_rows();
 		
 		return $affected_rows;
 
+	}
+	
+	//------------------------------------------------------------------
+	// deleting sense
+	//------------------------------------------------------------------	
+	
+	function delete_sense($node_id){
+		
+		// starting transaction
+		
+		$this->database->start_transaction();
+		
+		// moving senses with greater order
+		
+		$query =
+			'UPDATE senses s1, senses s2, senses s3' .
+			' SET ' .
+			'  s2.order = s2.order - 1,' .
+			'  s2.label = s3.label' .
+			" WHERE s1.node_id = $node_id" .
+			'  AND s1.parent_node_id = s2.parent_node_id' .
+			'  AND s2.order > s1.order' .
+			'  AND s3.parent_node_id = s2.parent_node_id' .
+			'  AND s3.order = s2.order - 1' .
+			';';
+		$result = $this->database->query($query);
+		
+		if($result === false) {
+			echo $query;
+			return false;
+		}
+		
+		// deleting node
+		
+		$query = "DELETE FROM nodes WHERE node_id = $node_id;";
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		// commiting transaction
+		
+		$this->database->commit_transaction();
+		
+		return true;
+		
+	}
+	
+	//==================================================================
+	// atomic operations: phrases
+	//==================================================================
+	
+	//------------------------------------------------------------------
+	// adding phrase
+	//------------------------------------------------------------------
+	
+	function add_phrase($parent_node_id, $phrase = ''){
+		
+		// strarting transaction
+		
+		$this->database->start_transaction();
+		
+		// inserting new node
+		
+		$node_id = $this->add_node();
+		
+		if($node_id === false) return false;
+		
+		// inserting new phrase
+		
+		$query =
+			'INSERT phrases (node_id, parent_node_id, `order`, phrase)' .
+			' SELECT ' .
+			'  last_insert_id() AS node_id,' .
+			"  $parent_node_id AS parent_node_id," .
+			'  MAX(new_order) AS `order`,' .
+			" '$phrase' AS phrase" .
+			' FROM (' .
+			'  SELECT MAX(`order`) + 1 AS new_order' .
+			'   FROM phrases' .
+			"   WHERE parent_node_id = $parent_node_id" .
+			'   GROUP BY parent_node_id' .
+			'  UNION SELECT 1 AS new_order' .
+			' ) ph' .
+			';';
+		
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		// commiting transaction
+		
+		$this->database->commit_transaction();
+		
+		return $node_id;
+		
+	}
+	
+	//------------------------------------------------------------------
+	// updating phrase
+	//------------------------------------------------------------------
+	
+	function update_phrase($node_id, $phrase){
+		
+		$query =
+			'UPDATE phrases' .
+			" SET phrase = '$phrase'" .
+			" WHERE node_id = $node_id" .
+			';';
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		return true;
+		
+	}
+	
+	//------------------------------------------------------------------
+	// moving phrase up
+	//------------------------------------------------------------------
+	
+	function move_phrase_up($node_id){
+		
+		$query =
+			'UPDATE phrases ph1, phrases ph2' .
+			' SET' .
+			'  ph1.order = ph2.order,' .
+			'  ph2.order = ph1.order' .
+			" WHERE ph1.node_id = $node_id" .
+			'  AND ph1.parent_node_id = ph2.parent_node_id' .
+			'  AND ph1.order = ph2.order + 1' .
+			';';
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		$affected_rows = $this->database->get_affected_rows();
+		
+		return $affected_rows;
+		
+	}
+
+	//------------------------------------------------------------------
+	// moving phrase down
+	//------------------------------------------------------------------
+	
+	function move_phrase_down($node_id){
+		
+		$query =
+			'UPDATE phrases ph1, phrases ph2' .
+			' SET' .
+			'  ph1.order = ph2.order,' .
+			'  ph2.order = ph1.order' .
+			" WHERE ph1.node_id = $node_id" .
+			'  AND ph1.parent_node_id = ph2.parent_node_id' .
+			'  AND ph1.order = ph2.order - 1' .
+			';';
+		$result = $this->database->query($query);
+		
+		if($result === false) { echo $query; return false; }
+		
+		$affected_rows = $this->database->get_affected_rows();
+		
+		return $affected_rows;
+		
+	}
+	
+	//------------------------------------------------------------------
+	// deleting phrase
+	//------------------------------------------------------------------
+	
+	function delete_phrase($node_id){
+		
+		// starting transaction
+		
+		$this->database->start_transaction();
+		
+		// moving senses with greater order
+		
+		$query =
+			'UPDATE phrases ph1, phrases ph2, phrases ph3' .
+			' SET ' .
+			'  ph2.order = ph2.order - 1' .
+			" WHERE ph1.node_id = $node_id" .
+			'  AND ph1.parent_node_id = ph2.parent_node_id' .
+			'  AND ph2.order > ph1.order' .
+			';';
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		// deleting node
+		
+		$query = "DELETE FROM nodes WHERE node_id = $node_id;";
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		// commiting transaction
+		
+		$this->database->commit_transaction();
+		
+		return true;
+		
 	}
 	
 	//==================================================================
@@ -185,37 +609,36 @@ class MySQL_Data implements Data {
 	// creating translation
 	//------------------------------------------------------------------
 
-	function add_translation($sense_id, $text = ''){
+	function add_translation($parent_node_id, $text = ''){
+		
+		// inserting new translation
 		
 		$query =
-			'INSERT translations (sense_id, parent_node_id, `order`, text)' .
-			" SELECT sense_id, node_id, MAX(new_order), '$text'" .
+			'INSERT translations (parent_node_id, `order`, text)' .
+			' SELECT' .
+			"  $parent_node_id as parent_node_id," .
+			'  MAX(new_order) AS `order`,' .
+			"  '$text' AS text" .
 			'  FROM (' .
-			'   SELECT s.sense_id, s.node_id, MAX(t.order) + 1 AS new_order' .
-			'    FROM translations t, senses s' .
-			"    WHERE s.`sense_id` = $sense_id" .
-			'     AND s.node_id = t.parent_node_id' .
-			'    GROUP BY s.sense_id, s.node_id' .
-			'   UNION SELECT sense_id, node_id, 1 AS new_order' .
-			'    FROM senses' .
-			"    WHERE sense_id = $sense_id" .
+			'   SELECT MAX(`order`) + 1 AS new_order' .
+			'    FROM translations' .
+			"    WHERE parent_node_id = $parent_node_id" .
+			'    GROUP BY parent_node_id' .
+			'   UNION SELECT 1 AS new_order' .
 			'  ) t' .
 			';';
-		
 		$result = $this->database->query($query);
-
-		if($result === false){
-			return false;
-		}
-
-		$query = 'SELECT last_insert_id() AS `insert_id`;';
-		$result = $this->database->query($query);
-
-		if($result === false){
-			return false;
-		}
 		
-		$translation_id = $result[0]['insert_id'];
+		if($result === false) { echo $query; return false; }
+		
+		// obtaining new translation id
+
+		$query = 'SELECT last_insert_id() AS `translation_id`;';
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		$translation_id = $result[0]['translation_id'];
 		
 		return $translation_id;
 		
@@ -234,9 +657,7 @@ class MySQL_Data implements Data {
 			';';
 		$result = $database->query($query);
 		
-		if($result === false){
-			return false;
-		}
+		if($result === false) return false;
 		
 		return true;
 		
@@ -257,9 +678,7 @@ class MySQL_Data implements Data {
 			';';
 		$result = $this->database->query($query);
 		
-		if($result === false){
-			return false;
-		}
+		if($result === false) return false;
 		
 		$affected_rows = $this->database->get_affected_rows();
 		
@@ -282,9 +701,7 @@ class MySQL_Data implements Data {
 			';';
 		$result = $this->database->query($query);
 		
-		if($result === false){
-			return false;
-		}
+		if($result === false) return false;
 		
 		$affected_rows = $this->database->get_affected_rows();
 		
@@ -314,14 +731,12 @@ class MySQL_Data implements Data {
 			'UPDATE translations t1, translations t2' .
 			' SET t1.order = t1.order - 1' .
 			" WHERE t2.translation_id = $translation_id" .
-			'  AND t1.sense_id = t2.sense_id' .
+			'  AND t1.parent_node_id = t2.parent_node_id' .
 			'  AND t1.order > t2.order' .
 			';';
 		$result = $this->database->query($query);
 
-		if($result === false){
-			return false;
-		}
+		if($result === false) return false;
 		
 		// deleting translation
 		
@@ -331,9 +746,7 @@ class MySQL_Data implements Data {
 			';';
 		$result = $this->database->query($query);
 		
-		if($result === false){
-			return false;
-		}
+		if($result === false) return false;
 		
 		$this->database->commit_transaction();
 		

@@ -1,27 +1,19 @@
 <?php
 
 require_once __DIR__.'/dictionary.php';
-require_once __DIR__.'/phrase.php';
 require_once __DIR__.'/translation.php';
 
-class Sense {
+class Phrase {
 	
-	private $dictionary;
 	private $data;
 	
 	private $id;
 	private $node_id;
 	
-	private $label;
+	private $phrase;
 	
-	private $translations;
+	private $translation;
 	private $translation_iterator;
-	
-	private $phrases;
-	private $phrases_iterator;
-	
-	private $senses;
-	private $sense_iterator;
 	
 	//------------------------------------------------
 	// constructor
@@ -33,12 +25,6 @@ class Sense {
 		
 		$this->translations = array();
 		$this->translation_iterator = 0;
-		
-		$this->phrases = array();
-		$this->phrase_iterator = 0;
-		
-		$this->senses = array();
-		$this->sense_iterator = 0;
 	}
 	
 	//------------------------------------------------
@@ -66,15 +52,15 @@ class Sense {
 	}
 	
 	//------------------------------------------------
-	// label management
+	// phrase management
 	//------------------------------------------------
 	
-	function set_label($label){
-		$this->label = $label;
+	function set($phrase){
+		$this->phrase = $phrase;
 	}
 	
-	function get_label(){
-		return $this->label;
+	function get(){
+		return $this->phrase;
 	}
 	
 	//------------------------------------------------
@@ -97,46 +83,6 @@ class Sense {
 		return $translation;
 	}
 
-	//------------------------------------------------
-	// phrase management
-	//------------------------------------------------
-	
-	function add_phrase(){
-		$phrase = new Phrase($this->dictionary);
-		$this->phrases[] = $phrase;
-		
-		return $phrase;
-	}
-	
-	function get_phrase(){
-		if(!isset($this->phrases[$this->phrase_iterator])) return false;
-		
-		$phrase = $this->phrases[$this->phrase_iterator];
-		$this->phrase_iterator++;
-		
-		return $phrase;
-	}
-	
-	//------------------------------------------------
-	// sense management
-	//------------------------------------------------
-	
-	function add_sense(){
-		$sense = new Sense($this->dictionary);
-		$this->senses[] = $sense;
-		
-		return $sense;
-	}
-	
-	function get_sense(){
-		if(!isset($this->senses[$this->sense_iterator])) return false;
-		
-		$sense = $this->senses[$this->sense_iterator];
-		$this->sense_iterator++;
-		
-		return $sense;
-	}
-	
 }
 
 ?>

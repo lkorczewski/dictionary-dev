@@ -2,20 +2,22 @@
 
 require_once __DIR__.'/dictionary.php';
 
-class Translation {
+class Form {
 	private $dictionary;
 	
-	private $id;	
-	private $text;
+	private $id;
+	private $label;
+	private $form;
 	
 	//------------------------------------------------
 	// constructor
 	//------------------------------------------------
 	
-	function __construct(Dictionary $dictionary, $text = NULL){
+	function __construct(Dictionary $dictionary, $label = NULL, $form = NULL){
 		$this->dictionary = $dictionary;
 		
-		if($text) $this->text = $text;
+		if($label) $this->label = $label;
+		if($form) $this->form = $form;
 	}
 	
 	//------------------------------------------------
@@ -31,15 +33,27 @@ class Translation {
 	}
 	
 	//------------------------------------------------
-	// setting value
+	// setting label
 	//------------------------------------------------
 	
-	function set_text($text){
-		$this->text = $text;
+	function set_label($label){
+		$this->label = $label;
 	}
 	
-	function get_text(){
-		return $this->text;
+	function get_label(){
+		return $this->label;
+	}
+	
+	//------------------------------------------------
+	// setting label
+	//------------------------------------------------
+	
+	function set_form($form){
+		$this->form = $form;
+	}
+	
+	function get_form(){
+		return $this->form;
 	}
 }
 
