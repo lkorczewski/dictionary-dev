@@ -41,6 +41,7 @@ class Translation {
 	function get_text(){
 		return $this->text;
 	}
+	
 }
 
 ?>

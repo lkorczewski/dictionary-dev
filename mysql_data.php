@@ -44,11 +44,17 @@ class MySQL_Data implements Data {
 	// pulling entry from database
 	//------------------------------------------------------------------
 	
-	function pull_entry(Entry $entry, $headword){
+	function pull_entry(Dictionary $dictionary, $headword){
 		// to do: only the first headword if all are the same
 		
 		$query = "SELECT * FROM entries WHERE headword = '$headword';"; // needs escaping!
 		$entry_result = $this->database->query($query);
+		
+		if($entry_result == false || count($entry_result) == 0){
+			return false;
+		}
+		
+		$entry = new Entry($dictionary);
 		
 		$entry->set_id($entry_result[0]['entry_id']);
 		$entry->set_node_id($entry_result[0]['node_id']);
@@ -65,22 +71,9 @@ class MySQL_Data implements Data {
 	
 	private function pull_entry_children(Entry $entry){
 		
-		// forms
+		// headword_node
 		
-		$query = 
-			'SELECT *' .
-			' FROM forms' .
-			" WHERE parent_node_id = {$entry->get_node_id()}" .
-			' ORDER BY `order`' .
-			';';
-		$forms_result = $this->database->query($query);
-		
-		foreach($forms_result as $form_result){
-			$form = $entry->add_form();
-			$form->set_id($form_result['form_id']);
-			$form->set_label($form_result['label']);
-			$form->set_form($form_result['form']);
-		}
+		$this->pull_headword_node_children($entry);
 		
 		// senses
 		
@@ -110,21 +103,9 @@ class MySQL_Data implements Data {
 	
 	private function pull_sense_children(Sense $sense){
 		
-		// translations
+		// headword_node
 		
-		$query =
-			'SELECT *' .
-			' FROM translations' .
-			" WHERE parent_node_id = {$sense->get_node_id()}" .
-			' ORDER BY `order`' .
-			';';
-		$translations_result = $this->database->query($query);
-		
-		foreach($translations_result as $translation_result){
-			$translation = $sense->add_translation();
-			$translation->set_id($translation_result['translation_id']);
-			$translation->set_text($translation_result['text']);
-		}
+		$this->pull_headword_node_children($sense);
 		
 		// phrases
 		
@@ -172,18 +153,74 @@ class MySQL_Data implements Data {
 	
 	private function pull_phrase_children(Phrase $phrase){
 		
+		// node
+		
+		$this->pull_node_children($phrase);
+		
+	}
+	
+	//------------------------------------------------------------------
+	// pulling headword node children from database
+	//------------------------------------------------------------------
+	
+	private function pull_headword_node_children(Headword_Node $node){
+		
+		// category label
+		
+		$query =
+			'SELECT *' .
+			' FROM category_labels' .
+			" WHERE parent_node_id = {$node->get_node_id()}" .
+			';';
+		$category_labels_result = $this->database->query($query);
+		
+		if(is_array($category_labels_result) && count($category_labels_result)){
+			$category_label_result = $category_labels_result[0];
+			$category_label = $node->set_category_label();
+			$category_label->set_id($category_label_result['category_label_id']);
+			$category_label->set($category_label_result['label']);
+		}
+		
+		// forms
+		
+		$query = 
+			'SELECT *' .
+			' FROM forms' .
+			" WHERE parent_node_id = {$node->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
+		$forms_result = $this->database->query($query);
+		
+		foreach($forms_result as $form_result){
+			$form = $node->add_form();
+			$form->set_id($form_result['form_id']);
+			$form->set_label($form_result['label']);
+			$form->set_form($form_result['form']);
+		}
+		
+		// node
+		$this->pull_node_children($node);
+		
+	}
+	
+	//------------------------------------------------------------------
+	// pulling node children from database
+	//------------------------------------------------------------------
+	
+	private function pull_node_children(Node $node){
+		
 		// translations
 		
 		$query =
 			'SELECT *' .
 			' FROM translations' .
-			" WHERE parent_node_id = {$phrase->get_node_id()}" .
+			" WHERE parent_node_id = {$node->get_node_id()}" .
 			' ORDER BY `order`' .
 			';';
 		$translations_result = $this->database->query($query);
 		
 		foreach($translations_result as $translation_result){
-			$translation = $phrase->add_translation();
+			$translation = $node->add_translation();
 			$translation->set_id($translation_result['translation_id']);
 			$translation->set_text($translation_result['text']);
 		}
@@ -264,13 +301,14 @@ class MySQL_Data implements Data {
 	// updating entry
 	//------------------------------------------------------------------
 	
-	function update_entry($entry_id, $headword){
+	function update_entry($node_id, $headword){
 		
 		$query =
-			'UPDATE entry' .
+			'UPDATE entries' .
 			" SET headword = '$headword'" .
-			" WHERE entry_id = $entry_id" .
+			" WHERE node_id = $node_id" .
 			';';
+		$result = $this->database->query($query);
 		if($result === false) return false;
 		
 		return true;
@@ -281,13 +319,13 @@ class MySQL_Data implements Data {
 	// deleting entry
 	//------------------------------------------------------------------
 	
-	function delete_entry($entry_id){
+	function delete_entry($node_id){
 		
 		$query =
 			'DELETE FROM entries' .
-			" WHERE entry_id = {$entry_id}" .
+			" WHERE node_id = $node_id" .
 			';';
-		$result = $database->query($query);
+		$result = $this->database->query($query);
 		if($result === false) return false;
 		
 		return true;
@@ -600,13 +638,52 @@ class MySQL_Data implements Data {
 		return true;
 		
 	}
+
+	//==================================================================
+	// atomic operations: category_labels
+	//==================================================================
+	// needs rewriting: ids, storing method
+	
+	function set_category_label($parent_node_id, $label){
+		
+		$query =
+			'REPLACE category_labels' .
+			' SET' .
+			" label = '$label'," .
+			" parent_node_id = $parent_node_id" .
+			';';
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		$affected_rows = $this->database->get_affected_rows();
+		
+		return $affected_rows;
+		
+	}
+	
+	function delete_category_label($parent_node_id){
+		
+		$query =
+			'DELETE FROM category_labels' .
+			" WHERE parent_node_id = $parent_node_id" .
+			';';
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		$affected_rows = $this->database->get_affected_rows();
+		
+		return $affected_rows;
+		
+	}
 	
 	//==================================================================
 	// atomic operations: forms
 	//==================================================================
 	
 	//------------------------------------------------------------------
-	// creating translation
+	// creating form
 	//------------------------------------------------------------------
 
 	function add_form($parent_node_id, $label = '', $form = ''){

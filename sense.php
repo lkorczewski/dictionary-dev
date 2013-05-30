@@ -1,21 +1,15 @@
 <?php
 
 require_once __DIR__.'/dictionary.php';
+require_once __DIR__.'/headword_node.php';
 require_once __DIR__.'/phrase.php';
 require_once __DIR__.'/translation.php';
 
-class Sense {
-	
-	private $dictionary;
-	private $data;
+class Sense extends Headword_Node {
 	
 	private $id;
-	private $node_id;
 	
 	private $label;
-	
-	private $translations;
-	private $translation_iterator;
 	
 	private $phrases;
 	private $phrases_iterator;
@@ -28,17 +22,14 @@ class Sense {
 	//------------------------------------------------
 	
 	function __construct(Dictionary $dictionary){
-		$this->dictionary = $dictionary;
-		$this->data = $dictionary->get_data();
-		
-		$this->translations = array();
-		$this->translation_iterator = 0;
+		parent::__construct($dictionary);
 		
 		$this->phrases = array();
 		$this->phrase_iterator = 0;
 		
 		$this->senses = array();
 		$this->sense_iterator = 0;
+		
 	}
 	
 	//------------------------------------------------
@@ -54,18 +45,6 @@ class Sense {
 	}
 	
 	//------------------------------------------------
-	// node id management
-	//------------------------------------------------
-	
-	function set_node_id($node_id){
-		$this->node_id = $node_id;
-	}
-	
-	function get_node_id(){
-		return $this->node_id;
-	}
-	
-	//------------------------------------------------
 	// label management
 	//------------------------------------------------
 	
@@ -77,26 +56,6 @@ class Sense {
 		return $this->label;
 	}
 	
-	//------------------------------------------------
-	// translation management
-	//------------------------------------------------
-	
-	function add_translation(){
-		$translation = new Translation($this->dictionary);
-		$this->translations[] = $translation;
-		
-		return $translation;
-	}
-	
-	function get_translation(){
-		if(!isset($this->translations[$this->translation_iterator])) return false;
-		
-		$translation = $this->translations[$this->translation_iterator];
-		$this->translation_iterator++;
-			
-		return $translation;
-	}
-
 	//------------------------------------------------
 	// phrase management
 	//------------------------------------------------

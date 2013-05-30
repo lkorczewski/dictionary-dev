@@ -45,7 +45,7 @@ class XML_Layout {
 	}
 
 	//--------------------------------------------------------------------
-	// dictionary parser
+	// universal parser
 	//--------------------------------------------------------------------
 	// just a theoretical fun, no practical purposes expected
 	//--------------------------------------------------------------------
@@ -72,6 +72,8 @@ class XML_Layout {
 	
 	//--------------------------------------------------------------------
 	// dictionary parser
+	//--------------------------------------------------------------------
+	// TO DO: describe behaviour when $sream = false
 	//--------------------------------------------------------------------
 	
 	function parse_dictionary(Dictionary $dictionary, $stream = false){

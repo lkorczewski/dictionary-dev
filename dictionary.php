@@ -54,7 +54,7 @@ class Dictionary {
 	function get_entry($headword){
 		
 		$entry = new Entry($this);
-		$entry = $this->data->pull_entry($entry, $headword);
+		$entry = $this->data->pull_entry($this, $headword);
 		
 		return $entry;
 	}

@@ -2,18 +2,14 @@
 
 //require_once __DIR__.'/data.php';
 require_once __DIR__.'/dictionary.php';
+require_once __DIR__.'/headword_node.php';
 require_once __DIR__.'/sense.php';
 
-class Entry {
-	private $dictionary;
+class Entry extends Headword_Node {
 	
 	private $id;
-	private $node_id;
 	
 	private $headword;
-	
-	private $forms;
-	private $form_iterator;
 	
 	private $senses;
 	private $sense_iterator;
@@ -23,14 +19,14 @@ class Entry {
 	//------------------------------------------------
 	
 	function __construct(Dictionary $dictionary){
+		parent::__construct($dictionary);
+		
 		$this->dictionary = $dictionary;
 		$this->database = $dictionary->get_database();
 		
-		$this->forms = array();
-		$this->form_iterator = 0;
-		
 		$this->senses = array();
 		$this->sense_iterator = 0;
+		
 	}
 	
 	//------------------------------------------------
@@ -46,18 +42,6 @@ class Entry {
 	}
 	
 	//------------------------------------------------
-	// node id management
-	//------------------------------------------------
-	
-	function set_node_id($node_id){
-		$this->node_id = $node_id;
-	}
-	
-	function get_node_id(){
-		return $this->node_id;
-	}
-	
-	//------------------------------------------------
 	// headword management
 	//------------------------------------------------
 	
@@ -69,26 +53,6 @@ class Entry {
 		return $this->headword;
 	}
 
-	//------------------------------------------------
-	// form management
-	//------------------------------------------------
-	
-	function add_form(){
-		$form = new Form($this->dictionary);
-		$this->forms[] = $form;
-		
-		return $form;
-	}
-	
-	function get_form(){
-		if(!isset($this->forms[$this->form_iterator])) return false;
-		
-		$form = $this->forms[$this->form_iterator];
-		$this->form_iterator++;
-		
-		return $form;
-	}
-	
 	//------------------------------------------------
 	// sense management
 	//------------------------------------------------

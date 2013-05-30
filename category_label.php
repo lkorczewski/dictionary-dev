@@ -1,22 +1,21 @@
 <?php
 
 require_once __DIR__.'/dictionary.php';
-require_once __DIR__.'/node.php';
-require_once __DIR__.'/translation.php';
 
-class Phrase extends Node {
+class Category_Label {
+	private $dictionary;
 	
 	private $id;
-	
-	private $phrase;
+	private $label;
 	
 	//------------------------------------------------
 	// constructor
 	//------------------------------------------------
 	
-	function __construct(Dictionary $dictionary){
-		parent::__construct($dictionary);
-
+	function __construct(Dictionary $dictionary, $label = NULL){
+		$this->dictionary = $dictionary;
+		
+		if($label) $this->label = $label;
 	}
 	
 	//------------------------------------------------
@@ -32,15 +31,15 @@ class Phrase extends Node {
 	}
 	
 	//------------------------------------------------
-	// phrase management
+	// setting value
 	//------------------------------------------------
 	
-	function set($phrase){
-		$this->phrase = $phrase;
+	function set($label){
+		$this->label = $label;
 	}
 	
 	function get(){
-		return $this->phrase;
+		return $this->label;
 	}
 	
 }
