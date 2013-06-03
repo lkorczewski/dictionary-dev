@@ -4,6 +4,8 @@ require_once 'database/database.php';
 require_once __DIR__.'/data.php';
 
 require_once __DIR__.'/dictionary.php';
+require_once __DIR__.'/node.php';
+require_once __DIR__.'/headword_node.php';
 require_once __DIR__.'/entry.php';
 require_once __DIR__.'/sense.php';
 require_once __DIR__.'/translation.php';
@@ -169,8 +171,9 @@ class MySQL_Data implements Data {
 		
 		$query =
 			'SELECT *' .
-			' FROM category_labels' .
-			" WHERE parent_node_id = {$node->get_node_id()}" .
+			' FROM node_category_labels ncl, category_labels cl' .
+			' WHERE ncl.category_label_id = cl.category_label_id' .
+			"  AND parent_node_id = {$node->get_node_id()}" .
 			';';
 		$category_labels_result = $this->database->query($query);
 		
@@ -281,9 +284,9 @@ class MySQL_Data implements Data {
 		
 		$query =
 			'INSERT entries (node_id, headword)' .
-			' SELECT ' .
-			'last_insert_id() AS node_id,' .
-			"'$headword' AS headword" .
+			' SELECT' .
+			'  last_insert_id() AS node_id,' .
+			"  '$headword' AS headword" .
 			';';
 		$result = $this->database->query($query);
 		
@@ -613,7 +616,7 @@ class MySQL_Data implements Data {
 		// moving senses with greater order
 		
 		$query =
-			'UPDATE phrases ph1, phrases ph2, phrases ph3' .
+			'UPDATE phrases ph1, phrases ph2' .
 			' SET ' .
 			'  ph2.order = ph2.order - 1' .
 			" WHERE ph1.node_id = $node_id" .
@@ -626,7 +629,10 @@ class MySQL_Data implements Data {
 		
 		// deleting node
 		
-		$query = "DELETE FROM nodes WHERE node_id = $node_id;";
+		$query =
+			'DELETE FROM nodes' .
+			" WHERE node_id = $node_id" .
+			';';
 		$result = $this->database->query($query);
 		
 		if($result === false) return false;
@@ -643,24 +649,64 @@ class MySQL_Data implements Data {
 	// atomic operations: category_labels
 	//==================================================================
 	// needs rewriting: ids, storing method
+
+	//------------------------------------------------------------------
+	// setting category label
+	//------------------------------------------------------------------
 	
 	function set_category_label($parent_node_id, $label){
 		
+		// starting transaction
+		
+		$this->database->start_transaction();
+		
+		// inserting category label, if it doesn't exist
+		
 		$query =
-			'REPLACE category_labels' .
-			' SET' .
-			" label = '$label'," .
-			" parent_node_id = $parent_node_id" .
+			'INSERT IGNORE category_labels' .
+			" SET label = '$label'" .
 			';';
 		$result = $this->database->query($query);
 		
 		if($result === false) return false;
 		
-		$affected_rows = $this->database->get_affected_rows();
+		// obtaining new category label id
+
+		$query =
+			'SELECT *' .
+			' FROM category_labels' .
+			" WHERE label = '$label'" .
+			';';
+		$result = $this->database->query($query);
 		
-		return $affected_rows;
+		if($result === false) return false;
+		
+		$category_label_id = $result[0]['category_label_id'];
+		
+		// inserting node to category label relation
+		
+		$query =
+			'REPLACE node_category_labels' .
+			' SET' .
+			"  category_label_id = $category_label_id," .
+			"  parent_node_id = $parent_node_id" .
+			';';
+		
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		// commiting transaction
+		
+		$this->database->commit_transaction();
+		
+		return true;
 		
 	}
+	
+	//------------------------------------------------------------------
+	// deleting category label
+	//------------------------------------------------------------------
 	
 	function delete_category_label($parent_node_id){
 		

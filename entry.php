@@ -11,6 +11,9 @@ class Entry extends Headword_Node {
 	
 	private $headword;
 	
+	private $phrases;
+	private $phrase_iterator;
+	
 	private $senses;
 	private $sense_iterator;
 	
@@ -51,6 +54,26 @@ class Entry extends Headword_Node {
 	
 	function get_headword(){
 		return $this->headword;
+	}
+	
+	//------------------------------------------------
+	// phrase management
+	//------------------------------------------------
+	
+	function add_phrase(){
+		$phrase = new Phrase($this->dictionary);
+		$this->phrases[] = $phrase;
+		
+		return $phrase;
+	}
+	
+	function get_phrase(){
+		if(!isset($this->phrases[$this->phrase_iterator])) return false;
+		
+		$phrase = $this->phrases[$this->phrase_iterator];
+		$this->phrase_iterator++;
+		
+		return $phrase;
 	}
 
 	//------------------------------------------------

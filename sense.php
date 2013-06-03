@@ -12,7 +12,7 @@ class Sense extends Headword_Node {
 	private $label;
 	
 	private $phrases;
-	private $phrases_iterator;
+	private $phrase_iterator;
 	
 	private $senses;
 	private $sense_iterator;
