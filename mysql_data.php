@@ -711,7 +711,7 @@ class MySQL_Data implements Data {
 	function delete_category_label($parent_node_id){
 		
 		$query =
-			'DELETE FROM category_labels' .
+			'DELETE FROM node_category_labels' .
 			" WHERE parent_node_id = $parent_node_id" .
 			';';
 		$result = $this->database->query($query);
