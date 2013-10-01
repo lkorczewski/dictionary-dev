@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/dictionary.php';
+require_once __DIR__ . '/dictionary.php';
 
 class Category_Label {
 	private $dictionary;

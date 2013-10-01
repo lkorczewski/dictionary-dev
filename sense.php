@@ -2,6 +2,7 @@
 
 require_once __DIR__.'/dictionary.php';
 require_once __DIR__.'/headword_node.php';
+require_once __DIR__.'/context.php';
 require_once __DIR__.'/phrase.php';
 require_once __DIR__.'/translation.php';
 
@@ -10,6 +11,8 @@ class Sense extends Headword_Node {
 	private $id;
 	
 	private $label;
+	
+	private $context;
 	
 	private $phrases;
 	private $phrase_iterator;
@@ -54,6 +57,21 @@ class Sense extends Headword_Node {
 	
 	function get_label(){
 		return $this->label;
+	}
+	
+	//------------------------------------------------
+	// context management
+	//------------------------------------------------
+	
+	function set_context(){
+		$context = new Context($this->dictionary);
+		$this->context = $context;
+		
+		return $context;		
+	}
+	
+	function get_context(){
+		return $this->context;
 	}
 	
 	//------------------------------------------------

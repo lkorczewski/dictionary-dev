@@ -1,21 +1,21 @@
 <?php
 
-require_once __DIR__.'/dictionary.php';
-require_once __DIR__.'/node.php';
-require_once __DIR__.'/translation.php';
+require_once __DIR__ . '/dictionary.php';
 
-class Phrase extends Node {
+class Context {
+	private $dictionary;
 	
 	private $id;
-	
-	private $phrase;
+	private $context;
 	
 	//------------------------------------------------
 	// constructor
 	//------------------------------------------------
 	
-	function __construct(Dictionary $dictionary){
-		parent::__construct($dictionary);
+	function __construct(Dictionary $dictionary, $context = NULL){
+		$this->dictionary = $dictionary;
+		
+		if($context) $this->label = $context;
 	}
 	
 	//------------------------------------------------
@@ -31,15 +31,15 @@ class Phrase extends Node {
 	}
 	
 	//------------------------------------------------
-	// phrase management
+	// value management
 	//------------------------------------------------
 	
-	function set($phrase){
-		$this->phrase = $phrase;
+	function set($context){
+		$this->context = $context;
 	}
 	
 	function get(){
-		return $this->phrase;
+		return $this->context;
 	}
 	
 }

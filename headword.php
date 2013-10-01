@@ -2,22 +2,19 @@
 
 require_once __DIR__.'/dictionary.php';
 
-class Form {
+class Headword {
 	private $dictionary;
 	
 	private $id;
-	private $label;
-	private $form;
+	private $headword;
 	
 	//------------------------------------------------
 	// constructor
 	//------------------------------------------------
 	
-	function __construct(Dictionary $dictionary, $label = NULL, $form = NULL){
+	function __construct(Dictionary $dictionary, $headword = ''){
 		$this->dictionary = $dictionary;
-		
-		if($label) $this->label = $label;
-		if($form) $this->form = $form;
+		if($headword) $this->headword = $headword;
 	}
 	
 	//------------------------------------------------
@@ -33,28 +30,17 @@ class Form {
 	}
 	
 	//------------------------------------------------
-	// managing label
+	// headword managemenet
 	//------------------------------------------------
 	
-	function set_label($label){
-		$this->label = $label;
+	function set($headword){
+		$this->headword = $headword;
 	}
 	
-	function get_label(){
-		return $this->label;
+	function get(){
+		return $this->headword;
 	}
 	
-	//------------------------------------------------
-	// managing form
-	//------------------------------------------------
-	
-	function set_form($form){
-		$this->form = $form;
-	}
-	
-	function get_form(){
-		return $this->form;
-	}
 }
 
 ?>

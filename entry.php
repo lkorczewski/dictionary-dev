@@ -1,7 +1,7 @@
 <?php
 
-//require_once __DIR__.'/data.php';
 require_once __DIR__.'/dictionary.php';
+require_once __DIR__.'/headword.php';
 require_once __DIR__.'/headword_node.php';
 require_once __DIR__.'/sense.php';
 
@@ -11,30 +11,40 @@ class Entry extends Headword_Node {
 	
 	private $headword;
 	
+	private $headwords;
+	private $headword_iterator;
+		
 	private $phrases;
 	private $phrase_iterator;
 	
 	private $senses;
 	private $sense_iterator;
 	
-	//------------------------------------------------
+	private $comment;
+	
+	//------------------------------------------------------------------------
 	// constructor
-	//------------------------------------------------
+	//------------------------------------------------------------------------
 	
 	function __construct(Dictionary $dictionary){
 		parent::__construct($dictionary);
 		
 		$this->dictionary = $dictionary;
-		$this->database = $dictionary->get_database();
+		
+		$this->headwords = array();
+		$this->headword_iterator = 0;
+		
+		$this->phrases = array();
+		$this->phrase_iterator = 0;
 		
 		$this->senses = array();
 		$this->sense_iterator = 0;
 		
 	}
 	
-	//------------------------------------------------
+	//------------------------------------------------------------------------
 	// id management
-	//------------------------------------------------
+	//------------------------------------------------------------------------
 	
 	function set_id($id){
 		$this->id = $id;
@@ -44,10 +54,10 @@ class Entry extends Headword_Node {
 		return $this->id;
 	}
 	
-	//------------------------------------------------
+	//------------------------------------------------------------------------
 	// headword management
-	//------------------------------------------------
-	
+	//------------------------------------------------------------------------
+	/*
 	function set_headword($headword){
 		$this->headword = $headword;
 	}
@@ -55,10 +65,27 @@ class Entry extends Headword_Node {
 	function get_headword(){
 		return $this->headword;
 	}
+	*/
 	
-	//------------------------------------------------
+	function add_headword(){
+		$headword = new Headword($this->dictionary);
+		$this->headwords[] = $headword;
+		
+		return $headword;
+	}
+	
+	function get_headword(){
+		if(!isset($this->headwords[$this->headword_iterator])) return false;
+		
+		$headword = $this->headwords[$this->headword_iterator];
+		$this->headword_iterator++;
+		
+		return $headword;
+	}
+	
+	//------------------------------------------------------------------------
 	// phrase management
-	//------------------------------------------------
+	//------------------------------------------------------------------------
 	
 	function add_phrase(){
 		$phrase = new Phrase($this->dictionary);
@@ -76,9 +103,9 @@ class Entry extends Headword_Node {
 		return $phrase;
 	}
 
-	//------------------------------------------------
+	//------------------------------------------------------------------------
 	// sense management
-	//------------------------------------------------
+	//------------------------------------------------------------------------
 	
 	function add_sense(){
 		$sense = new Sense($this->dictionary);
@@ -94,6 +121,21 @@ class Entry extends Headword_Node {
 		$this->sense_iterator++;
 		
 		return $sense;
+	}
+	
+	//------------------------------------------------------------------------
+	// comment management
+	//------------------------------------------------------------------------
+	
+	function set_comment($comment = ''){
+		$comment = new Comment($this->dictionary);
+		$this->comment = $comment;
+		
+		return $comment;
+	}
+	
+	function get_comment(){
+		return $comment;
 	}
 	
 }

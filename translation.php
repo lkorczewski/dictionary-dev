@@ -14,7 +14,6 @@ class Translation {
 	
 	function __construct(Dictionary $dictionary, $text = NULL){
 		$this->dictionary = $dictionary;
-		
 		if($text) $this->text = $text;
 	}
 	
