@@ -1,16 +1,16 @@
 <?php
 
-trait MySQL_Sense {
+trait MySQL_Phrase {
 	
 	//==================================================================
-	// atomic operations: senses
+	// atomic operations: phrases
 	//==================================================================
 	
 	//------------------------------------------------------------------
-	// adding sense
+	// adding phrase
 	//------------------------------------------------------------------
 	
-	function add_sense($parent_node_id, $label = ''){
+	function add_phrase($parent_node_id, $phrase = ''){
 		
 		// strarting transaction
 		
@@ -22,22 +22,22 @@ trait MySQL_Sense {
 		
 		if($node_id === false) return false;
 		
-		// inserting new entry
+		// inserting new phrase
 		
 		$query =
-			'INSERT senses (node_id, parent_node_id, `order`, label)' .
+			'INSERT phrases (node_id, parent_node_id, `order`, phrase)' .
 			' SELECT ' .
 			'  last_insert_id() AS node_id,' .
 			"  $parent_node_id AS parent_node_id," .
 			'  MAX(new_order) AS `order`,' .
-			" '{$this->database->escape_string($label)}' AS label" .
+			" '{$this->database->escape_string($phrase)}' AS phrase" .
 			' FROM (' .
 			'  SELECT MAX(`order`) + 1 AS new_order' .
-			'   FROM senses' .
+			'   FROM phrases' .
 			"   WHERE parent_node_id = $parent_node_id" .
 			'   GROUP BY parent_node_id' .
 			'  UNION SELECT 1 AS new_order' .
-			' ) s' .
+			' ) ph' .
 			';';
 		
 		$result = $this->database->query($query);
@@ -52,21 +52,37 @@ trait MySQL_Sense {
 	}
 	
 	//------------------------------------------------------------------
-	// moving sense up
+	// updating phrase
 	//------------------------------------------------------------------
-
-	function move_sense_up($node_id){
+	
+	function update_phrase($node_id, $phrase){
 		
 		$query =
-			'UPDATE senses s1, senses s2' .
+			'UPDATE phrases' .
+			" SET phrase = '{$this->database->escape_string($phrase)}'" .
+			" WHERE node_id = $node_id" .
+			';';
+		$result = $this->database->query($query);
+		
+		if($result === false) return false;
+		
+		return true;
+	}
+	
+	//------------------------------------------------------------------
+	// moving phrase up
+	//------------------------------------------------------------------
+	
+	function move_phrase_up($node_id){
+		
+		$query =
+			'UPDATE phrases ph1, phrases ph2' .
 			' SET' .
-			'  s1.order = s2.order,' .
-			'  s2.order = s1.order,' .
-			'  s1.label = s2.label,' .
-			'  s2.label = s1.label' .
-			" WHERE s1.node_id = $node_id" .
-			'  AND s1.parent_node_id = s2.parent_node_id' .
-			'  AND s1.order = s2.order + 1' .
+			'  ph1.order = ph2.order,' .
+			'  ph2.order = ph1.order' .
+			" WHERE ph1.node_id = $node_id" .
+			'  AND ph1.parent_node_id = ph2.parent_node_id' .
+			'  AND ph1.order = ph2.order + 1' .
 			';';
 		$result = $this->database->query($query);
 		
@@ -75,28 +91,27 @@ trait MySQL_Sense {
 		$affected_rows = $this->database->get_affected_rows();
 		
 		return $affected_rows;
+		
 	}
 
 	//------------------------------------------------------------------
-	// moving translation down
+	// moving phrase down
 	//------------------------------------------------------------------
 	
-	function move_sense_down($node_id){
+	function move_phrase_down($node_id){
 		
 		$query =
-			'UPDATE senses s1, senses s2' .
+			'UPDATE phrases ph1, phrases ph2' .
 			' SET' .
-			'  s1.order = s2.order,' .
-			'  s2.order = s1.order,' .
-			'  s1.label = s2.label,' .
-			'  s2.label = s1.label' .
-			" WHERE s1.node_id = $node_id" .
-			'  AND s1.parent_node_id = s2.parent_node_id' .
-			'  AND s1.order = s2.order - 1' .
+			'  ph1.order = ph2.order,' .
+			'  ph2.order = ph1.order' .
+			" WHERE ph1.node_id = $node_id" .
+			'  AND ph1.parent_node_id = ph2.parent_node_id' .
+			'  AND ph1.order = ph2.order - 1' .
 			';';
 		$result = $this->database->query($query);
 		
-		if($result === false) return false;
+		if($result === false) { echo $query; return false; }
 		
 		$affected_rows = $this->database->get_affected_rows();
 		
@@ -104,10 +119,10 @@ trait MySQL_Sense {
 	}
 	
 	//------------------------------------------------------------------
-	// deleting sense
-	//------------------------------------------------------------------	
+	// deleting phrase
+	//------------------------------------------------------------------
 	
-	function delete_sense($node_id){
+	function delete_phrase($node_id){
 		
 		// starting transaction
 		
@@ -116,28 +131,23 @@ trait MySQL_Sense {
 		// moving senses with greater order
 		
 		$query =
-			'UPDATE senses s1, senses s2, senses s3' .
+			'UPDATE phrases ph1, phrases ph2' .
 			' SET ' .
-			'  s2.order = s2.order - 1,' .
-			'  s2.label = s3.label' .
-			" WHERE s1.node_id = $node_id" .
-			'  AND s1.parent_node_id = s2.parent_node_id' .
-			'  AND s2.order > s1.order' .
-			'  AND s3.parent_node_id = s2.parent_node_id' .
-			'  AND s3.order = s2.order - 1' .
+			'  ph2.order = ph2.order - 1' .
+			" WHERE ph1.node_id = $node_id" .
+			'  AND ph1.parent_node_id = ph2.parent_node_id' .
+			'  AND ph2.order > ph1.order' .
 			';';
 		$result = $this->database->query($query);
 		
-		if($result === false) {
-			echo $query;
-			return false;
-		}
+		if($result === false) return false;
 		
 		// deleting node
 		
 		$query =
 			'DELETE FROM nodes' .
-			" WHERE node_id = $node_id;";
+			" WHERE node_id = $node_id" .
+			';';
 		$result = $this->database->query($query);
 		
 		if($result === false) return false;
