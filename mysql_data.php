@@ -10,6 +10,7 @@ require_once __DIR__.'/entry.php';
 require_once __DIR__.'/sense.php';
 require_once __DIR__.'/translation.php';
 
+require_once __DIR__.'/data/mysql/node.php';
 require_once __DIR__.'/data/mysql/entry.php';
 require_once __DIR__.'/data/mysql/sense.php';
 require_once __DIR__.'/data/mysql/phrase.php';
@@ -19,7 +20,10 @@ require_once __DIR__.'/data/mysql/form.php';
 require_once __DIR__.'/data/mysql/context.php';
 require_once __DIR__.'/data/mysql/translation.php';
 
+require_once __DIR__.'/data/mysql/order_label.php';
+
 class MySQL_Data implements Data {
+	use MySQL_Node;
 	use MySQL_Entry;
 	use MySQL_Sense;
 	use MySQL_Phrase;
@@ -28,6 +32,7 @@ class MySQL_Data implements Data {
 	use MySQL_Form;
 	use MySQL_Context;
 	use MySQL_Translation;
+	use MySQL_Order_Label;
 	
 	private $database;
 	
@@ -44,17 +49,68 @@ class MySQL_Data implements Data {
 	}
 	
 	//------------------------------------------------------------------
+	// creating storage (database)
+	//------------------------------------------------------------------
+	
+	public function create_storage(&$log){
+		$methods = array(
+			'create_node_storage',
+			'create_entry_storage',
+			'create_sense_storage',
+			'create_phrase_storage',
+			'create_headword_storage',
+			'create_category_label_storage',
+			'create_form_storage',
+			'create_context_storage',
+			'create_translation_storage',
+			'create_order_label_storage',
+			
+			'fill_order_label_storage',
+			
+			'link_entry_storage',
+			'link_sense_storage',
+			'link_phrase_storage',
+			'link_headword_storage',
+			'link_category_label_storage',
+			'link_form_storage',
+			'link_context_storage',
+			'link_translation_storage',
+			'link_order_label_storage',
+		);
+		
+		$log = array();
+		
+		foreach($methods as $method){
+			$result = $this->$method();
+			$log[] = array(
+				'action' => $method,
+				'result' => $result
+			);
+			if(!$result){
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	//------------------------------------------------------------------
 	// pulling list of headwords
 	//------------------------------------------------------------------
 	
-	function pull_headwords(){
+	function pull_headwords($mask = '', $number = NULL){
+		
+		$mask_sql = $mask ? "  AND h.headword LIKE '$mask%'" : '';
+		$number_sql = $number ? " LIMIT $number" : '';
 		
 		$query =
 			'SELECT h.headword' .
 			' FROM entries e, headwords h' .
 			' WHERE e.node_id = h.parent_node_id' .
 			'  AND h.order = 1' .
+			$mask_sql .
 			' ORDER BY `headword`' .
+			$number_sql .
 			';';
 		$result = $this->database->fetch_all($query);
 		
@@ -373,35 +429,6 @@ class MySQL_Data implements Data {
 		/* ... */
 	}
 	
-	//==================================================================
-	// auxiliary functions
-	//==================================================================
-	
-	//------------------------------------------------------------------
-	// adding node
-	//------------------------------------------------------------------
-	
-	private function add_node(){
-		
-		// inserting new node
-		
-		$query = 'INSERT nodes () VALUES ();';
-		$result = $this->database->query($query);
-		
-		if($result === false) return false;
-		
-		// obtaining node id
-		
-		$query = 'SELECT last_insert_id() AS node_id;';
-		$result = $this->database->query($query);
-		
-		if($result === false) return false;
-		
-		$node_id = $result[0]['node_id'];
-		
-		return $node_id;
-	}
-		
 }
 
 ?>

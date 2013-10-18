@@ -57,15 +57,12 @@ class Dictionary {
 	//  - headwords by mask
 	//------------------------------------------------------------------------
 
-	function get_entries($headword){
+	function get_entries($headword_mask){
 		
-		$headword_mask = $headword;
-					
 		//$entries = array();
 		$entries = $this->data->pull_entries($this, $headword_mask);
 		
 		return $entries;
-			
 	}
 	
 }

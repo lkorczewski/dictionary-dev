@@ -2,7 +2,6 @@
 
 require_once __DIR__.'/dictionary.php';
 require_once __DIR__.'/node.php';
-require_once __DIR__.'/translation.php';
 
 class Phrase extends Node {
 	
