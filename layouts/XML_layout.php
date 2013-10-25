@@ -10,16 +10,18 @@ require_once 'dictionary/form.php';
 require_once 'dictionary/translation.php';
 
 class XML_Layout {
+	const RETURN_RESULT = false;
+	
 	private $depth;
 	private $indent_string;
 	
 	private $output;
 
 	//--------------------------------------------------------------------
-	// konstruktor
+	// constructor
 	//--------------------------------------------------------------------
 	
-	function __construct(){
+	public function __construct(){
 		$this->depth = 0;
 		$this->indent_string = ' ';
 	}
@@ -28,7 +30,7 @@ class XML_Layout {
 	// depth management
 	//--------------------------------------------------------------------
 	
-	function set_depth($depth){
+	private function set_depth($depth){
 		$this->depth = $depth;
 	}
 	
@@ -50,7 +52,7 @@ class XML_Layout {
 	// just a theoretical fun, no practical purposes expected
 	//--------------------------------------------------------------------
 	
-	function parse($object){
+	public function parse($object){
 		
 		$class_name = get_class($object);
 		
@@ -62,6 +64,8 @@ class XML_Layout {
 			case 'Sense' :        return $this->parse_sense($object);
 			case 'Phrase' :       return $this->parse_phrase($object);
 			
+			case 'Headword' :     return $this->parse_headword($object);
+			case 'Context' :      return $this->parse_context($object);
 			case 'Form' :         return $this->parse_form($object);
 			case 'Translation' :  return $this->parse_translation($object);
 			default :             return false;
@@ -73,10 +77,12 @@ class XML_Layout {
 	//--------------------------------------------------------------------
 	// dictionary parser
 	//--------------------------------------------------------------------
-	// TO DO: describe behaviour when $sream = false
+	// $stream:
+	//   PHP stream identifier; if false, output is returned as return
+	//     value
 	//--------------------------------------------------------------------
 	
-	function parse_dictionary(Dictionary $dictionary, $stream = false){
+	public function parse_dictionary(Dictionary $dictionary, $stream = self::RETURN_RESULT){
 		$return_content = false;
 		
 		if($stream === false){
@@ -111,16 +117,22 @@ class XML_Layout {
 	// entry parser
 	//--------------------------------------------------------------------
 	
-	function parse_entry(Entry $entry){
+	private function parse_entry(Entry $entry){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Entry>'."\n";
 		$this->depth++;
 		
-		$output .= self::get_indent() . '<H>' . $entry->get_headword() . '</H>' . "\n";
-
+		while($headword = $entry->get_headword()){
+			$output .= $this->parse_headword($headword);
+		}
+		
 		while($form = $entry->get_form()){
 			$output .= $this->parse_form($form);
+		}
+
+		while($translation = $entry->get_translation()){
+			$output .= $this->parse_translation($translation);
 		}
 		
 		while($sense = $entry->get_sense()){
@@ -138,13 +150,21 @@ class XML_Layout {
 	// sense parser
 	//--------------------------------------------------------------------
 	
-	function parse_sense(Sense $sense){
+	private function parse_sense(Sense $sense){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Sense>' . "\n";
 		$this->depth++;
 		
 		$output .= self::get_indent() . '<L>' . $sense->get_label() . '</L>' . "\n";
+		
+		if($context = $sense->get_context()){
+			$output .= $this->parse_context($context);
+		}
+		
+		while($form = $sense->get_form()){
+			$output .= $this->parse_form($form);
+		}
 		
 		while($translation = $sense->get_translation()){
 			$output .= $this->parse_translation($translation);
@@ -168,7 +188,7 @@ class XML_Layout {
 	// phrase parser
 	//--------------------------------------------------------------------
 	
-	function parse_phrase(Phrase $phrase){
+	private function parse_phrase(Phrase $phrase){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Phrase>' . "\n";
@@ -187,16 +207,28 @@ class XML_Layout {
 	}
 	
 	//--------------------------------------------------------------------
+	// headword parser
+	//--------------------------------------------------------------------
+	
+	private function parse_headword(Headword $headword){
+		$output = '';
+		
+		$output .= self::get_indent() . '<H>' . $headword->get() . '</H>' . "\n";
+		
+		return $output;
+	}
+	
+	//--------------------------------------------------------------------
 	// form parser
 	//--------------------------------------------------------------------
 	
-	function parse_form(Form $form){
+	private function parse_form(Form $form){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Form>' . "\n";
 		$this->depth++;
 		
-		$output .= self::get_indent() . '<Grammar>' . $form->get_label() . '</Grammar>' . "\n";
+		$output .= self::get_indent() . '<L>' . $form->get_label() . '</L>' . "\n";
 		
 		$output .= self::get_indent() . '<H>' . $form->get_form() . '</H>' . "\n";
 		
@@ -207,10 +239,22 @@ class XML_Layout {
 	}
 
 	//--------------------------------------------------------------------
+	// parse context
+	//--------------------------------------------------------------------
+	
+	private function parse_context(Context $context){
+		$output = '';
+		
+		$output .= self::get_indent() . '<I>' . $context->get() . '</I>' . "\n";
+		
+		return $output;
+	}
+
+	//--------------------------------------------------------------------
 	// translation parser
 	//--------------------------------------------------------------------
 	
-	function parse_translation(Translation $translation){
+	private function parse_translation(Translation $translation){
 		$output = '';
 		
 		$output .= self::get_indent() . '<T>' . $translation->get_text() . '</T>' . "\n";
