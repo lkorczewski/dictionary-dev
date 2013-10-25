@@ -9,6 +9,7 @@
 //========================================================
 
 require_once __DIR__.'/dictionary.php';
+require_once __DIR__.'/translation.php';
 
 abstract class Node {
 	

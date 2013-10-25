@@ -95,6 +95,7 @@ trait MySQL_Entry {
 	//------------------------------------------------------------------
 	// updating entry
 	//------------------------------------------------------------------
+	// WARNING! outdated!
 	
 	function update_entry($node_id, $headword){
 		
@@ -112,6 +113,7 @@ trait MySQL_Entry {
 	//------------------------------------------------------------------
 	// deleting entry
 	//------------------------------------------------------------------
+	// WARNING! do not use, delete node instead!
 	
 	function delete_entry($node_id){
 		
