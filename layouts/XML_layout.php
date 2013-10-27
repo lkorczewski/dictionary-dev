@@ -166,7 +166,7 @@ class XML_Layout {
 		
 		$output .= self::get_indent() . '<L>' . $sense->get_label() . '</L>' . "\n";
 		
-		while($category_label = $sense->get_category_label()){
+		if($category_label = $sense->get_category_label()){
 			$output .= $this->parse_category_label($category_label);
 		}
 		
