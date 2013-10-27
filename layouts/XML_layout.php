@@ -6,7 +6,10 @@ require_once 'dictionary/entry.php';
 require_once 'dictionary/sense.php';
 require_once 'dictionary/phrase.php';
 
+require_once 'dictionary/headword.php';
+require_once 'dictionary/category_label.php';
 require_once 'dictionary/form.php';
+require_once 'dictionary/context.php';
 require_once 'dictionary/translation.php';
 
 class XML_Layout {
@@ -58,17 +61,18 @@ class XML_Layout {
 		
 		switch($class_name){
 			
-			case 'Dictionary' :   return $this->parse_dictionary($object);
+			case 'Dictionary' :      return $this->parse_dictionary($object);
 			
-			case 'Entry' :        return $this->parse_entry($object);
-			case 'Sense' :        return $this->parse_sense($object);
-			case 'Phrase' :       return $this->parse_phrase($object);
+			case 'Entry' :           return $this->parse_entry($object);
+			case 'Sense' :           return $this->parse_sense($object);
+			case 'Phrase' :          return $this->parse_phrase($object);
 			
-			case 'Headword' :     return $this->parse_headword($object);
-			case 'Context' :      return $this->parse_context($object);
-			case 'Form' :         return $this->parse_form($object);
-			case 'Translation' :  return $this->parse_translation($object);
-			default :             return false;
+			case 'Headword' :        return $this->parse_headword($object);
+			case 'Category_Label' :  return $this->parse_context($object);
+			case 'Form' :            return $this->parse_form($object);
+			case 'Context' :         return $this->parse_context($object);
+			case 'Translation' :     return $this->parse_translation($object);
+			default :                return false;
 			
 		}
 		
@@ -85,7 +89,7 @@ class XML_Layout {
 	public function parse_dictionary(Dictionary $dictionary, $stream = self::RETURN_RESULT){
 		$return_content = false;
 		
-		if($stream === false){
+		if($stream === self::RETURN_RESULT){
 			$return_content = true;
 			ob_start();
 			$stream = 'php://stdout';
@@ -127,6 +131,10 @@ class XML_Layout {
 			$output .= $this->parse_headword($headword);
 		}
 		
+		if($category_label = $entry->get_category_label()){
+			$output .= $this->parse_category_label($category_label);
+		}
+		
 		while($form = $entry->get_form()){
 			$output .= $this->parse_form($form);
 		}
@@ -158,12 +166,16 @@ class XML_Layout {
 		
 		$output .= self::get_indent() . '<L>' . $sense->get_label() . '</L>' . "\n";
 		
-		if($context = $sense->get_context()){
-			$output .= $this->parse_context($context);
+		while($category_label = $sense->get_category_label()){
+			$output .= $this->parse_category_label($category_label);
 		}
 		
 		while($form = $sense->get_form()){
 			$output .= $this->parse_form($form);
+		}
+		
+		if($context = $sense->get_context()){
+			$output .= $this->parse_context($context);
 		}
 		
 		while($translation = $sense->get_translation()){
@@ -234,6 +246,18 @@ class XML_Layout {
 		
 		$this->depth--;
 		$output .= self::get_indent() .  '</Form>' . "\n";
+		
+		return $output;
+	}
+	
+	//--------------------------------------------------------------------
+	// category label
+	//--------------------------------------------------------------------
+	
+	private function parse_category_label(Category_Label $category_label){
+		$output = '';
+		
+		$output .= self::get_indent() . '<CL>' . $category_label->get() . '</CL>' . "\n";
 		
 		return $output;
 	}
