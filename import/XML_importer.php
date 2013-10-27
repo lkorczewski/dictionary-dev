@@ -83,16 +83,22 @@ class XML_Importer {
 		
 		$node_id = $this->data->add_sense($parent_node_id);
 		
-		// context
-		$context = $this->xpath->query('I', $sense)->item(0);
-		if($context){
-			$this->parse_context($node_id, $context);
+		// category label
+		$category_labels = $this->xpath->query('CL', $sense);
+		foreach($category_labels as $category_label){
+			$this->parse_category_label($node_id, $category_label);
 		}
 		
 		// forms
 		$forms = $this->xpath->query('Form', $sense);
 		foreach($forms as $form){
 			$this->parse_form($node_id, $form);
+		}
+		
+		// context
+		$context = $this->xpath->query('I', $sense)->item(0);
+		if($context){
+			$this->parse_context($node_id, $context);
 		}
 		
 		// translations
