@@ -238,17 +238,21 @@ class MySQL_Data implements Data {
 		$this->sense_depth++;
 		
 		$query =
-			'SELECT s.*, ol.label AS order_label' .
+			'SELECT s.*, ol_2.label AS order_label' .
 			' FROM' .
-			'  senses s,' .
-			'  order_label_system_assignments olsa,' .
-			'  order_labels ol' .
+			'  senses s' .
+			'   LEFT JOIN (' .
+			'    SELECT ol.order, ol.label' .
+			'     FROM' .
+			'      order_label_system_assignments olsa,' .
+			'      order_labels ol' .
+			'     WHERE olsa.order_label_system_id = ol.order_label_system_id' .
+			'      AND olsa.element = \'sense\'' .
+			"      AND olsa.depth = {$this->sense_depth}" .
+			'   ) ol_2' .
+			'    ON ol_2.order = s.order' .
 			" WHERE parent_node_id = {$entry->get_node_id()}" .
-			'  AND olsa.element = \'sense\'' .
-			"  AND olsa.depth = {$this->sense_depth}" .
-			'  AND olsa.order_label_system_id = ol.order_label_system_id' .
-			'  AND ol.order = s.order' .
-			' ORDER BY `order`' .
+			' ORDER BY s.`order`' .
 			';';
 		$senses_result = $this->database->fetch_all($query);
 		
@@ -311,19 +315,23 @@ class MySQL_Data implements Data {
 		// subsenses
 		
 		$this->sense_depth++;
-		
+
 		$query =
-			'SELECT s.*, ol.label AS order_label' .
+			'SELECT s.*, ol_2.label AS order_label' .
 			' FROM' .
-			'  senses s,' .
-			'  order_label_system_assignments olsa,' .
-			'  order_labels ol' .
+			'  senses s' .
+			'   LEFT JOIN (' .
+			'    SELECT ol.order, ol.label' .
+			'     FROM' .
+			'      order_label_system_assignments olsa,' .
+			'      order_labels ol' .
+			'     WHERE olsa.order_label_system_id = ol.order_label_system_id' .
+			'      AND olsa.element = \'sense\'' .
+			"      AND olsa.depth = {$this->sense_depth}" .
+			'   ) ol_2' .
+			'    ON ol_2.order = s.order' .
 			" WHERE parent_node_id = {$sense->get_node_id()}" .
-			'  AND olsa.element = \'sense\'' .
-			"  AND olsa.depth = {$this->sense_depth}" .
-			'  AND olsa.order_label_system_id = ol.order_label_system_id' .
-			'  AND ol.order = s.order' .
-			' ORDER BY `order`' .
+			' ORDER BY s.`order`' .
 			';';
 		$subsenses_result = $this->database->fetch_all($query);
 		
