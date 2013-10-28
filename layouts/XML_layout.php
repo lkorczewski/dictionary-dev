@@ -90,7 +90,7 @@ class XML_Layout implements Layout{
 	//     value
 	//--------------------------------------------------------------------
 	
-	public function parse_dictionary(\Dictionary $dictionary, $stream = self::RETURN_RESULT){
+	public function parse_dictionary(Dictionary $dictionary, $stream = self::RETURN_RESULT){
 		$return_content = false;
 		
 		if($stream === self::RETURN_RESULT){
@@ -125,7 +125,7 @@ class XML_Layout implements Layout{
 	// entry parser
 	//--------------------------------------------------------------------
 	
-	public function parse_entry(\Entry $entry){
+	public function parse_entry(Entry $entry){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Entry>'."\n";
@@ -162,7 +162,7 @@ class XML_Layout implements Layout{
 	// sense parser
 	//--------------------------------------------------------------------
 	
-	public function parse_sense(\Sense $sense){
+	public function parse_sense(Sense $sense){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Sense>' . "\n";
@@ -204,7 +204,7 @@ class XML_Layout implements Layout{
 	// phrase parser
 	//--------------------------------------------------------------------
 	
-	public function parse_phrase(\Phrase $phrase){
+	public function parse_phrase(Phrase $phrase){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Phrase>' . "\n";
@@ -226,7 +226,7 @@ class XML_Layout implements Layout{
 	// headword parser
 	//--------------------------------------------------------------------
 	
-	public function parse_headword(\Headword $headword){
+	public function parse_headword(Headword $headword){
 		$output = '';
 		
 		$output .= self::get_indent() . '<H>' . $headword->get() . '</H>' . "\n";
@@ -238,7 +238,7 @@ class XML_Layout implements Layout{
 	// category label
 	//--------------------------------------------------------------------
 	
-	public function parse_category_label(\Category_Label $category_label){
+	public function parse_category_label(Category_Label $category_label){
 		$output = '';
 		
 		$output .= self::get_indent() . '<CL>' . $category_label->get() . '</CL>' . "\n";
@@ -250,7 +250,7 @@ class XML_Layout implements Layout{
 	// form parser
 	//--------------------------------------------------------------------
 	
-	public function parse_form(\Form $form){
+	public function parse_form(Form $form){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Form>' . "\n";
@@ -270,7 +270,7 @@ class XML_Layout implements Layout{
 	// parse context
 	//--------------------------------------------------------------------
 	
-	public function parse_context(\Context $context){
+	public function parse_context(Context $context){
 		$output = '';
 		
 		$output .= self::get_indent() . '<I>' . $context->get() . '</I>' . "\n";
@@ -282,7 +282,7 @@ class XML_Layout implements Layout{
 	// translation parser
 	//--------------------------------------------------------------------
 	
-	public function parse_translation(\Translation $translation){
+	public function parse_translation(Translation $translation){
 		$output = '';
 		
 		$output .= self::get_indent() . '<T>' . $translation->get_text() . '</T>' . "\n";

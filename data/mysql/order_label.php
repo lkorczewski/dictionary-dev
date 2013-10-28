@@ -1,5 +1,7 @@
 <?php
 
+namespace Dictionary;
+
 trait MySQL_Order_Label {
 
 	//------------------------------------------------------------------

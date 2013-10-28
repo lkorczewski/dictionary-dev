@@ -1,5 +1,7 @@
 <?php
 
+namespace Dictionary;
+
 require_once __DIR__ . '/dictionary.php';
 
 class Comment {
