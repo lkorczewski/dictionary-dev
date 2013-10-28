@@ -1,18 +1,22 @@
 <?php
 
-require_once 'dictionary/dictionary.php';
+namespace Dictionary;
 
-require_once 'dictionary/entry.php';
-require_once 'dictionary/sense.php';
-require_once 'dictionary/phrase.php';
+require_once __DIR__ . '/../dictionary.php';
 
-require_once 'dictionary/headword.php';
-require_once 'dictionary/category_label.php';
-require_once 'dictionary/form.php';
-require_once 'dictionary/context.php';
-require_once 'dictionary/translation.php';
+require_once __DIR__ . '/../entry.php';
+require_once __DIR__ . '/../sense.php';
+require_once __DIR__ . '/../phrase.php';
 
-class XML_Layout {
+require_once __DIR__ . '/../headword.php';
+require_once __DIR__ . '/../category_label.php';
+require_once __DIR__ . '/../form.php';
+require_once __DIR__ . '/../context.php';
+require_once __DIR__ . '/../translation.php';
+
+require_once __DIR__ . '/layout.php';
+
+class XML_Layout implements Layout{
 	const RETURN_RESULT = false;
 	
 	private $depth;
@@ -86,7 +90,7 @@ class XML_Layout {
 	//     value
 	//--------------------------------------------------------------------
 	
-	public function parse_dictionary(Dictionary $dictionary, $stream = self::RETURN_RESULT){
+	public function parse_dictionary(\Dictionary $dictionary, $stream = self::RETURN_RESULT){
 		$return_content = false;
 		
 		if($stream === self::RETURN_RESULT){
@@ -121,7 +125,7 @@ class XML_Layout {
 	// entry parser
 	//--------------------------------------------------------------------
 	
-	private function parse_entry(Entry $entry){
+	public function parse_entry(\Entry $entry){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Entry>'."\n";
@@ -158,7 +162,7 @@ class XML_Layout {
 	// sense parser
 	//--------------------------------------------------------------------
 	
-	private function parse_sense(Sense $sense){
+	public function parse_sense(\Sense $sense){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Sense>' . "\n";
@@ -200,7 +204,7 @@ class XML_Layout {
 	// phrase parser
 	//--------------------------------------------------------------------
 	
-	private function parse_phrase(Phrase $phrase){
+	public function parse_phrase(\Phrase $phrase){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Phrase>' . "\n";
@@ -222,7 +226,7 @@ class XML_Layout {
 	// headword parser
 	//--------------------------------------------------------------------
 	
-	private function parse_headword(Headword $headword){
+	public function parse_headword(\Headword $headword){
 		$output = '';
 		
 		$output .= self::get_indent() . '<H>' . $headword->get() . '</H>' . "\n";
@@ -231,10 +235,22 @@ class XML_Layout {
 	}
 	
 	//--------------------------------------------------------------------
+	// category label
+	//--------------------------------------------------------------------
+	
+	public function parse_category_label(\Category_Label $category_label){
+		$output = '';
+		
+		$output .= self::get_indent() . '<CL>' . $category_label->get() . '</CL>' . "\n";
+		
+		return $output;
+	}
+	
+	//--------------------------------------------------------------------
 	// form parser
 	//--------------------------------------------------------------------
 	
-	private function parse_form(Form $form){
+	public function parse_form(\Form $form){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Form>' . "\n";
@@ -251,22 +267,10 @@ class XML_Layout {
 	}
 	
 	//--------------------------------------------------------------------
-	// category label
-	//--------------------------------------------------------------------
-	
-	private function parse_category_label(Category_Label $category_label){
-		$output = '';
-		
-		$output .= self::get_indent() . '<CL>' . $category_label->get() . '</CL>' . "\n";
-		
-		return $output;
-	}
-
-	//--------------------------------------------------------------------
 	// parse context
 	//--------------------------------------------------------------------
 	
-	private function parse_context(Context $context){
+	public function parse_context(\Context $context){
 		$output = '';
 		
 		$output .= self::get_indent() . '<I>' . $context->get() . '</I>' . "\n";
@@ -278,7 +282,7 @@ class XML_Layout {
 	// translation parser
 	//--------------------------------------------------------------------
 	
-	private function parse_translation(Translation $translation){
+	public function parse_translation(\Translation $translation){
 		$output = '';
 		
 		$output .= self::get_indent() . '<T>' . $translation->get_text() . '</T>' . "\n";
