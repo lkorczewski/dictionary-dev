@@ -13,7 +13,7 @@ class XML_Importer {
 	
 	//--------------------------------------------------------------------
 	
-	public function __construct(\Data $data){
+	public function __construct(Data $data){
 		$this->data = $data;
 	}
 	
