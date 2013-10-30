@@ -57,7 +57,10 @@ trait MySQL_Entry {
 		
 		$node_id = $this->add_node();
 		
-		if($node_id === false) return false;
+		if($node_id === false){
+			$this->database->rollback_transaction();
+			return false;
+		}
 		
 		// inserting new entry
 		
@@ -66,9 +69,12 @@ trait MySQL_Entry {
 			' SET' .
 			'  node_id = last_insert_id()' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			$this->database->rollback_transaction();
+			return false;
+		}
 		
 		// inserting headword
 		
@@ -81,9 +87,12 @@ trait MySQL_Entry {
 				'  `order` = 1,' .
 				"  headword = '{$this->database->escape_string($headword)}'" .
 				';';
-			$result = $this->database->query($query);
+			$result = $this->database->execute($query);
 			
-			if($result === false) return false;
+			if($result === false){
+				$this->database->rollback_transaction();
+				return false;
+			}
 			
 		}
 				
@@ -98,6 +107,7 @@ trait MySQL_Entry {
 	// updating entry
 	//------------------------------------------------------------------
 	// WARNING! outdated!
+	/*
 	
 	function update_entry($node_id, $headword){
 		
@@ -106,16 +116,18 @@ trait MySQL_Entry {
 			" SET headword = '{$this->database->escape_string($headword)}'" .
 			" WHERE node_id = $node_id" .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		if($result === false) return false;
 		
 		return true;
 	}
+	*/
 	
 	//------------------------------------------------------------------
 	// deleting entry
 	//------------------------------------------------------------------
 	// WARNING! do not use, delete node instead!
+	/*
 	
 	function delete_entry($node_id){
 		
@@ -123,11 +135,12 @@ trait MySQL_Entry {
 			'DELETE FROM entries' .
 			" WHERE node_id = $node_id" .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		if($result === false) return false;
 		
 		return true;
 	}
+	*/
 	
 }
 

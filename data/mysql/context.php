@@ -60,7 +60,7 @@ trait MySQL_Context {
 			' ON DUPLICATE KEY UPDATE' .
 			"  context = '{$this->database->escape_string($context)}'" .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
@@ -80,7 +80,7 @@ trait MySQL_Context {
 			'DELETE FROM contexts' .
 			" WHERE parent_node_id = $parent_node_id" .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		

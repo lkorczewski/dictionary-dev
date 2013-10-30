@@ -79,7 +79,7 @@ trait MySQL_Category_Label {
 			'INSERT IGNORE category_labels' .
 			" SET label = '{$this->database->escape_string($label)}'" .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
@@ -90,11 +90,11 @@ trait MySQL_Category_Label {
 			' FROM category_labels' .
 			" WHERE label = '{$this->database->escape_string($label)}'" .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->fetch_one($query);
 		
 		if($result === false) return false;
 		
-		$category_label_id = $result[0]['category_label_id'];
+		$category_label_id = $result['category_label_id'];
 		
 		// inserting node to category label relation
 		
@@ -105,7 +105,7 @@ trait MySQL_Category_Label {
 			"  parent_node_id = $parent_node_id" .
 			';';
 		
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
@@ -126,7 +126,7 @@ trait MySQL_Category_Label {
 			'DELETE FROM node_category_labels' .
 			" WHERE parent_node_id = $parent_node_id" .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		

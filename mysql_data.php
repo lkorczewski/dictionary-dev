@@ -67,8 +67,6 @@ class MySQL_Data implements Data {
 			'create_translation_storage',
 			'create_order_label_storage',
 			
-			'fill_order_label_storage',
-			
 			'link_entry_storage',
 			'link_sense_storage',
 			'link_phrase_storage',
@@ -78,6 +76,8 @@ class MySQL_Data implements Data {
 			'link_context_storage',
 			'link_translation_storage',
 			'link_order_label_storage',
+
+			'fill_order_label_storage',
 		);
 		
 		$log = array();
@@ -100,7 +100,7 @@ class MySQL_Data implements Data {
 	// pulling list of headwords
 	//------------------------------------------------------------------
 	
-	function pull_headwords($mask = '', $number = NULL){
+	public function pull_headwords($mask = '', $number = NULL){
 		
 		$mask_sql = $mask ? "  AND h.headword LIKE '$mask%'" : '';
 		$number_sql = $number ? " LIMIT $number" : '';
@@ -129,7 +129,7 @@ class MySQL_Data implements Data {
 	// pulling entry from database
 	//------------------------------------------------------------------
 	
-	function pull_entry(Dictionary $dictionary, $headword){
+	public function pull_entry(Dictionary $dictionary, $headword){
 		// to do: only the first headword if all are the same
 		
 		$query =
@@ -159,7 +159,7 @@ class MySQL_Data implements Data {
 	// pulling entries from database by headword
 	//------------------------------------------------------------------
 	
-	function pull_entries(Dictionary $dictionary, $headword){
+	public function pull_entries(Dictionary $dictionary, $headword){
 		
 		$query =
 			'SELECT DISTINCT e.*' .
@@ -197,76 +197,13 @@ class MySQL_Data implements Data {
 	
 	private function pull_entry_children(Entry $entry){
 		
-		// headword
-		
-		$query =
-			'SELECT *' .
-			' FROM headwords' .
-			" WHERE parent_node_id = {$entry->get_node_id()}" .
-			' ORDER BY `order`' .
-			';';
-		$headwords_result = $this->database->fetch_all($query);
-		
-		foreach($headwords_result as $headword_result){
-			$headword = $entry->add_headword();
-			$headword->set_id($headword_result['headword_id']);
-			$headword->set($headword_result['headword']);
-		}
-		
-		// headword_node
+		$this->_pull_headwords($entry);
+		$this->_pull_pronuntiations($entry);
 		
 		$this->pull_headword_node_children($entry);
 		
-		// phrases
-		
-		$query =
-			'SELECT *' .
-			' FROM phrases' .
-			" WHERE parent_node_id = {$entry->get_node_id()}" .
-			' ORDER BY `order`' .
-			';';
-		$phrases_result = $this->database->fetch_all($query);
-		
-		foreach($phrases_result as $phrase_result){
-			$phrase = $entry->add_phrase();
-			$phrase->set_id($phrase_result['phrase_id']);
-			$phrase->set_node_id($phrase_result['node_id']);
-			$phrase->set($phrase_result['phrase']);
-			$this->pull_phrase_children($phrase);
-		}
-		
-		// senses
-		
-		$this->sense_depth++;
-		
-		$query =
-			'SELECT s.*, ol_2.label AS order_label' .
-			' FROM' .
-			'  senses s' .
-			'   LEFT JOIN (' .
-			'    SELECT ol.order, ol.label' .
-			'     FROM' .
-			'      order_label_system_assignments olsa,' .
-			'      order_labels ol' .
-			'     WHERE olsa.order_label_system_id = ol.order_label_system_id' .
-			'      AND olsa.element = \'sense\'' .
-			"      AND olsa.depth = {$this->sense_depth}" .
-			'   ) ol_2' .
-			'    ON ol_2.order = s.order' .
-			" WHERE parent_node_id = {$entry->get_node_id()}" .
-			' ORDER BY s.`order`' .
-			';';
-		$senses_result = $this->database->fetch_all($query);
-		
-		foreach($senses_result as $sense_result){
-			$sense = $entry->add_sense();
-			$sense->set_id($sense_result['sense_id']);
-			$sense->set_node_id($sense_result['node_id']);
-			$sense->set_label($sense_result['order_label']);
-			$this->pull_sense_children($sense);
-		}
-		
-		$this->sense_depth--;
+		$this->_pull_phrases($entry);
+		$this->_pull_senses($entry);
 		
 		return $entry;
 	}
@@ -298,54 +235,8 @@ class MySQL_Data implements Data {
 		
 		// phrases
 		
-		$query =
-			'SELECT *' .
-			' FROM phrases' .
-			" WHERE parent_node_id = {$sense->get_node_id()}" .
-			' ORDER BY `order`' .
-			';';
-		$phrases_result = $this->database->fetch_all($query);
-		
-		foreach($phrases_result as $phrase_result){
-			$phrase = $sense->add_phrase();
-			$phrase->set_id($phrase_result['phrase_id']);
-			$phrase->set_node_id($phrase_result['node_id']);
-			$phrase->set($phrase_result['phrase']);
-			$this->pull_phrase_children($phrase);
-		}
-		
-		// subsenses
-		
-		$this->sense_depth++;
-
-		$query =
-			'SELECT s.*, ol_2.label AS order_label' .
-			' FROM' .
-			'  senses s' .
-			'   LEFT JOIN (' .
-			'    SELECT ol.order, ol.label' .
-			'     FROM' .
-			'      order_label_system_assignments olsa,' .
-			'      order_labels ol' .
-			'     WHERE olsa.order_label_system_id = ol.order_label_system_id' .
-			'      AND olsa.element = \'sense\'' .
-			"      AND olsa.depth = {$this->sense_depth}" .
-			'   ) ol_2' .
-			'    ON ol_2.order = s.order' .
-			" WHERE parent_node_id = {$sense->get_node_id()}" .
-			' ORDER BY s.`order`' .
-			';';
-		$subsenses_result = $this->database->fetch_all($query);
-		
-		foreach($subsenses_result as $subsense_result){
-			$subsense = $sense->add_sense();
-			$subsense->set_id($subsense_result['sense_id']);
-			$subsense->set_node_id($subsense_result['node_id']);
-			$subsense->set_label($subsense_result['order_label']);
-			$this->pull_sense_children($subsense);
-		}
-		
-		$this->sense_depth--;
+		$this->_pull_phrases($sense);
+		$this->_pull_senses($sense);
 		
 		return $sense;
 		
@@ -435,8 +326,101 @@ class MySQL_Data implements Data {
 	// pulling ...
 	//==================================================================
 	
-	private function pull_senses(Node $node){
-		/* ... */
+	private function _pull_senses(Has_Senses_Interface $node){
+	
+		$this->sense_depth++;
+		
+		$query =
+			'SELECT s.*, ol_2.label AS order_label' .
+			' FROM' .
+			'  senses s' .
+			'   LEFT JOIN (' .
+			'    SELECT ol.order, ol.label' .
+			'     FROM' .
+			'      order_label_system_assignments olsa,' .
+			'      order_labels ol' .
+			'     WHERE olsa.order_label_system_id = ol.order_label_system_id' .
+			'      AND olsa.element = \'sense\'' .
+			"      AND olsa.depth = {$this->sense_depth}" .
+			'   ) ol_2' .
+			'    ON ol_2.order = s.order' .
+			" WHERE parent_node_id = {$node->get_node_id()}" .
+			' ORDER BY s.`order`' .
+			';';
+		$senses_result = $this->database->fetch_all($query);
+		
+		foreach($senses_result as $sense_result){
+			$sense = $node->add_sense();
+			$sense->set_id($sense_result['sense_id']);
+			$sense->set_node_id($sense_result['node_id']);
+			$sense->set_label($sense_result['order_label']);
+			$this->pull_sense_children($sense);
+		}
+		
+		$this->sense_depth--;
+		
+	}
+	
+	//------------------------------------------------------------------
+	
+	private function _pull_phrases(Has_Phrases_Interface $node){
+		
+		$query =
+			'SELECT *' .
+			' FROM phrases' .
+			" WHERE parent_node_id = {$node->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
+		$phrases_result = $this->database->fetch_all($query);
+		
+		foreach($phrases_result as $phrase_result){
+			$phrase = $node->add_phrase();
+			$phrase->set_id($phrase_result['phrase_id']);
+			$phrase->set_node_id($phrase_result['node_id']);
+			$phrase->set($phrase_result['phrase']);
+			$this->pull_phrase_children($phrase);
+		}
+		
+	}
+	
+	//------------------------------------------------------------------
+	
+	private function _pull_headwords(Has_Headwords_Interface $node){
+		
+		$query =
+			'SELECT *' .
+			' FROM headwords' .
+			" WHERE parent_node_id = {$node->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
+		$headwords_result = $this->database->fetch_all($query);
+		
+		foreach($headwords_result as $headword_result){
+			$headword = $node->add_headword();
+			$headword->set_id($headword_result['headword_id']);
+			$headword->set($headword_result['headword']);
+		}
+		
+	}
+	
+	//------------------------------------------------------------------
+	
+	private function _pull_pronuntiations(Has_Pronuntiations_Interface $node){
+		
+		$query =
+			'SELECT *' .
+			' FROM pronuntiations' .
+			" WHERE parent_node_id = {$node->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
+		$pronuntiations_result = $this->database->fetch_all($query);
+		
+		foreach($pronuntiations_result as $pronuntiation_result){
+			$pronuntiation = $node->add_pronuntiation();
+			$pronuntiation->set_id($pronuntiation_result['pronuntiation_id']);
+			$pronuntiation->set($pronuntiation_result['pronuntiation']);
+		}
+	
 	}
 	
 }

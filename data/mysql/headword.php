@@ -68,7 +68,7 @@ trait MySQL_Headword {
 			'   UNION SELECT 1 AS new_order' .
 			'  ) h' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
@@ -95,11 +95,13 @@ trait MySQL_Headword {
 			"  headword = '$headword'" .
 			" WHERE headword_id = $headword_id" .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
-		return true;
+		$affected_rows = $this->database->get_affected_rows();
+		
+		return $affected_rows;
 	}
 	
 	//------------------------------------------------------------------
@@ -117,7 +119,7 @@ trait MySQL_Headword {
 			'  AND h1.parent_node_id = h2.parent_node_id' .
 			'  AND h1.order = h2.order + 1' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
@@ -141,7 +143,7 @@ trait MySQL_Headword {
 			'  AND h1.parent_node_id = h2.parent_node_id' .
 			'  AND h1.order = h2.order - 1' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
@@ -175,9 +177,12 @@ trait MySQL_Headword {
 			'  AND h1.parent_node_id = h2.parent_node_id' .
 			'  AND h1.order > h2.order' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			$this->database->rollback_transaction();
+			return false;
+		}
 		
 		// deleting translation
 		
@@ -185,9 +190,12 @@ trait MySQL_Headword {
 			'DELETE FROM headwords' .
 			" WHERE headword_id = $headword_id" .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			$this->database->rollback_transaction();
+			return false;
+		}
 		
 		$this->database->commit_transaction();
 		

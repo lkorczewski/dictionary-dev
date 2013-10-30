@@ -67,7 +67,10 @@ trait MySQL_Phrase {
 		
 		$node_id = $this->add_node();
 		
-		if($node_id === false) return false;
+		if($node_id === false){
+			$this->database->rollback_transaction();
+			return false;
+		}
 		
 		// inserting new phrase
 		
@@ -87,9 +90,12 @@ trait MySQL_Phrase {
 			' ) ph' .
 			';';
 		
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			$this->database->rollback_transaction();
+			return false;
+		}
 		
 		// commiting transaction
 		
@@ -109,11 +115,13 @@ trait MySQL_Phrase {
 			" SET phrase = '{$this->database->escape_string($phrase)}'" .
 			" WHERE node_id = $node_id" .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
-		return true;
+		$affected_rows = $this->database->get_affected_rows();
+		
+		return $affected_rows;
 	}
 	
 	//------------------------------------------------------------------
@@ -131,7 +139,7 @@ trait MySQL_Phrase {
 			'  AND ph1.parent_node_id = ph2.parent_node_id' .
 			'  AND ph1.order = ph2.order + 1' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
@@ -156,7 +164,7 @@ trait MySQL_Phrase {
 			'  AND ph1.parent_node_id = ph2.parent_node_id' .
 			'  AND ph1.order = ph2.order - 1' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) { echo $query; return false; }
 		
@@ -185,9 +193,12 @@ trait MySQL_Phrase {
 			'  AND ph1.parent_node_id = ph2.parent_node_id' .
 			'  AND ph2.order > ph1.order' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			$this->database->rollback_transaction();
+			return false;
+		}
 		
 		// deleting node
 		
@@ -195,9 +206,12 @@ trait MySQL_Phrase {
 			'DELETE FROM nodes' .
 			" WHERE node_id = $node_id" .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			$this->database->rollback_transaction();
+			return false;
+		}
 		
 		// commiting transaction
 		

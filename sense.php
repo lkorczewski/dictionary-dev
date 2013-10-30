@@ -11,8 +11,7 @@ require_once __DIR__ . '/phrase.php';
 require_once __DIR__ . '/traits/has_phrases.php';
 require_once __DIR__ . '/traits/has_senses.php';
 
-class Sense
-  extends Headword_Node
+class Sense extends Headword_Node
   implements
     Has_Phrases_Interface,
     Has_Senses_Interface

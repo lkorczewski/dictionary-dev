@@ -14,8 +14,8 @@ interface Data {
 	
 	// entries
 	function add_entry($headword = '');
-	function update_entry($node_id, $headword);
-	function delete_entry($node_id);
+	//function update_entry($node_id, $headword);
+	//function delete_entry($node_id);
 	
 	// senses
 	function add_sense($parent_node_id, $label = '');

@@ -25,6 +25,7 @@ class Headword {
 	
 	function set_id($id){
 		$this->id = $id;
+		return $this;
 	}
 	
 	function get_id(){
@@ -37,6 +38,7 @@ class Headword {
 	
 	function set($headword){
 		$this->headword = $headword;
+		return $this;
 	}
 	
 	function get(){

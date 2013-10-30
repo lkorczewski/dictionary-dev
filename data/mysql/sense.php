@@ -64,7 +64,10 @@ trait MySQL_Sense {
 		
 		$node_id = $this->add_node();
 		
-		if($node_id === false) return false;
+		if($node_id === false){
+			$this->database->rollback_transaction();
+			return false;
+		}
 		
 		// inserting new entry
 		
@@ -83,9 +86,12 @@ trait MySQL_Sense {
 			' ) s' .
 			';';
 		
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			$this->database->rollback_transaction();
+			return false;
+		}
 		
 		// commiting transaction
 		
@@ -109,7 +115,7 @@ trait MySQL_Sense {
 			'  AND s1.parent_node_id = s2.parent_node_id' .
 			'  AND s1.order = s2.order + 1' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
@@ -133,7 +139,7 @@ trait MySQL_Sense {
 			'  AND s1.parent_node_id = s2.parent_node_id' .
 			'  AND s1.order = s2.order - 1' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
@@ -164,18 +170,24 @@ trait MySQL_Sense {
 			'  AND s3.parent_node_id = s2.parent_node_id' .
 			'  AND s3.order = s2.order - 1' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			$this->database->rollback_transaction();
+			return false;
+		}
 		
 		// deleting node
 		
 		$query =
 			'DELETE FROM nodes' .
 			" WHERE node_id = $node_id;";
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			$this->database->rollback_transaction();
+			return false;
+		}
 		
 		// commiting transaction
 		

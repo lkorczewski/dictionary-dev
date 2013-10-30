@@ -19,8 +19,8 @@ abstract class Node {
 	
 	private $node_id;
 	
-	private $translations;
-	private $translation_iterator;
+	private $translations = array();
+	private $translation_iterator = 0;
 	
 	//------------------------------------------------
 	// constructor
@@ -29,9 +29,6 @@ abstract class Node {
 	function __construct(Dictionary $dictionary){
 		
 		$this->dictionary = $dictionary;
-		
-		$this->translations = array();
-		$this->translation_iterator = 0;
 		
 	}
 	

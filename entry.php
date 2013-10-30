@@ -6,15 +6,17 @@ require_once __DIR__ . '/dictionary.php';
 require_once __DIR__ . '/headword_node.php';
 
 require_once __DIR__ . '/traits/has_headwords.php';
+require_once __DIR__ . '/traits/has_pronuntiations.php';
 require_once __DIR__ . '/traits/has_phrases.php';
 require_once __DIR__ . '/traits/has_senses.php';
 
 class Entry
-  extends Headword_Node
-  implements
-    Has_Headwords_Interface,
-    Has_Phrases_Interface,
-    Has_Senses_Interface
+	extends Headword_Node
+	implements
+		Has_Headwords_Interface,
+		Has_Pronuntiations_Interface,
+		Has_Phrases_Interface,
+		Has_Senses_Interface
 {
 	
 	private $id;
@@ -22,9 +24,10 @@ class Entry
 	private $headword;
 	
 	use Has_Headwords_Trait;
+	use Has_Pronuntiations_Trait;
 	use Has_Phrases_Trait;
 	use Has_Senses_Trait;
-		
+	
 	private $comment;
 	
 	//------------------------------------------------------------------------

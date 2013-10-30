@@ -69,7 +69,7 @@ trait MySQL_Translation {
 			'   UNION SELECT 1 AS new_order' .
 			'  ) t' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
@@ -96,7 +96,7 @@ trait MySQL_Translation {
 			" SET text = '{$this->database->escape_string($text)}'" .
 			" WHERE translation_id = $translation_id" .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
@@ -118,7 +118,7 @@ trait MySQL_Translation {
 			'  AND t1.parent_node_id = t2.parent_node_id' .
 			'  AND t1.order = t2.order + 1' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
@@ -142,7 +142,7 @@ trait MySQL_Translation {
 			'  AND t1.parent_node_id = t2.parent_node_id' .
 			'  AND t1.order = t2.order - 1' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
@@ -176,7 +176,7 @@ trait MySQL_Translation {
 			'  AND t1.parent_node_id = t2.parent_node_id' .
 			'  AND t1.order > t2.order' .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 
 		if($result === false) return false;
 		
@@ -186,7 +186,7 @@ trait MySQL_Translation {
 			'DELETE FROM `translations`' .
 			" WHERE `translation_id` = $translation_id" .
 			';';
-		$result = $this->database->query($query);
+		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
