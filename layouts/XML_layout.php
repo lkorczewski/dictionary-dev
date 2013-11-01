@@ -76,6 +76,7 @@ class XML_Layout implements Layout{
 			case 'Form' :            return $this->parse_form($object);
 			case 'Context' :         return $this->parse_context($object);
 			case 'Translation' :     return $this->parse_translation($object);
+			case 'Pronunciation' :   return $this->parse_pronunciation($object);
 			default :                return false;
 			
 		}
@@ -134,6 +135,10 @@ class XML_Layout implements Layout{
 		while($headword = $entry->get_headword()){
 			$output .= $this->parse_headword($headword);
 		}
+
+		while($pronunciation = $entry->get_pronunciation()){
+			$output .= $this->parse_pronunciation($pronunciation);
+		}	
 		
 		if($category_label = $entry->get_category_label()){
 			$output .= $this->parse_category_label($category_label);
@@ -235,6 +240,18 @@ class XML_Layout implements Layout{
 	}
 	
 	//--------------------------------------------------------------------
+	// pronunciation parser
+	//--------------------------------------------------------------------
+	
+	public function parse_pronunciation(Pronunciation $pronunciation){
+		$output = '';
+		
+		$output .= self::get_indent() . '<P>' . $pronunciation->get() . '</P>' . "\n";
+		
+		return $output;
+	}
+	
+	//--------------------------------------------------------------------
 	// category label
 	//--------------------------------------------------------------------
 	
@@ -285,7 +302,7 @@ class XML_Layout implements Layout{
 	public function parse_translation(Translation $translation){
 		$output = '';
 		
-		$output .= self::get_indent() . '<T>' . $translation->get_text() . '</T>' . "\n";
+		$output .= self::get_indent() . '<T>' . $translation->get() . '</T>' . "\n";
 		
 		return $output;
 	}

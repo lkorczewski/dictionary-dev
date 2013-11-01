@@ -6,27 +6,24 @@ require_once __DIR__ . '/dictionary.php';
 require_once __DIR__ . '/headword_node.php';
 
 require_once __DIR__ . '/traits/has_headwords.php';
-require_once __DIR__ . '/traits/has_pronuntiations.php';
+require_once __DIR__ . '/traits/has_pronunciations.php';
 require_once __DIR__ . '/traits/has_phrases.php';
 require_once __DIR__ . '/traits/has_senses.php';
 
-class Entry
-	extends Headword_Node
+class Entry extends Headword_Node
 	implements
-		Has_Headwords_Interface,
-		Has_Pronuntiations_Interface,
-		Has_Phrases_Interface,
-		Has_Senses_Interface
+		Node_With_Headwords,
+		Node_With_Pronunciations,
+		Node_With_Phrases,
+		Node_With_Senses
 {
 	
 	private $id;
 	
-	private $headword;
-	
-	use Has_Headwords_Trait;
-	use Has_Pronuntiations_Trait;
-	use Has_Phrases_Trait;
-	use Has_Senses_Trait;
+	use Has_Headwords;
+	use Has_Pronunciations;
+	use Has_Phrases;
+	use Has_Senses;
 	
 	private $comment;
 	
@@ -34,7 +31,7 @@ class Entry
 	// constructor
 	//------------------------------------------------------------------------
 	
-	function __construct(Dictionary $dictionary){
+	public function __construct(Dictionary $dictionary){
 		parent::__construct($dictionary);
 		
 		$this->dictionary = $dictionary;
@@ -45,11 +42,11 @@ class Entry
 	// id management
 	//------------------------------------------------------------------------
 	
-	function set_id($id){
+	public function set_id($id){
 		$this->id = $id;
 	}
 	
-	function get_id(){
+	public function get_id(){
 		return $this->id;
 	}
 	
@@ -57,14 +54,14 @@ class Entry
 	// comment management
 	//------------------------------------------------------------------------
 	
-	function set_comment($comment = ''){
+	public function set_comment($comment = ''){
 		$comment = new Comment($this->dictionary);
 		$this->comment = $comment;
 		
 		return $comment;
 	}
 	
-	function get_comment(){
+	public function get_comment(){
 		return $comment;
 	}
 	

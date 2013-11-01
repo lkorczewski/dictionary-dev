@@ -3,44 +3,16 @@
 namespace Dictionary;
 
 require_once __DIR__.'/dictionary.php';
+require_once __DIR__.'/value.php';
 
-class Translation {
-	private $dictionary;
+class Translation extends Value {
 	
-	private $id;	
-	private $text;
-	
-	//------------------------------------------------
-	// constructor
-	//------------------------------------------------
-	
-	function __construct(Dictionary $dictionary, $text = NULL){
-		$this->dictionary = $dictionary;
-		if($text) $this->text = $text;
+	public function set_text($value){
+		return $this->set($value);
 	}
 	
-	//------------------------------------------------
-	// id management
-	//------------------------------------------------
-	
-	function set_id($id){
-		$this->id = $id;
-	}
-	
-	function get_id(){
-		return $this->id;
-	}
-	
-	//------------------------------------------------
-	// setting value
-	//------------------------------------------------
-	
-	function set_text($text){
-		$this->text = $text;
-	}
-	
-	function get_text(){
-		return $this->text;
+	public function get_text(){
+		return $this->get();
 	}
 	
 }

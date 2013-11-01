@@ -3,44 +3,46 @@
 namespace Dictionary;
 
 require_once __DIR__.'/dictionary.php';
-require_once __DIR__.'/node.php';
 
-class Phrase extends Node {
-	
+class Value {
+	private $dictionary;
+
 	private $id;
-	
-	private $phrase;
+	private $value;
 	
 	//------------------------------------------------
 	// constructor
 	//------------------------------------------------
 	
-	public function __construct(Dictionary $dictionary){
-		parent::__construct($dictionary);
+	function __construct(Dictionary $dictionary, $value = null){
+		$this->dictionary = $dictionary;
+		if($value) $this->value = $value;
 	}
 	
 	//------------------------------------------------
 	// id management
 	//------------------------------------------------
 	
-	public function set_id($id){
+	function set_id($id){
 		$this->id = $id;
+		return $this;
 	}
 	
-	public function get_id(){
+	function get_id(){
 		return $this->id;
 	}
 	
 	//------------------------------------------------
-	// phrase management
+	// value management
 	//------------------------------------------------
 	
-	public function set($phrase){
-		$this->phrase = $phrase;
+	function set($value){
+		$this->value = $value;
+		return $this;
 	}
 	
-	public function get(){
-		return $this->phrase;
+	function get(){
+		return $this->value;
 	}
 	
 }

@@ -12,9 +12,9 @@ require_once __DIR__ . '/traits/has_phrases.php';
 require_once __DIR__ . '/traits/has_senses.php';
 
 class Sense extends Headword_Node
-  implements
-    Has_Phrases_Interface,
-    Has_Senses_Interface
+	implements
+		Node_With_Phrases,
+		Node_With_Senses
 {
 	
 	private $id;
@@ -23,8 +23,8 @@ class Sense extends Headword_Node
 	
 	private $context;
 	
-	use Has_Phrases_Trait;
-	use Has_Senses_Trait;
+	use Has_Phrases;
+	use Has_Senses;
 	
 	//------------------------------------------------
 	// constructor

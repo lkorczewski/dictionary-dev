@@ -45,6 +45,12 @@ class XML_Importer {
 			$this->parse_headword($node_id, $headword);
 		}
 		
+		// headwords
+		$pronunciations = $this->xpath->query('P', $entry);
+		foreach($pronunciations as $pronunciation){
+			$this->parse_pronunciation($node_id, $pronunciation);
+		}
+		
 		// category label
 		$category_labels = $this->xpath->query('CL', $entry);
 		foreach($category_labels as $category_label){
@@ -140,6 +146,12 @@ class XML_Importer {
 	
 	private function parse_headword($parent_node_id, $headword){
 		$this->data->add_headword($parent_node_id, $headword->nodeValue);
+	}
+
+	//--------------------------------------------------------------------
+	
+	private function parse_pronunciation($parent_node_id, $pronunciation){
+		$this->data->add_pronunciation($parent_node_id, $pronunciation->nodeValue);
 	}
 	
 	//--------------------------------------------------------------------

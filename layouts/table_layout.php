@@ -28,10 +28,25 @@ class Table_Layout implements Layout {
 	
 	function parse_entry(Entry $entry){
 		$output = array();
-		$output['headword'] = $entry->get_headword();
+		
+		while($headword = $sense->get_headwords()){
+			$output['headwords'][] = $this->parse_headword($headword);
+		}
+		
+		while($pronunciation = $sense->get_pronunciation()){
+			$output['pronunciations'][] = $this->parse_headword($headword);
+		}
 		
 		while($form = $entry->get_form()){
 			$output['forms'][] = $this->parse_form($form);
+		}
+		
+		while($translation = $sense->get_translation()){
+			$output['translations'][] = $this->parse_translation($translation);
+		}
+
+		while($phrase = $sense->get_phrase()){
+			$output['phrases'][] = $this->parse_phrase($phrase);
 		}
 		
 		while($sense = $entry->get_sense()){
@@ -50,16 +65,24 @@ class Table_Layout implements Layout {
 		
 		$output['label'] = $sense->get_label();
 		
+		while($form = $entry->get_form()){
+			$output['forms'][] = $this->parse_form($form);
+		}
+		
+		if($context = $sense->get_context()){
+			$output['context'][] = $this->parse_context($context);
+		}
+		
 		while($translation = $sense->get_translation()){
-			$output['translations'] = $this->parse_translation($translation);
+			$output['translations'][] = $this->parse_translation($translation);
 		}
 
 		while($phrase = $sense->get_phrase()){
-			$output['phrases'] = $this->parse_phrase($phrase);
+			$output['phrases'][] = $this->parse_phrase($phrase);
 		}
 		
 		while($sense = $sense->get_sense()){
-			$output['senses'] = $this->parse_sense($sense);
+			$output['senses'][] = $this->parse_sense($sense);
 		}
 		
 		return $output;
@@ -80,6 +103,28 @@ class Table_Layout implements Layout {
 		
 		return $output;
 	}
+
+	//--------------------------------------------------------------------
+	// headword parser
+	//--------------------------------------------------------------------
+	
+	function parse_headword(Headword $headword){
+		
+		$output = $headword->get();
+		
+		return $output;
+	}
+
+	//--------------------------------------------------------------------
+	// pronunciation parser
+	//--------------------------------------------------------------------
+	
+	function parse_pronunciation(Pronunciation $headword){
+		
+		$output = $pronunciation->get();
+		
+		return $output;
+	}
 	
 	//--------------------------------------------------------------------
 	// form parser
@@ -94,6 +139,18 @@ class Table_Layout implements Layout {
 		
 		return $output;
 	}
+	
+	//--------------------------------------------------------------------
+	// translation parser
+	//--------------------------------------------------------------------
+	
+	function parse_context(Context $context){
+		
+		$output = $context->get();
+		
+		return $output;
+	}
+	
 
 	//--------------------------------------------------------------------
 	// translation parser
@@ -101,7 +158,7 @@ class Table_Layout implements Layout {
 	
 	function parse_translation(Translation $translation){
 		
-		$output =  $translation->get_text();
+		$output = $translation->get();
 		
 		return $output;
 	}

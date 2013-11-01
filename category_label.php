@@ -14,7 +14,7 @@ class Category_Label {
 	// constructor
 	//------------------------------------------------
 	
-	function __construct(Dictionary $dictionary, $label = NULL){
+	public function __construct(Dictionary $dictionary, $label = NULL){
 		$this->dictionary = $dictionary;
 		
 		if($label) $this->label = $label;
@@ -24,11 +24,11 @@ class Category_Label {
 	// id management
 	//------------------------------------------------
 	
-	function set_id($id){
+	public function set_id($id){
 		$this->id = $id;
 	}
 	
-	function get_id(){
+	public function get_id(){
 		return $this->id;
 	}
 	
@@ -36,11 +36,11 @@ class Category_Label {
 	// setting value
 	//------------------------------------------------
 	
-	function set($label){
+	public function set($label){
 		$this->label = $label;
 	}
 	
-	function get(){
+	public function get(){
 		return $this->label;
 	}
 	

@@ -1,7 +1,7 @@
 <?php
 
 //========================================================
-// Abstraction of translation node
+// Abstraction of node
 //--------------------------------------------------------
 // Contains:
 //  - node id
@@ -11,22 +11,23 @@
 namespace Dictionary;
 
 require_once __DIR__.'/dictionary.php';
-require_once __DIR__.'/translation.php';
+require_once __DIR__.'/traits/has_translations.php';
 
-abstract class Node {
+abstract class Node
+	implements Node_With_Translations
+{
 	
 	protected $dictionary;
 	
 	private $node_id;
 	
-	private $translations = array();
-	private $translation_iterator = 0;
+	use Has_Translations;
 	
 	//------------------------------------------------
 	// constructor
 	//------------------------------------------------
 	
-	function __construct(Dictionary $dictionary){
+	public function __construct(Dictionary $dictionary){
 		
 		$this->dictionary = $dictionary;
 		
@@ -36,32 +37,12 @@ abstract class Node {
 	// node id management
 	//------------------------------------------------
 	
-	function set_node_id($node_id){
+	public function set_node_id($node_id){
 		$this->node_id = $node_id;
 	}
 	
 	function get_node_id(){
 		return $this->node_id;
-	}
-	
-	//------------------------------------------------
-	// translation management
-	//------------------------------------------------
-	
-	function add_translation(){
-		$translation = new Translation($this->dictionary);
-		$this->translations[] = $translation;
-		
-		return $translation;
-	}
-	
-	function get_translation(){
-		if(!isset($this->translations[$this->translation_iterator])) return false;
-		
-		$translation = $this->translations[$this->translation_iterator];
-		$this->translation_iterator++;
-			
-		return $translation;
 	}
 	
 }

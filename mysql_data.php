@@ -17,6 +17,7 @@ require_once __DIR__.'/data/mysql/entry.php';
 require_once __DIR__.'/data/mysql/sense.php';
 require_once __DIR__.'/data/mysql/phrase.php';
 require_once __DIR__.'/data/mysql/headword.php';
+require_once __DIR__.'/data/mysql/pronunciation.php';
 require_once __DIR__.'/data/mysql/category_label.php';
 require_once __DIR__.'/data/mysql/form.php';
 require_once __DIR__.'/data/mysql/context.php';
@@ -30,6 +31,7 @@ class MySQL_Data implements Data {
 	use MySQL_Sense;
 	use MySQL_Phrase;
 	use MySQL_Headword;
+	use MySQL_Pronunciation;
 	use MySQL_Category_Label;
 	use MySQL_Form;
 	use MySQL_Context;
@@ -61,6 +63,7 @@ class MySQL_Data implements Data {
 			'create_sense_storage',
 			'create_phrase_storage',
 			'create_headword_storage',
+			'create_pronunciation_storage',
 			'create_category_label_storage',
 			'create_form_storage',
 			'create_context_storage',
@@ -71,6 +74,7 @@ class MySQL_Data implements Data {
 			'link_sense_storage',
 			'link_phrase_storage',
 			'link_headword_storage',
+			'link_pronunciations_storage',
 			'link_category_label_storage',
 			'link_form_storage',
 			'link_context_storage',
@@ -197,12 +201,19 @@ class MySQL_Data implements Data {
 	
 	private function pull_entry_children(Entry $entry){
 		
+		// headwords
 		$this->_pull_headwords($entry);
-		$this->_pull_pronuntiations($entry);
 		
+		// pronunciation
+		$this->_pull_pronunciations($entry);
+		
+		// headword node
 		$this->pull_headword_node_children($entry);
 		
+		// phrases
 		$this->_pull_phrases($entry);
+		
+		// senses
 		$this->_pull_senses($entry);
 		
 		return $entry;
@@ -230,12 +241,12 @@ class MySQL_Data implements Data {
 		}
 		
 		// headword_node
-		
 		$this->pull_headword_node_children($sense);
 		
 		// phrases
-		
 		$this->_pull_phrases($sense);
+		
+		// senses
 		$this->_pull_senses($sense);
 		
 		return $sense;
@@ -249,7 +260,6 @@ class MySQL_Data implements Data {
 	private function pull_phrase_children(Phrase $phrase){
 		
 		// node
-		
 		$this->pull_node_children($phrase);
 		
 	}
@@ -261,37 +271,10 @@ class MySQL_Data implements Data {
 	private function pull_headword_node_children(Headword_Node $node){
 		
 		// category label
-		
-		$query =
-			'SELECT *' .
-			' FROM node_category_labels ncl, category_labels cl' .
-			' WHERE ncl.category_label_id = cl.category_label_id' .
-			"  AND parent_node_id = {$node->get_node_id()}" .
-			';';
-		$category_label_result = $this->database->fetch_one($query);
-		
-		if(is_array($category_label_result) && count($category_label_result)){
-			$category_label = $node->set_category_label();
-			$category_label->set_id($category_label_result['category_label_id']);
-			$category_label->set($category_label_result['label']);
-		}
+		$this->_pull_category_label($node);
 		
 		// forms
-		
-		$query = 
-			'SELECT *' .
-			' FROM forms' .
-			" WHERE parent_node_id = {$node->get_node_id()}" .
-			' ORDER BY `order`' .
-			';';
-		$forms_result = $this->database->fetch_all($query);
-		
-		foreach($forms_result as $form_result){
-			$form = $node->add_form();
-			$form->set_id($form_result['form_id']);
-			$form->set_label($form_result['label']);
-			$form->set_form($form_result['form']);
-		}
+		$this->_pull_forms($node);
 		
 		// node
 		$this->pull_node_children($node);
@@ -305,20 +288,7 @@ class MySQL_Data implements Data {
 	private function pull_node_children(Node $node){
 		
 		// translations
-		
-		$query =
-			'SELECT *' .
-			' FROM translations' .
-			" WHERE parent_node_id = {$node->get_node_id()}" .
-			' ORDER BY `order`' .
-			';';
-		$translations_result = $this->database->fetch_all($query);
-		
-		foreach($translations_result as $translation_result){
-			$translation = $node->add_translation();
-			$translation->set_id($translation_result['translation_id']);
-			$translation->set_text($translation_result['text']);
-		}
+		$this->_pull_translations($node);
 		
 	}
 	
@@ -326,24 +296,25 @@ class MySQL_Data implements Data {
 	// pulling ...
 	//==================================================================
 	
-	private function _pull_senses(Has_Senses_Interface $node){
+	private function _pull_senses(Node_With_Senses $node){
 	
 		$this->sense_depth++;
 		
+		$order_labels_query =
+			'SELECT ol.order, ol.label' .
+			' FROM' .
+			'  order_label_system_assignments olsa,' .
+			'  order_labels ol' .
+			' WHERE olsa.order_label_system_id = ol.order_label_system_id' .
+			'  AND olsa.element = \'sense\'' .
+			"  AND olsa.depth = {$this->sense_depth}"
+			;
 		$query =
-			'SELECT s.*, ol_2.label AS order_label' .
+			'SELECT s.*, ol.label AS order_label' .
 			' FROM' .
 			'  senses s' .
-			'   LEFT JOIN (' .
-			'    SELECT ol.order, ol.label' .
-			'     FROM' .
-			'      order_label_system_assignments olsa,' .
-			'      order_labels ol' .
-			'     WHERE olsa.order_label_system_id = ol.order_label_system_id' .
-			'      AND olsa.element = \'sense\'' .
-			"      AND olsa.depth = {$this->sense_depth}" .
-			'   ) ol_2' .
-			'    ON ol_2.order = s.order' .
+			'   LEFT JOIN (' . $order_labels_query . ') ol' .
+			'    ON ol.order = s.order' .
 			" WHERE parent_node_id = {$node->get_node_id()}" .
 			' ORDER BY s.`order`' .
 			';';
@@ -363,7 +334,7 @@ class MySQL_Data implements Data {
 	
 	//------------------------------------------------------------------
 	
-	private function _pull_phrases(Has_Phrases_Interface $node){
+	private function _pull_phrases(Node_With_Phrases $node){
 		
 		$query =
 			'SELECT *' .
@@ -385,7 +356,7 @@ class MySQL_Data implements Data {
 	
 	//------------------------------------------------------------------
 	
-	private function _pull_headwords(Has_Headwords_Interface $node){
+	private function _pull_headwords(Node_With_Headwords $node){
 		
 		$query =
 			'SELECT *' .
@@ -405,22 +376,83 @@ class MySQL_Data implements Data {
 	
 	//------------------------------------------------------------------
 	
-	private function _pull_pronuntiations(Has_Pronuntiations_Interface $node){
+	private function _pull_pronunciations(Node_With_Pronunciations $node){
 		
 		$query =
 			'SELECT *' .
-			' FROM pronuntiations' .
+			' FROM pronunciations' .
 			" WHERE parent_node_id = {$node->get_node_id()}" .
 			' ORDER BY `order`' .
 			';';
-		$pronuntiations_result = $this->database->fetch_all($query);
+		$pronunciations_result = $this->database->fetch_all($query);
 		
-		foreach($pronuntiations_result as $pronuntiation_result){
-			$pronuntiation = $node->add_pronuntiation();
-			$pronuntiation->set_id($pronuntiation_result['pronuntiation_id']);
-			$pronuntiation->set($pronuntiation_result['pronuntiation']);
+		foreach($pronunciations_result as $pronunciation_result){
+			$pronunciation = $node->add_pronunciation();
+			$pronunciation->set_id($pronunciation_result['pronunciation_id']);
+			$pronunciation->set($pronunciation_result['pronunciation']);
 		}
 	
+	}
+	
+	//------------------------------------------------------------------
+
+	private function _pull_category_label(Node_With_Category_Label $node){
+	
+		$query =
+			'SELECT *' .
+			' FROM node_category_labels ncl, category_labels cl' .
+			' WHERE ncl.category_label_id = cl.category_label_id' .
+			"  AND parent_node_id = {$node->get_node_id()}" .
+			';';
+		$category_label_result = $this->database->fetch_one($query);
+		
+		if(is_array($category_label_result) && count($category_label_result)){
+			$category_label = $node->set_category_label();
+			$category_label->set_id($category_label_result['category_label_id']);
+			$category_label->set($category_label_result['label']);
+		}
+	
+	}
+	
+	//------------------------------------------------------------------
+	
+	private function _pull_forms(Node_With_Forms $node){
+		
+		$query =
+			'SELECT *' .
+			' FROM forms' .
+			" WHERE parent_node_id = {$node->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
+		$forms_result = $this->database->fetch_all($query);
+		
+		foreach($forms_result as $form_result){
+			$form = $node->add_form();
+			$form->set_id($form_result['form_id']);
+			$form->set_label($form_result['label']);
+			$form->set_form($form_result['form']);
+		}
+	
+	}
+	
+	//------------------------------------------------------------------
+	
+	private function _pull_translations(Node_With_Translations $node){
+		
+		$query =
+			'SELECT *' .
+			' FROM translations' .
+			" WHERE parent_node_id = {$node->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
+		$translations_result = $this->database->fetch_all($query);
+		
+		foreach($translations_result as $translation_result){
+			$translation = $node->add_translation();
+			$translation->set_id($translation_result['translation_id']);
+			$translation->set($translation_result['text']);
+		}
+		
 	}
 	
 }
