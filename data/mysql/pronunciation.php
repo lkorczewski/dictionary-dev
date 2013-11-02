@@ -172,7 +172,7 @@ trait MySQL_Pronunciation {
 		// moving forms with greater order
 		
 		$query =
-			'UPDATE pronunciations h1, pronunciations h2' .
+			'UPDATE pronunciations p1, pronunciations p2' .
 			' SET p1.order = p1.order - 1' .
 			" WHERE p2.pronunciation_id = $pronunciation_id" .
 			'  AND p1.parent_node_id = p2.parent_node_id' .
