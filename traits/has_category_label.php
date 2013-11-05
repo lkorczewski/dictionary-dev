@@ -18,7 +18,7 @@ require_once __DIR__ . '/../category_label.php';
 trait Has_Category_Label {
 	
 	private $category_label = false;
-
+	
 	//------------------------------------------------
 	// category label management
 	//------------------------------------------------

@@ -8,11 +8,13 @@ require_once __DIR__ . '/headword_node.php';
 require_once __DIR__ . '/context.php';
 require_once __DIR__ . '/phrase.php';
 
+require_once __DIR__ . '/traits/has_context.php';
 require_once __DIR__ . '/traits/has_phrases.php';
 require_once __DIR__ . '/traits/has_senses.php';
 
 class Sense extends Headword_Node
 	implements
+		Node_With_Context,
 		Node_With_Phrases,
 		Node_With_Senses
 {
@@ -21,8 +23,7 @@ class Sense extends Headword_Node
 	
 	private $label;
 	
-	private $context;
-	
+	use Has_Context;
 	use Has_Phrases;
 	use Has_Senses;
 	
@@ -59,21 +60,6 @@ class Sense extends Headword_Node
 	
 	function get_label(){
 		return $this->label;
-	}
-	
-	//------------------------------------------------
-	// context management
-	//------------------------------------------------
-	
-	function set_context(){
-		$context = new Context($this->dictionary);
-		$this->context = $context;
-		
-		return $context;		
-	}
-	
-	function get_context(){
-		return $this->context;
 	}
 	
 }
