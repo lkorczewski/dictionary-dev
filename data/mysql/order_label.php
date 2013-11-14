@@ -51,7 +51,7 @@ trait MySQL_Order_Label {
 	}
 	
 	function fill_order_label_storage(){
-		
+		/*
 		$query =
 			'TRUNCATE TABLE `order_label_systems`' .
 			';';
@@ -59,7 +59,7 @@ trait MySQL_Order_Label {
 		
 		if(!$result)
 			return false;
-		
+		*/
 		$query =
 			'INSERT INTO `order_label_systems` (`order_label_system_id`, `name`)' .
 			' VALUES' .
@@ -74,7 +74,7 @@ trait MySQL_Order_Label {
 		
 		if(!$result)
 			return false;
-		
+		/*
 		$query =
 			'TRUNCATE TABLE `order_labels`' .
 			';';
@@ -82,7 +82,7 @@ trait MySQL_Order_Label {
 		
 		if(!$result)
 			return false;
-		
+		*/
 		$query =
 			'INSERT INTO `order_labels` (`order_label_system_id`, `order`, `label`)' .
 			' VALUES' .
