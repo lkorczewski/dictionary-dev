@@ -74,7 +74,7 @@ class MySQL_Data implements Data {
 			'link_sense_storage',
 			'link_phrase_storage',
 			'link_headword_storage',
-			'link_pronunciations_storage',
+			'link_pronunciation_storage',
 			'link_category_label_storage',
 			'link_form_storage',
 			'link_context_storage',
