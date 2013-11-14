@@ -54,7 +54,7 @@ trait MySQL_Sense {
 	// adding sense
 	//------------------------------------------------------------------
 	
-	function add_sense($parent_node_id, $label = ''){
+	function add_sense($parent_node_id){
 		
 		// strarting transaction
 		

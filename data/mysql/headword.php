@@ -50,7 +50,7 @@ trait MySQL_Headword {
 	// adding headword
 	//------------------------------------------------------------------
 	
-	function add_headword($parent_node_id, $headword){
+	function add_headword($parent_node_id, $headword = ''){
 		
 		// inserting new translation
 		

@@ -51,7 +51,7 @@ trait MySQL_Translation {
 	// creating translation
 	//------------------------------------------------------------------
 
-	function add_translation($parent_node_id, $text = ''){
+	function add_translation($parent_node_id, $translation = ''){
 		
 		// inserting new translation
 		
@@ -60,7 +60,7 @@ trait MySQL_Translation {
 			' SELECT' .
 			"  $parent_node_id as parent_node_id," .
 			'  MAX(new_order) AS `order`,' .
-			"  '{$this->database->escape_string($text)}' AS text" .
+			"  '{$this->database->escape_string($translation)}' AS text" .
 			'  FROM (' .
 			'   SELECT MAX(`order`) + 1 AS new_order' .
 			'    FROM translations' .

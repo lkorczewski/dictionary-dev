@@ -21,7 +21,7 @@ trait MySQL_Pronunciation {
 			' `pronunciation` varchar(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT \'pronunciation\',' .
 			' PRIMARY KEY (`pronunciation_id`),' .
 			' KEY `parent_node_id` (`parent_node_id`),' .
-			' KEY `pronunciation` (`pronunciaion`)' .
+			' KEY `pronunciation` (`pronunciation`)' .
 			') ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin' .
 			';';
 		$result = $this->database->execute($query);
@@ -50,7 +50,7 @@ trait MySQL_Pronunciation {
 	// adding pronunciation
 	//------------------------------------------------------------------
 	
-	function add_pronunciation($parent_node_id, $pronunciation){
+	function add_pronunciation($parent_node_id, $pronunciation = ''){
 		
 		// inserting new translation
 		

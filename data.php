@@ -18,7 +18,7 @@ interface Data {
 	//function delete_entry($node_id);
 	
 	// senses
-	function add_sense($parent_node_id, $label = '');
+	function add_sense($parent_node_id);
 	function move_sense_up($node_id);
 	function move_sense_down($node_id);
 	function delete_sense($node_id);
@@ -29,8 +29,15 @@ interface Data {
 	function move_phrase_down($node_id);
 	function delete_phrase($node_id);
 	
+	// headwords
+	function add_headword($headword_id, $headword = '');
+	function update_headword($headword_id, $text);
+	function move_headword_up($headword_id);
+	function move_headword_down($headword_id);
+	function delete_headword($headword_id);
+	
 	// translations
-	function add_translation($sense_id, $text = '');
+	function add_translation($translation_id, $translation = '');
 	function update_translation($translation_id, $text);
 	function move_translation_up($translation_id);
 	function move_translation_down($translation_id);
