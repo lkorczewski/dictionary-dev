@@ -21,6 +21,7 @@ interface Data {
 	function add_sense($parent_node_id);
 	function move_sense_up($node_id);
 	function move_sense_down($node_id);
+	function get_sense_label($node_id);
 	function delete_sense($node_id);
 	
 	// phrases

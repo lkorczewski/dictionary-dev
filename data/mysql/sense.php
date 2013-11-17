@@ -147,10 +147,72 @@ trait MySQL_Sense {
 		
 		return $affected_rows;
 	}
+
+	//------------------------------------------------------------------
+	// getting sense depth
+	//------------------------------------------------------------------
+	// this relatively slow recursive solution shows that the way
+	// the tree structure was implemented is a bit cumbersome
+	
+	function get_sense_depth($node_id){
+		$current_node_id = $node_id;
+		$depth = 0;
+		
+		while($current_node_id){
+			$query =
+				'SELECT parent_node_id' .
+				' FROM' .
+				'  senses' .
+				' WHERE' .
+				"  node_id = $current_node_id".
+				';';
+			$result = $this->database->fetch_one($query);
+			
+			if($result === false) return false;
+			
+			if(empty($result)){
+				$current_node_id = false;
+			} else {
+				$current_node_id = $result['parent_node_id'];
+				$depth++;
+			}
+		}
+		
+		return $depth;
+	}
+	
+	//------------------------------------------------------------------
+	// getting sense label
+	//------------------------------------------------------------------
+	
+	function get_sense_label($node_id){
+		
+		$depth = $this->get_sense_depth($node_id);
+		
+		$query =
+			'SELECT ol.label' .
+			' FROM ' .
+			'  order_labels ol,' .
+			'  order_label_system_assignments olsa,' .
+			'  senses s' .
+			" WHERE s.node_id = $node_id" .
+			'  AND s.order = ol.order' .
+			'  AND ol.order_label_system_id = olsa.order_label_system_id' .
+			'  AND olsa.element = \'sense\''.
+			"  AND olsa.depth = $depth" .
+			';';
+		$result = $this->database->fetch_one($query);
+		
+		if($result === false) return false;
+		
+		$sense_label = $result['label'];
+		
+		return $sense_label;
+	}
 	
 	//------------------------------------------------------------------
 	// deleting sense
-	//------------------------------------------------------------------	
+	//------------------------------------------------------------------
 	
 	function delete_sense($node_id){
 		
