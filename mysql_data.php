@@ -3,29 +3,33 @@
 namespace Dictionary;
 
 require_once 'database/database.php';
-require_once __DIR__.'/data.php';
+require_once __DIR__ . '/data.php';
 
-require_once __DIR__.'/dictionary.php';
-require_once __DIR__.'/node.php';
-require_once __DIR__.'/headword_node.php';
-require_once __DIR__.'/entry.php';
-require_once __DIR__.'/sense.php';
-require_once __DIR__.'/translation.php';
+require_once __DIR__ . '/dictionary.php';
+require_once __DIR__ . '/node.php';
+require_once __DIR__ . '/headword_node.php';
+require_once __DIR__ . '/entry.php';
+require_once __DIR__ . '/sense.php';
+require_once __DIR__ . '/translation.php';
 
-require_once __DIR__.'/data/mysql/node.php';
-require_once __DIR__.'/data/mysql/entry.php';
-require_once __DIR__.'/data/mysql/sense.php';
-require_once __DIR__.'/data/mysql/phrase.php';
-require_once __DIR__.'/data/mysql/headword.php';
-require_once __DIR__.'/data/mysql/pronunciation.php';
-require_once __DIR__.'/data/mysql/category_label.php';
-require_once __DIR__.'/data/mysql/form.php';
-require_once __DIR__.'/data/mysql/context.php';
-require_once __DIR__.'/data/mysql/translation.php';
+require_once __DIR__ . '/data/mysql/metadata.php';
+require_once __DIR__ . '/data/mysql/order_label.php';
 
-require_once __DIR__.'/data/mysql/order_label.php';
+require_once __DIR__ . '/data/mysql/node.php';
+require_once __DIR__ . '/data/mysql/entry.php';
+require_once __DIR__ . '/data/mysql/sense.php';
+require_once __DIR__ . '/data/mysql/phrase.php';
+require_once __DIR__ . '/data/mysql/headword.php';
+require_once __DIR__ . '/data/mysql/pronunciation.php';
+require_once __DIR__ . '/data/mysql/category_label.php';
+require_once __DIR__ . '/data/mysql/form.php';
+require_once __DIR__ . '/data/mysql/context.php';
+require_once __DIR__ . '/data/mysql/translation.php';
 
 class MySQL_Data implements Data {
+	use MySQL_Metadata;
+	use MySQL_Order_Label;
+	
 	use MySQL_Node;
 	use MySQL_Entry;
 	use MySQL_Sense;
@@ -36,7 +40,6 @@ class MySQL_Data implements Data {
 	use MySQL_Form;
 	use MySQL_Context;
 	use MySQL_Translation;
-	use MySQL_Order_Label;
 	
 	private $database;
 	
@@ -57,7 +60,7 @@ class MySQL_Data implements Data {
 	//------------------------------------------------------------------
 	
 	public function create_storage(&$log){
-		$methods = array(
+		$actions = [
 			'create_node_storage',
 			'create_entry_storage',
 			'create_sense_storage',
@@ -82,16 +85,20 @@ class MySQL_Data implements Data {
 			'link_order_label_storage',
 
 			'fill_order_label_storage',
-		);
+		];
 		
-		$log = array();
+		// allowing continuing previous log
+		if(!is_array($log)){
+			$log = [];
+		}
 		
-		foreach($methods as $method){
-			$result = $this->$method();
-			$log[] = array(
-				'action' => $method,
+		foreach($actions as $action){
+			$result = $this->$action();
+			$log[] = [
+				'action' => $action,
 				'result' => $result
-			);
+			];
+			
 			if(!$result){
 				return false;
 			}
@@ -120,7 +127,7 @@ class MySQL_Data implements Data {
 			';';
 		$result = $this->database->fetch_all($query);
 		
-		$headwords = array();
+		$headwords = [];
 		
 		foreach($result as $row){
 			$headwords[] = $row['headword'];
@@ -178,7 +185,7 @@ class MySQL_Data implements Data {
 			return false;
 		}
 		
-		$entries = array();
+		$entries = [];
 		
 		foreach($entries_result as $entry_result){
 			$entry = new Entry($dictionary);

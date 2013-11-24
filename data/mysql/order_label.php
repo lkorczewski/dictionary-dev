@@ -39,6 +39,7 @@ trait MySQL_Order_Label {
 			' `element` varchar(10) COLLATE utf8_bin NOT NULL,' .
 			' `depth` tinyint(3) unsigned NOT NULL,' .
 			' `order_label_system_id` tinyint(3) unsigned NOT NULL,' .
+			' PRIMARY KEY (`element`,`depth`),' .
 			' KEY `order_label_system_id` (`order_label_system_id`)' .
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin' .
 			';';
@@ -72,8 +73,10 @@ trait MySQL_Order_Label {
 			';';
 		$result = $this->database->execute($query);
 		
-		if(!$result)
+		if(!$result){
 			return false;
+		}
+		
 		/*
 		$query =
 			'TRUNCATE TABLE `order_labels`' .
@@ -148,8 +151,12 @@ trait MySQL_Order_Label {
 			'  (6, 10, \'κ\')' .
 			';';
 		$result = $this->database->execute($query);
+
+		if(!$result){
+			return false;
+		}
 		
-		return $result;
+		return true;
 	}
 	
 	//------------------------------------------------------------------
@@ -165,8 +172,9 @@ trait MySQL_Order_Label {
 			';';
 		$result = $this->database->execute($query);
 		
-		if(!$result)
+		if(!$result){
 			return false;
+		}
 		
 		$query =
 			'ALTER TABLE `order_label_system_assignments`' .
@@ -176,12 +184,60 @@ trait MySQL_Order_Label {
 			';';
 		$result = $this->database->execute($query);
 		
-		if(!$result)
+		if(!$result){
 			return false;
+		}
 		
 		return true;
 	}
-
+	
+	//------------------------------------------------------------------
+	// setting order label assignment
+	//------------------------------------------------------------------
+	// TODO: "element" should be "node_type" ?
+	
+	function set_order_label_system_assignment($element, $depth, $system){
+		$query =
+			'REPLACE order_label_system_assignments' .
+			' (' .
+			'   element,' .
+			'   depth,' .
+			'   order_label_system_id' .
+			' )' .
+			' SELECT' .
+			"  '$element' AS element," .
+			"  $depth AS depth," .
+			'  ols.order_label_system_id AS order_label_system_id' .
+			' FROM `order_label_systems` ols' .
+			" WHERE ols.name = '$system'" .
+			';';
+		$result = $this->database->execute($query);
+		
+		if(!$result){
+			return false;
+		}
+		
+		return true;
+	}
+	
+	//------------------------------------------------------------------
+	// deleting order label assignment
+	//------------------------------------------------------------------
+	// TODO: "element" should be "node_type" ?
+	
+	function delete_order_label_system_assignment($element, $depth){
+		$query = 
+			'DELETE FROM order_label_system_assignments' .
+			" WHERE element = '$element'" .
+			" AND depth = $depth" .
+			';';
+		$result = $this->database->execute($query);
+		
+		if(!$result){
+			return false;
+		}
+		
+		return true;
+	}
+	
 }
-
-?>
