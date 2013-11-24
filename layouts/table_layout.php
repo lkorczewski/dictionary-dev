@@ -27,7 +27,7 @@ class Table_Layout implements Layout {
 	//--------------------------------------------------------------------
 	
 	function parse_entry(Entry $entry){
-		$output = array();
+		$output = [];
 		
 		while($headword = $sense->get_headwords()){
 			$output['headwords'][] = $this->parse_headword($headword);
@@ -61,7 +61,7 @@ class Table_Layout implements Layout {
 	//--------------------------------------------------------------------
 	
 	function parse_sense(Sense $sense){
-		$output = array();
+		$output = [];
 		
 		$output['label'] = $sense->get_label();
 		
@@ -93,7 +93,7 @@ class Table_Layout implements Layout {
 	//--------------------------------------------------------------------
 	
 	function parse_phrase(Phrase $phrase){
-		$output = array();
+		$output = [];
 		
 		$output['headword'] = $phrase->get();
 		
@@ -131,7 +131,7 @@ class Table_Layout implements Layout {
 	//--------------------------------------------------------------------
 	
 	function parse_form(Form $form){
-		$output = array();
+		$output = [];
 		
 		$output['label'] = $form->get_label();
 		
