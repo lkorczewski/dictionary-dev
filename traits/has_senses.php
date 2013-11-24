@@ -17,7 +17,7 @@ interface Node_With_Senses extends Node_Interface {
 
 trait Has_Senses {
 	
-	private $senses = array();
+	private $senses = [];
 	private $sense_iterator = 0;
 	
 	//------------------------------------------------------------------------

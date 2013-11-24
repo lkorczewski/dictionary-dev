@@ -16,7 +16,7 @@ interface Node_With_Forms extends Node_Interface {
 require_once __DIR__ . '/../form.php';
 
 trait Has_Forms {
-	private $forms = array();
+	private $forms = [];
 	private $form_iterator = 0;
 	
 	//------------------------------------------------

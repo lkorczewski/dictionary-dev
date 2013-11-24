@@ -12,7 +12,7 @@ interface Node_With_Translations extends Node_Interface {
 
 trait Has_Translations {
 	
-	private $translations = array();
+	private $translations = [];
 	private $translation_iterator = 0;
 	
 	//------------------------------------------------------------------------

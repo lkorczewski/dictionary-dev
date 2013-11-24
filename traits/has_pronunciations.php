@@ -17,7 +17,7 @@ require_once __DIR__.'/../pronunciation.php';
 
 trait Has_Pronunciations {
 	
-	private $pronunciations = array();
+	private $pronunciations = [];
 	private $pronunciation_iterator = 0;
 	
 	//------------------------------------------------------------------------

@@ -17,7 +17,7 @@ require_once __DIR__.'/../headword.php';
 
 trait Has_Headwords {
 	
-	private $headwords = array();
+	private $headwords = [];
 	private $headword_iterator = 0;
 	
 	//------------------------------------------------------------------------

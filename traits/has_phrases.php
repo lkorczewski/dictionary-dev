@@ -17,7 +17,7 @@ require_once __DIR__ . '/../phrase.php';
 
 trait Has_Phrases {
 	
-	private $phrases = array();
+	private $phrases = [];
 	private $phrase_iterator = 0;
 	
 	//------------------------------------------------------------------------
