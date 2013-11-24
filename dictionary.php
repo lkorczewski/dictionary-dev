@@ -61,7 +61,6 @@ class Dictionary {
 
 	function get_entries($headword_mask){
 		
-		//$entries = array();
 		$entries = $this->data->pull_entries($this, $headword_mask);
 		
 		return $entries;
