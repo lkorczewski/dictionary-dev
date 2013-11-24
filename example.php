@@ -24,7 +24,7 @@ class Example {
 	function __construct(Dictionary $dictionary){
 		$this->data = $dictionary->get_data();
 		
-		$this->translations = array();
+		$this->translations = [];
 		$this->translation_iterator = 0;
 	}
 	
