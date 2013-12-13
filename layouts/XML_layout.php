@@ -59,7 +59,7 @@ class XML_Layout implements Layout{
 	// just a theoretical fun, no practical purposes expected
 	//--------------------------------------------------------------------
 	
-	public function parse($object){
+	function parse($object){
 		
 		$class_name = get_class($object);
 		
@@ -87,11 +87,11 @@ class XML_Layout implements Layout{
 	// dictionary parser
 	//--------------------------------------------------------------------
 	// $stream:
-	//   PHP stream identifier; if false, output is returned as return
-	//     value
+	//   PHP stream identifier; if self::RETURN_RESULT, output is returned
+	//   as return value
 	//--------------------------------------------------------------------
 	
-	public function parse_dictionary(Dictionary $dictionary, $stream = self::RETURN_RESULT){
+	function parse_dictionary(Dictionary $dictionary, $stream = self::RETURN_RESULT){
 		$return_content = false;
 		
 		if($stream === self::RETURN_RESULT){
@@ -105,13 +105,21 @@ class XML_Layout implements Layout{
 		fwrite($stream, self::get_indent() . '<Dictionary>'."\n");
 		$this->depth++;
 		
-		$headwords = $dictionary->get_headwords();
+		// metadata
 		
-		foreach($headwords as $headword){
-			$entry = $dictionary->get_entry($headword);
+		$metadata = $dictionary->get_metadata();
+		
+		fwrite($stream, $this->parse_metadata($metadata));
+		
+		// entries
+		
+		$entry_ids = $dictionary->get_entry_ids();
+		
+		foreach($entry_ids as $entry_id){
+			$entry = $dictionary->get_entry_by_id($entry_id);
 			fwrite($stream, $this->parse_entry($entry));
 		}
-				
+		
 		$this->depth--;
 		fwrite($stream, self::get_indent() . '</Dictionary>'."\n");
 		
@@ -122,11 +130,69 @@ class XML_Layout implements Layout{
 		}
 	}
 	
+	//====================================================================
+	// metadata
+	//====================================================================
+	
+	//--------------------------------------------------------------------
+	// parser for metadata
+	//--------------------------------------------------------------------
+	
+	function parse_metadata(Array $metadata){
+		$output = '';
+		
+		$output .= self::get_indent() . '<Metadata>' . "\n";
+		$this->depth++;
+		
+		// senses
+		$number_of_senses = count($metadata['sense']);
+		foreach($metadata['sense'] as $depth => $sense_metadata){
+			if($number_of_senses == 1){
+				$output .= self::get_indent() . '<Sense>';
+			} else {
+				$output .= self::get_indent() . '<Sense depth="' . $depth . '">' . "\n";
+			}
+			$this->depth++;
+			
+			$output .= $this->parse_order_label_metadata($sense_metadata);
+			
+			$this->depth--;
+			$output .= self::get_indent() . '</Sense>' . "\n";
+		}
+		
+		$this->depth--;
+		$output .= self::get_indent() . '</Metadata>' . "\n";
+		
+		return $output;
+	}
+	
+	//--------------------------------------------------------------------
+	// parser for order label metadata
+	//--------------------------------------------------------------------
+	
+	private function parse_order_label_metadata($node_metadata){
+		$output = '';
+		
+		if(isset($node_metadata['order_label_system'])){
+			$output .=
+				self::get_indent() .
+				'<OrderLabel system="' .
+					$node_metadata['order_label_system'] .
+				'"/>' .
+				"\n";
+		}
+		return $output;
+	}
+	
+	//====================================================================
+	// entries
+	//====================================================================
+
 	//--------------------------------------------------------------------
 	// entry parser
 	//--------------------------------------------------------------------
 	
-	public function parse_entry(Entry $entry){
+	function parse_entry(Entry $entry){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Entry>'."\n";
@@ -167,7 +233,7 @@ class XML_Layout implements Layout{
 	// sense parser
 	//--------------------------------------------------------------------
 	
-	public function parse_sense(Sense $sense){
+	function parse_sense(Sense $sense){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Sense>' . "\n";
@@ -209,7 +275,7 @@ class XML_Layout implements Layout{
 	// phrase parser
 	//--------------------------------------------------------------------
 	
-	public function parse_phrase(Phrase $phrase){
+	function parse_phrase(Phrase $phrase){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Phrase>' . "\n";
@@ -243,7 +309,7 @@ class XML_Layout implements Layout{
 	// pronunciation parser
 	//--------------------------------------------------------------------
 	
-	public function parse_pronunciation(Pronunciation $pronunciation){
+	function parse_pronunciation(Pronunciation $pronunciation){
 		$output = '';
 		
 		$output .= self::get_indent() . '<P>' . $pronunciation->get() . '</P>' . "\n";
@@ -255,7 +321,7 @@ class XML_Layout implements Layout{
 	// category label
 	//--------------------------------------------------------------------
 	
-	public function parse_category_label(Category_Label $category_label){
+	function parse_category_label(Category_Label $category_label){
 		$output = '';
 		
 		$output .= self::get_indent() . '<CL>' . $category_label->get() . '</CL>' . "\n";
@@ -267,7 +333,7 @@ class XML_Layout implements Layout{
 	// form parser
 	//--------------------------------------------------------------------
 	
-	public function parse_form(Form $form){
+	function parse_form(Form $form){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Form>' . "\n";
@@ -287,7 +353,7 @@ class XML_Layout implements Layout{
 	// parse context
 	//--------------------------------------------------------------------
 	
-	public function parse_context(Context $context){
+	function parse_context(Context $context){
 		$output = '';
 		
 		$output .= self::get_indent() . '<I>' . $context->get() . '</I>' . "\n";
@@ -299,7 +365,7 @@ class XML_Layout implements Layout{
 	// translation parser
 	//--------------------------------------------------------------------
 	
-	public function parse_translation(Translation $translation){
+	function parse_translation(Translation $translation){
 		$output = '';
 		
 		$output .= self::get_indent() . '<T>' . $translation->get() . '</T>' . "\n";
