@@ -10,32 +10,32 @@ trait MySQL_Order_Label {
 	
 	function create_order_label_storage(){
 		$query =
-			'CREATE TABLE IF NOT EXISTS `order_label_systems` (' .
+			'CREATE TABLE `order_label_systems` (' .
 			' `order_label_system_id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,' .
-			' `name` varchar(8) COLLATE utf8_bin NOT NULL,' .
+			' `name` varchar(24) COLLATE utf8_bin NOT NULL,' .
 			' PRIMARY KEY (`order_label_system_id`)' .
-			') ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin' .
+			') ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin' .
 			';';
 		$result = $this->database->execute($query);
 		
-		if(!$result)
+		if($result === false)
 			return false;
 		
 		$query =
-			'CREATE TABLE IF NOT EXISTS `order_labels` (' .
-			' `order_label_system_id` tinyint(3) unsigned NOT NULL COMMENT \'system identifier\',' .
-			' `order` tinyint(3) unsigned NOT NULL COMMENT \'order\',' .
-			' `label` varchar(8) COLLATE utf8_bin NOT NULL COMMENT \'label\',' .
+			'CREATE TABLE `order_labels` (' .
+			' `order_label_system_id` tinyint(3) unsigned NOT NULL,' .
+			' `order` tinyint(3) unsigned NOT NULL,' .
+			' `label` varchar(8) COLLATE utf8_bin NOT NULL,' .
 			' PRIMARY KEY (`order_label_system_id`,`order`)' .
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin' .
 			';';
 		$result = $this->database->execute($query);
 		
-		if(!$result)
+		if($result === false)
 			return false;
 		
 		$query =
-			'CREATE TABLE IF NOT EXISTS `order_label_system_assignments` (' .
+			'CREATE TABLE `order_label_system_assignments` (' .
 			' `element` varchar(10) COLLATE utf8_bin NOT NULL,' .
 			' `depth` tinyint(3) unsigned NOT NULL,' .
 			' `order_label_system_id` tinyint(3) unsigned NOT NULL,' .
@@ -45,47 +45,30 @@ trait MySQL_Order_Label {
 			';';
 		$result = $this->database->execute($query);
 		
-		if(!$result)
+		if($result === false)
 			return false;
 		
 		return true;
 	}
 	
 	function fill_order_label_storage(){
-		/*
-		$query =
-			'TRUNCATE TABLE `order_label_systems`' .
-			';';
-		$result = $this->database->execute($query);
 		
-		if(!$result)
-			return false;
-		*/
 		$query =
 			'INSERT INTO `order_label_systems` (`order_label_system_id`, `name`)' .
 			' VALUES' .
-			'  (1, \'arabic\'),' .
-			'  (2, \'ROMAN\'),' .
-			'  (3, \'roman\'),' .
-			'  (4, \'LATIN\'),' .
-			'  (5, \'latin\'),' .
-			'  (6, \'greek\')' .
+			'  (1, \'arabic-numbers\'),' .
+			'  (2, \'uppercase-roman-numbers\'),' .
+			'  (3, \'lowercase-roman-numbers\'),' .
+			'  (4, \'uppercase-latin-letters\'),' .
+			'  (5, \'lowercase-latin-letters\'),' .
+			'  (6, \'lowercase-greek-letters\')' .
 			';';
 		$result = $this->database->execute($query);
 		
-		if(!$result){
+		if($result === false){
 			return false;
 		}
 		
-		/*
-		$query =
-			'TRUNCATE TABLE `order_labels`' .
-			';';
-		$result = $this->database->execute($query);
-		
-		if(!$result)
-			return false;
-		*/
 		$query =
 			'INSERT INTO `order_labels` (`order_label_system_id`, `order`, `label`)' .
 			' VALUES' .
@@ -152,7 +135,7 @@ trait MySQL_Order_Label {
 			';';
 		$result = $this->database->execute($query);
 
-		if(!$result){
+		if($result === false){
 			return false;
 		}
 		
@@ -172,7 +155,7 @@ trait MySQL_Order_Label {
 			';';
 		$result = $this->database->execute($query);
 		
-		if(!$result){
+		if($result === false){
 			return false;
 		}
 		
@@ -184,7 +167,7 @@ trait MySQL_Order_Label {
 			';';
 		$result = $this->database->execute($query);
 		
-		if(!$result){
+		if($result === false){
 			return false;
 		}
 		
@@ -213,7 +196,7 @@ trait MySQL_Order_Label {
 			';';
 		$result = $this->database->execute($query);
 		
-		if(!$result){
+		if($result === false){
 			return false;
 		}
 		
@@ -233,7 +216,7 @@ trait MySQL_Order_Label {
 			';';
 		$result = $this->database->execute($query);
 		
-		if(!$result){
+		if($result === false){
 			return false;
 		}
 		
