@@ -59,7 +59,7 @@ class MySQL_Data implements Data {
 	// creating storage (database)
 	//------------------------------------------------------------------
 	
-	public function create_storage(&$log){
+	function create_storage(&$log){
 		$actions = [
 			'create_node_storage',
 			'create_entry_storage',
@@ -111,7 +111,7 @@ class MySQL_Data implements Data {
 	// pulling list of headwords
 	//------------------------------------------------------------------
 	
-	public function pull_headwords($mask = '', $number = NULL){
+	function pull_headwords($mask = '', $number = NULL){
 		
 		$mask_sql = $mask ? "  AND h.headword LIKE '$mask%'" : '';
 		$number_sql = $number ? " LIMIT $number" : '';
@@ -140,7 +140,7 @@ class MySQL_Data implements Data {
 	// pulling entry from database
 	//------------------------------------------------------------------
 	
-	public function pull_entry(Dictionary $dictionary, $headword){
+	function pull_entry(Dictionary $dictionary, $headword){
 		// to do: only the first headword if all are the same
 		
 		$query =
@@ -170,7 +170,7 @@ class MySQL_Data implements Data {
 	// pulling entries from database by headword
 	//------------------------------------------------------------------
 	
-	public function pull_entries(Dictionary $dictionary, $headword){
+	function pull_entries(Dictionary $dictionary, $headword){
 		
 		$query =
 			'SELECT DISTINCT e.*' .

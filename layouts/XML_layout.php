@@ -28,7 +28,7 @@ class XML_Layout implements Layout{
 	// constructor
 	//--------------------------------------------------------------------
 	
-	public function __construct(){
+	function __construct(){
 		$this->depth = 0;
 		$this->indent_string = ' ';
 	}
@@ -59,7 +59,7 @@ class XML_Layout implements Layout{
 	// just a theoretical fun, no practical purposes expected
 	//--------------------------------------------------------------------
 	
-	public function parse($object){
+	function parse($object){
 		
 		$class_name = get_class($object);
 		
@@ -91,7 +91,7 @@ class XML_Layout implements Layout{
 	//     value
 	//--------------------------------------------------------------------
 	
-	public function parse_dictionary(Dictionary $dictionary, $stream = self::RETURN_RESULT){
+	function parse_dictionary(Dictionary $dictionary, $stream = self::RETURN_RESULT){
 		$return_content = false;
 		
 		if($stream === self::RETURN_RESULT){
@@ -126,7 +126,7 @@ class XML_Layout implements Layout{
 	// entry parser
 	//--------------------------------------------------------------------
 	
-	public function parse_entry(Entry $entry){
+	function parse_entry(Entry $entry){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Entry>'."\n";
@@ -167,7 +167,7 @@ class XML_Layout implements Layout{
 	// sense parser
 	//--------------------------------------------------------------------
 	
-	public function parse_sense(Sense $sense){
+	function parse_sense(Sense $sense){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Sense>' . "\n";
@@ -209,7 +209,7 @@ class XML_Layout implements Layout{
 	// phrase parser
 	//--------------------------------------------------------------------
 	
-	public function parse_phrase(Phrase $phrase){
+	function parse_phrase(Phrase $phrase){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Phrase>' . "\n";
@@ -231,7 +231,7 @@ class XML_Layout implements Layout{
 	// headword parser
 	//--------------------------------------------------------------------
 	
-	public function parse_headword(Headword $headword){
+	function parse_headword(Headword $headword){
 		$output = '';
 		
 		$output .= self::get_indent() . '<H>' . $headword->get() . '</H>' . "\n";
@@ -243,7 +243,7 @@ class XML_Layout implements Layout{
 	// pronunciation parser
 	//--------------------------------------------------------------------
 	
-	public function parse_pronunciation(Pronunciation $pronunciation){
+	function parse_pronunciation(Pronunciation $pronunciation){
 		$output = '';
 		
 		$output .= self::get_indent() . '<P>' . $pronunciation->get() . '</P>' . "\n";
@@ -255,7 +255,7 @@ class XML_Layout implements Layout{
 	// category label
 	//--------------------------------------------------------------------
 	
-	public function parse_category_label(Category_Label $category_label){
+	function parse_category_label(Category_Label $category_label){
 		$output = '';
 		
 		$output .= self::get_indent() . '<CL>' . $category_label->get() . '</CL>' . "\n";
@@ -267,7 +267,7 @@ class XML_Layout implements Layout{
 	// form parser
 	//--------------------------------------------------------------------
 	
-	public function parse_form(Form $form){
+	function parse_form(Form $form){
 		$output = '';
 		
 		$output .= self::get_indent() . '<Form>' . "\n";
@@ -287,7 +287,7 @@ class XML_Layout implements Layout{
 	// parse context
 	//--------------------------------------------------------------------
 	
-	public function parse_context(Context $context){
+	function parse_context(Context $context){
 		$output = '';
 		
 		$output .= self::get_indent() . '<I>' . $context->get() . '</I>' . "\n";
@@ -299,7 +299,7 @@ class XML_Layout implements Layout{
 	// translation parser
 	//--------------------------------------------------------------------
 	
-	public function parse_translation(Translation $translation){
+	function parse_translation(Translation $translation){
 		$output = '';
 		
 		$output .= self::get_indent() . '<T>' . $translation->get() . '</T>' . "\n";

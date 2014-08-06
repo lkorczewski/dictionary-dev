@@ -24,18 +24,18 @@ class Source {
 	// managing reference to source list
 	//------------------------------------------------
 	
-	public function set_reference($label){
+	function set_reference($label){
 		$this->label = $label;
 		$this->reference = $this->dictionary->sources[$label];
 	}
 	
-	public function is_reference(){
+	function is_reference(){
 		if(isset($this->reference)) return true;
 		
 		return false;
 	}
 	
-	public function get_label($label){
+	function get_label($label){
 		
 	}
 
@@ -43,11 +43,11 @@ class Source {
 	// managing author
 	//------------------------------------------------
 	
-	public function set_author($author){
+	function set_author($author){
 		$this->author = $author;
 	}
 	
-	public function get_author(){
+	function get_author(){
 		
 		if(isset($this->reference)){
 			$author = $this->reference['author'];
@@ -63,11 +63,11 @@ class Source {
 	// managing title
 	//------------------------------------------------
 
-	public function set_title($title){
+	function set_title($title){
 		$this->author = $title;
 	}
 	
-	public function get_title(){
+	function get_title(){
 		
 		if(isset($this->reference)){
 			$title = $this->reference['title'];

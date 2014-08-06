@@ -15,7 +15,7 @@ class Phrase extends Node {
 	// constructor
 	//------------------------------------------------
 	
-	public function __construct(Dictionary $dictionary){
+	function __construct(Dictionary $dictionary){
 		parent::__construct($dictionary);
 	}
 	
@@ -23,11 +23,13 @@ class Phrase extends Node {
 	// id management
 	//------------------------------------------------
 	
-	public function set_id($id){
+	function set_id($id){
 		$this->id = $id;
+		
+		return $this;
 	}
 	
-	public function get_id(){
+	function get_id(){
 		return $this->id;
 	}
 	
@@ -35,11 +37,13 @@ class Phrase extends Node {
 	// phrase management
 	//------------------------------------------------
 	
-	public function set($phrase){
+	function set($phrase){
 		$this->phrase = $phrase;
+		
+		return $this;
 	}
 	
-	public function get(){
+	function get(){
 		return $this->phrase;
 	}
 	

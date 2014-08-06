@@ -31,7 +31,7 @@ class Entry extends Headword_Node
 	// constructor
 	//------------------------------------------------------------------------
 	
-	public function __construct(Dictionary $dictionary){
+	function __construct(Dictionary $dictionary){
 		parent::__construct($dictionary);
 		
 		$this->dictionary = $dictionary;
@@ -42,11 +42,11 @@ class Entry extends Headword_Node
 	// id management
 	//------------------------------------------------------------------------
 	
-	public function set_id($id){
+	function set_id($id){
 		$this->id = $id;
 	}
 	
-	public function get_id(){
+	function get_id(){
 		return $this->id;
 	}
 	
@@ -54,14 +54,14 @@ class Entry extends Headword_Node
 	// comment management
 	//------------------------------------------------------------------------
 	
-	public function set_comment($comment = ''){
+	function set_comment($comment = ''){
 		$comment = new Comment($this->dictionary);
 		$this->comment = $comment;
 		
 		return $comment;
 	}
 	
-	public function get_comment(){
+	function get_comment(){
 		return $comment;
 	}
 	

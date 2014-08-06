@@ -27,7 +27,7 @@ abstract class Node
 	// constructor
 	//------------------------------------------------
 	
-	public function __construct(Dictionary $dictionary){
+	function __construct(Dictionary $dictionary){
 		
 		$this->dictionary = $dictionary;
 		
@@ -37,7 +37,7 @@ abstract class Node
 	// node id management
 	//------------------------------------------------
 	
-	public function set_node_id($node_id){
+	function set_node_id($node_id){
 		$this->node_id = $node_id;
 	}
 	

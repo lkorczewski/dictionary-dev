@@ -4,7 +4,6 @@ namespace Dictionary;
 
 require_once 'database/database.php';
 require_once __DIR__ . '/data.php';
-require_once __DIR__ . '/entry.php';
 
 class Dictionary {
 	
@@ -43,10 +42,11 @@ class Dictionary {
 	//------------------------------------------------------------------------
 	// getting entry
 	//------------------------------------------------------------------------
+	// WARNING! it is possible there are two entries with the same mask
+	//------------------------------------------------------------------------
 	
 	function get_entry($headword){
 		
-		//$entry = new Entry($this);
 		$entry = $this->data->pull_entry($this, $headword);
 		
 		return $entry;

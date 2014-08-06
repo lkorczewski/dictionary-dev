@@ -28,6 +28,8 @@ class Form {
 	
 	function set_id($id){
 		$this->id = $id;
+		
+		return $this;
 	}
 	
 	function get_id(){
@@ -40,6 +42,8 @@ class Form {
 	
 	function set_label($label){
 		$this->label = $label;
+		
+		return $this;
 	}
 	
 	function get_label(){

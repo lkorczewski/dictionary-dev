@@ -7,8 +7,8 @@ namespace Dictionary;
 require_once __DIR__ . '/node_interface.php';
 
 interface Node_With_Category_Label extends Node_Interface {
-	public function set_category_label();
-	public function get_category_label();
+	function set_category_label();
+	function get_category_label();
 }
 
 //----------------------------------------------------------------------------
@@ -23,14 +23,14 @@ trait Has_Category_Label {
 	// category label management
 	//------------------------------------------------
 	
-	public function set_category_label(){
+	function set_category_label(){
 		$category_label = new Category_Label($this->dictionary);
 		$this->category_label = $category_label;
 		
 		return $category_label;
 	}
 	
-	public function get_category_label(){
+	function get_category_label(){
 		$category_label = $this->category_label;
 		
 		return $category_label;

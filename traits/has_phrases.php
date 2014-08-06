@@ -7,8 +7,8 @@ namespace Dictionary;
 require_once __DIR__ . '/node_interface.php';
 
 interface Node_With_Phrases extends Node_Interface {
-	public function add_phrase();
-	public function get_phrase();
+	function add_phrase();
+	function get_phrase();
 }
 
 //----------------------------------------------------------------------------
@@ -24,14 +24,14 @@ trait Has_Phrases {
 	// phrase management
 	//------------------------------------------------------------------------
 	
-	public function add_phrase(){
+	function add_phrase(){
 		$phrase = new Phrase($this->dictionary);
 		$this->phrases[] = $phrase;
 		
 		return $phrase;
 	}
 	
-	public function get_phrase(){
+	function get_phrase(){
 		if(!isset($this->phrases[$this->phrase_iterator])){
 			return false;
 		}

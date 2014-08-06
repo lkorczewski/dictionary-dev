@@ -4,7 +4,7 @@ namespace Dictionary;
 
 require_once __DIR__.'/dictionary.php';
 
-class Value {
+abstract class Value {
 	private $dictionary;
 
 	private $id;

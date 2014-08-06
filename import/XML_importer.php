@@ -13,13 +13,13 @@ class XML_Importer {
 	
 	//--------------------------------------------------------------------
 	
-	public function __construct(Data $data){
+	function __construct(Data $data){
 		$this->data = $data;
 	}
 	
 	//--------------------------------------------------------------------
 	
-	public function parse($XML_file){
+	function parse($XML_file){
 		$reader = new \XMLReader();
 		$reader->open($XML_file);
 		while($reader->read()){

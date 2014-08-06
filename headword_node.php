@@ -29,7 +29,7 @@ abstract class Headword_Node extends Node
 	// constructor
 	//------------------------------------------------
 	
-	public function __construct($dictionary){
+	function __construct($dictionary){
 		parent::__construct($dictionary);
 		
 		$this->dictionary = $dictionary;
