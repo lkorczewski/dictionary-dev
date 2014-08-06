@@ -44,4 +44,3 @@ trait Has_Headwords {
 	
 }
 
-?>

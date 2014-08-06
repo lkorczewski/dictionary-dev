@@ -2,7 +2,6 @@
 
 namespace Dictionary;
 
-require_once __DIR__.'/dictionary.php';
 require_once __DIR__.'/value.php';
 
 class Translation extends Value {
@@ -17,4 +16,3 @@ class Translation extends Value {
 	
 }
 
-?>

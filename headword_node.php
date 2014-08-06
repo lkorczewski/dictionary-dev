@@ -38,4 +38,3 @@ abstract class Headword_Node extends Node
 	
 }
 
-?>

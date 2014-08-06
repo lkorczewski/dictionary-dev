@@ -222,4 +222,3 @@ trait MySQL_Phrase {
 	
 }
 
-?>

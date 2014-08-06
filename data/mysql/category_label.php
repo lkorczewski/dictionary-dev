@@ -137,4 +137,3 @@ trait MySQL_Category_Label {
 	
 }
 
-?>

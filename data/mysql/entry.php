@@ -144,4 +144,3 @@ trait MySQL_Entry {
 	
 }
 
-?>

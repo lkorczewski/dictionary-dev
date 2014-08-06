@@ -309,4 +309,3 @@ class XML_Layout implements Layout{
 	
 }
 
-?>

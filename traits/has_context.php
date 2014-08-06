@@ -36,4 +36,3 @@ trait Has_Context {
 	
 }
 
-?>

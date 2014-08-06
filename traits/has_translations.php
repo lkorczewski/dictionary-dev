@@ -39,4 +39,3 @@ trait Has_Translations {
 	
 }
 
-?>

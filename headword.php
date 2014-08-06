@@ -9,4 +9,3 @@ class Headword extends Value {
 	
 }
 
-?>

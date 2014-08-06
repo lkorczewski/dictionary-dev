@@ -91,4 +91,3 @@ trait MySQL_Context {
 	
 }
 
-?>

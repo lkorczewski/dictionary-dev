@@ -9,4 +9,3 @@ class Pronunciation extends Value {
 
 }
 
-?>

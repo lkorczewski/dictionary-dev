@@ -165,4 +165,3 @@ class Table_Layout implements Layout {
 	
 }
 
-?>

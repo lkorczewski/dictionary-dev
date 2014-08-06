@@ -204,4 +204,3 @@ trait MySQL_Headword {
 	
 }
 
-?>

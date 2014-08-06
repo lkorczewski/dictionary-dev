@@ -46,4 +46,3 @@ class Category_Label {
 	
 }
 
-?>

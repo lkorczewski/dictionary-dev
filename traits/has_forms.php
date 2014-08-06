@@ -41,4 +41,3 @@ trait Has_Forms {
 	
 }
 
-?>

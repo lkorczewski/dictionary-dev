@@ -260,4 +260,3 @@ trait MySQL_Sense {
 	
 }
 
-?>

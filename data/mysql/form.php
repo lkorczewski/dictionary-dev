@@ -207,4 +207,3 @@ trait MySQL_Form {
 	
 }
 
-?>

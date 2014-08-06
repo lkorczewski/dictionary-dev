@@ -197,4 +197,3 @@ trait MySQL_Translation {
 	
 }
 
-?>
