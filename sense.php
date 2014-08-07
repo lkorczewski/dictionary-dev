@@ -44,6 +44,8 @@ class Sense extends Headword_Node
 	
 	function set_id($id){
 		$this->id = $id;
+		
+		return $this;
 	}
 	
 	function get_id(){
@@ -56,6 +58,8 @@ class Sense extends Headword_Node
 	
 	function set_label($label){
 		$this->label = $label;
+		
+		return $this;
 	}
 	
 	function get_label(){

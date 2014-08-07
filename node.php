@@ -39,6 +39,8 @@ abstract class Node
 	
 	function set_node_id($node_id){
 		$this->node_id = $node_id;
+		
+		return $this;
 	}
 	
 	function get_node_id(){

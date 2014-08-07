@@ -44,6 +44,8 @@ class Entry extends Headword_Node
 	
 	function set_id($id){
 		$this->id = $id;
+		
+		return $this;
 	}
 	
 	function get_id(){

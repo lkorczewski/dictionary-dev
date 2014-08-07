@@ -16,7 +16,11 @@ class Value_Test extends PHPUnit_Framework_TestCase {
 		$this->dictionary = new Dictionary($data);
 		
 		$class_name = '\\Dictionary\\' . $this->value_name;
-		$this->value = $this->getMockForAbstractClass($class_name, [$this->dictionary]);
+		if($this->value_name == 'Value'){
+			$this->value = $this->getMockForAbstractClass($class_name, [$this->dictionary]);
+		} else {
+			$this->value = new $class_name($this->dictionary);
+		}
 	}
 	
 	function test_value_id(){
