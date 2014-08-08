@@ -8,8 +8,8 @@ namespace Dictionary;
 
 class XML_Importer {
 	
-	private $data;
-	private $xpath;
+	protected $data;
+	protected $xpath;
 	
 	//--------------------------------------------------------------------
 	
@@ -35,7 +35,7 @@ class XML_Importer {
 	
 	//--------------------------------------------------------------------
 	
-	private function parse_entry($entry){
+	protected function parse_entry($entry){
 		
 		$node_id = $this->data->add_entry();
 		
@@ -85,7 +85,7 @@ class XML_Importer {
 	
 	//--------------------------------------------------------------------
 	
-	private function parse_sense($parent_node_id, $sense){
+	protected function parse_sense($parent_node_id, $sense){
 		
 		$node_id = $this->data->add_sense($parent_node_id);
 		
@@ -129,7 +129,7 @@ class XML_Importer {
 	
 	//--------------------------------------------------------------------
 	
-	private function parse_phrase($parent_node_id, $phrase){
+	protected function parse_phrase($parent_node_id, $phrase){
 		
 		$headwords = $this->xpath->query('H', $phrase);
 		$headword = $headwords->item(0);
@@ -144,25 +144,25 @@ class XML_Importer {
 	
 	//--------------------------------------------------------------------
 	
-	private function parse_headword($parent_node_id, $headword){
+	protected function parse_headword($parent_node_id, $headword){
 		$this->data->add_headword($parent_node_id, $headword->nodeValue);
 	}
 
 	//--------------------------------------------------------------------
 	
-	private function parse_pronunciation($parent_node_id, $pronunciation){
+	protected function parse_pronunciation($parent_node_id, $pronunciation){
 		$this->data->add_pronunciation($parent_node_id, $pronunciation->nodeValue);
 	}
 	
 	//--------------------------------------------------------------------
 	
-	private function parse_category_label($parent_node_id, $category_label){
+	protected function parse_category_label($parent_node_id, $category_label){
 		$this->data->set_category_label($parent_node_id, $category_label->nodeValue);
 	}
 
 	//--------------------------------------------------------------------
 	
-	private function parse_form($parent_node_id, $form){
+	protected function parse_form($parent_node_id, $form){
 		$label = $this->xpath->query('L', $form)->item(0);
 		$headword = $this->xpath->query('H', $form)->item(0);
 		
@@ -171,13 +171,13 @@ class XML_Importer {
 	
 	//--------------------------------------------------------------------
 	
-	private function parse_context($parent_node_id, $context){
+	protected function parse_context($parent_node_id, $context){
 		$this->data->set_context($parent_node_id, $context->nodeValue);
 	}
 	
 	//--------------------------------------------------------------------
 	
-	private function parse_translation($parent_node_id, $translation){
+	protected function parse_translation($parent_node_id, $translation){
 		$this->data->add_translation($parent_node_id, $translation->nodeValue);
 	}
 	
