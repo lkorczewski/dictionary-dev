@@ -21,6 +21,12 @@ class Phrase_Test extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($this->phrase->get_id(), $id);
 	}
 	
+	function test_node_id(){
+		$node_id = 159;
+		$this->phrase->set_node_id($node_id);
+		$this->assertEquals($this->phrase->get_node_id(), $node_id);
+	}
+	
 	function test_value(){
 		$value = 'test';
 		$this->phrase->set($value);
@@ -28,13 +34,14 @@ class Phrase_Test extends PHPUnit_Framework_TestCase {
 	}
 	
 	function test_translation(){
-		$this->phrase->add_translation();
-		$this->assertInstanceOf('Dictionary\Translation', $this->phrase->get_translation());
+		$translation_1 = $this->phrase->add_translation();
+		$translation_2 = $this->phrase->add_translation();
+		$this->assertInstanceOf('\Dictionary\Translation', $translation_1);
+		$this->assertInstanceOf('\Dictionary\Translation', $translation_2);
+		$this->assertSame($this->phrase->get_translation(), $translation_1);
+		$this->assertSame($this->phrase->get_translation(), $translation_2);
+		$this->assertEquals($this->phrase->get_translation(), false);
+		$this->assertNotSame($translation_1, $translation_2);
 	}
 	
-	function test_node_id(){
-		$node_id = 159;
-		$this->phrase->set_node_id($node_id);
-		$this->assertSame($this->phrase->get_node_id(), $node_id);
-	}
 }
