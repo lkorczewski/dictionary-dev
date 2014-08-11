@@ -16,23 +16,16 @@ require_once __DIR__ . '/../translation.php';
 
 require_once __DIR__ . '/layout.php';
 
-class XML_Layout implements Layout{
+// TODO: output buffering instead of big string in memory
+
+class XML_Layout implements Layout {
 	const RETURN_RESULT = false;
 	
-	private $depth;
-	private $indent_string;
+	private $depth          = 0;
+	private $indent_string  = ' ';
 	
 	private $output;
 
-	//--------------------------------------------------------------------
-	// constructor
-	//--------------------------------------------------------------------
-	
-	function __construct(){
-		$this->depth = 0;
-		$this->indent_string = ' ';
-	}
-	
 	//--------------------------------------------------------------------
 	// depth management
 	//--------------------------------------------------------------------
@@ -61,9 +54,10 @@ class XML_Layout implements Layout{
 	
 	function parse($object){
 		
-		$class_name = get_class($object);
+		$class_name        = get_class($object);
+		$short_class_name  = $this->remove_prefix('Dictionary\\', $class_name);
 		
-		switch($class_name){
+		switch($short_class_name){
 			
 			case 'Dictionary' :      return $this->parse_dictionary($object);
 			
@@ -81,6 +75,15 @@ class XML_Layout implements Layout{
 			
 		}
 		
+	}
+	
+	protected function remove_prefix($prefix, $string){
+		
+		if (substr($string, 0, strlen($prefix)) == $prefix) {
+			return substr($string, strlen($prefix));
+		}
+		
+		return false;
 	}
 	
 	//--------------------------------------------------------------------
