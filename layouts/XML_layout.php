@@ -72,7 +72,7 @@ class XML_Layout implements Layout{
 			case 'Phrase' :          return $this->parse_phrase($object);
 			
 			case 'Headword' :        return $this->parse_headword($object);
-			case 'Category_Label' :  return $this->parse_context($object);
+			case 'Category_Label' :  return $this->parse_category_label($object);
 			case 'Form' :            return $this->parse_form($object);
 			case 'Context' :         return $this->parse_context($object);
 			case 'Translation' :     return $this->parse_translation($object);
