@@ -138,6 +138,18 @@ trait MySQL_Order_Label {
 		if($result === false){
 			return false;
 		}
+
+		$query =
+			'INSERT INTO `order_label_system_assignments` (`element`, `depth`, `order_label_system_id`)' .
+			' VALUES' .
+			'  (\'sense\', 1, 1),' .
+			'  (\'sense\', 2, 5)' .
+			';';
+		$result = $this->database->execute($query);
+
+		if($result === false){
+			return false;
+		}
 		
 		return true;
 	}
