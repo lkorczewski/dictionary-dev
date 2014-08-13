@@ -28,7 +28,7 @@ class XML_Layout implements Layout{
 	// constructor
 	//--------------------------------------------------------------------
 	
-	public function __construct(){
+	function __construct(){
 		$this->depth = 0;
 		$this->indent_string = ' ';
 	}
@@ -137,6 +137,7 @@ class XML_Layout implements Layout{
 	//--------------------------------------------------------------------
 	// parser for metadata
 	//--------------------------------------------------------------------
+	// protected?
 	
 	function parse_metadata(Array $metadata){
 		$output = '';
@@ -169,6 +170,7 @@ class XML_Layout implements Layout{
 	//--------------------------------------------------------------------
 	// parser for order label metadata
 	//--------------------------------------------------------------------
+	// protected?
 	
 	private function parse_order_label_metadata($node_metadata){
 		$output = '';
@@ -261,8 +263,8 @@ class XML_Layout implements Layout{
 			$output .= $this->parse_phrase($phrase);
 		}
 		
-		while($sense = $sense->get_sense()){
-			$output .= $this->parse_sense($sense);
+		while($subsense = $sense->get_sense()){
+			$output .= $this->parse_sense($subsense);
 		}
 		
 		$this->depth--;
@@ -374,5 +376,3 @@ class XML_Layout implements Layout{
 	}
 	
 }
-
-?>

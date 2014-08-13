@@ -8,10 +8,7 @@ require_once __DIR__ . '/entry.php';
 class Dictionary {
 	
 	private $data;
-	private $database;
-	
-	private $sources;
-	
+
 	//------------------------------------------------------------------------
 	// constructor
 	//------------------------------------------------------------------------

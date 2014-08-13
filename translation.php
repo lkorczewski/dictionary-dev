@@ -17,4 +17,3 @@ class Translation extends Value {
 	
 }
 
-?>

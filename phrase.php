@@ -44,5 +44,3 @@ class Phrase extends Node {
 	}
 	
 }
-
-?>

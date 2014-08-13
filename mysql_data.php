@@ -26,6 +26,8 @@ require_once __DIR__ . '/data/mysql/form.php';
 require_once __DIR__ . '/data/mysql/context.php';
 require_once __DIR__ . '/data/mysql/translation.php';
 
+use Database\Database;
+
 class MySQL_Data implements Data {
 	use MySQL_Metadata;
 	use MySQL_Order_Label;
@@ -49,7 +51,7 @@ class MySQL_Data implements Data {
 	// constructor
 	//------------------------------------------------------------------
 	
-	function __construct($database){
+	function __construct(Database $database){
 		
 		$this->database = $database;
 		
@@ -59,7 +61,7 @@ class MySQL_Data implements Data {
 	// creating storage (database)
 	//------------------------------------------------------------------
 	
-	public function create_storage(&$log){
+	function create_storage(&$log){
 		$actions = [
 			'create_node_storage',
 			'create_entry_storage',
@@ -111,7 +113,7 @@ class MySQL_Data implements Data {
 	// pulling list of headwords
 	//------------------------------------------------------------------
 	
-	public function get_headwords($mask = '', $limit = false){
+	function get_headwords($mask = '', $limit = false){
 		
 		$mask_sql = $mask ? "  AND h.headword LIKE '$mask%'" : '';
 		$limit_sql = $limit ? " LIMIT $limit" : '';
@@ -133,36 +135,10 @@ class MySQL_Data implements Data {
 	}
 	
 	//------------------------------------------------------------------
-	// pulling entry from database
-	//------------------------------------------------------------------
-	// deprecated!
-	/*
-	public function pull_entry(Dictionary $dictionary, $headword){
-		// to do: only the first headword if all are the same
-		
-		$query =
-			'SELECT e.*' .
-			' FROM headwords h, entries e' .
-			" WHERE h.headword = '{$this->database->escape_string($headword)}'" .
-			'  AND e.node_id = h.parent_node_id' .
-			';';
-		$entry_result = $this->database->fetch_one($query);
-		
-		// poniższe do poprawki
-		if($entry_result == false || count($entry_result) == 0){
-			return false;
-		}
-		
-		$entry = $this->make_entry($dictionary, $entry_result);
-		
-		return $entry;
-	}
-	*/
-	//------------------------------------------------------------------
 	// getting entries from database by headword
 	//------------------------------------------------------------------
 	
-	public function get_entries_by_headword(Dictionary $dictionary, $headword){
+	function get_entries_by_headword(Dictionary $dictionary, $headword){
 		
 		$query =
 			'SELECT DISTINCT e.*' . // why distinct?
@@ -227,22 +203,9 @@ class MySQL_Data implements Data {
 			' ORDER BY' .
 				' h.headword' .
 			';';
-		$entry_node_ids = $this->database->fetch_all($query);
+		$entry_node_ids = $this->database->fetch_column($query);
 		
 		return $entry_node_ids;
-		
-		/*
-		if($entry_node_ids_result === false){
-			return false;
-		}
-		
-		$entry_node_ids = [];
-		foreach($entry_node_ids_result as $entry_node_id_result){
-			$entry_node_ids[] = $entry_node_id_result['node_id'];
-		}
-		
-		return $entry_node_ids;
-		*/
 	}
 	
 	//------------------------------------------------------------------
@@ -528,7 +491,7 @@ class MySQL_Data implements Data {
 	
 	private function make_entry(Dictionary $dictionary, $entry_result){
 		$entry = new Entry($dictionary);
-		
+
 		$entry->set_id($entry_result['entry_id']);
 		$entry->set_node_id($entry_result['node_id']);
 		
@@ -538,5 +501,3 @@ class MySQL_Data implements Data {
 	}
 	
 }
-
-?>

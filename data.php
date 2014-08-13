@@ -48,5 +48,3 @@ interface Data {
 	function delete_translation($translation_id);
 	
 }
-
-?>

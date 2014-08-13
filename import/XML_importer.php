@@ -11,8 +11,13 @@ namespace Dictionary;
 //  * XML error handling
 //  * good data error handling
 //  * warnings:
-//   - order label system not matched in the database
+//   - (?) order label system not matched in the database
 //====================================================
+
+use XMLReader;
+use DOMDocument;
+use DOMElement;
+use DOMXPath;
 
 class XML_Importer {
 	
@@ -32,18 +37,18 @@ class XML_Importer {
 	//--------------------------------------------------------------------
 	
 	public function parse($XML_file){
-		$reader = new \XMLReader();
+		$reader = new XMLReader();
 		$reader->open($XML_file);
 		$parsed_elements = ['Entry', 'Metadata'];
 		while($reader->read()){
 			if(
-				$reader->nodeType == \XMLReader::ELEMENT
+				$reader->nodeType == XMLReader::ELEMENT
 				&& in_array($reader->name, $parsed_elements)
 			){
-				$document = new \DOMDocument('1.0', 'UTF-8');
+				$document = new DOMDocument('1.0', 'UTF-8');
 				$element = $reader->expand();
 				$document->appendChild($element);
-				$this->xpath = new \DOMXPath($document);
+				$this->xpath = new DOMXPath($document);
 				switch($reader->name){
 					case 'Entry' :
 						$status = $this->parse_entry($element);
@@ -67,7 +72,7 @@ class XML_Importer {
 	// should be an object instead
 	//--------------------------------------------------------------------
 	
-	private function parse_metadata(\DOMElement $metadata){
+	private function parse_metadata(DOMElement $metadata){
 		$metadata_buffer = [];
 		
 		$this->read_metadata($metadata, $metadata_buffer);
@@ -82,7 +87,7 @@ class XML_Importer {
 	// into temporary structure
 	//--------------------------------------------------------------------
 	
-	private function read_metadata(\DOMElement $metadata, &$metadata_buffer){
+	private function read_metadata(DOMElement $metadata, &$metadata_buffer){
 		$senses = $this->xpath->query('Sense', $metadata);
 		foreach($senses as $sense){
 			$this->read_sense_metadata($sense, $metadata_buffer);
@@ -94,7 +99,7 @@ class XML_Importer {
 	// into temporary structure
 	//--------------------------------------------------------------------
 	
-	private function read_sense_metadata(\DOMElement $sense, &$metadata_buffer){
+	private function read_sense_metadata(DOMElement $sense, &$metadata_buffer){
 		$depth =
 			$sense->hasAttribute('depth')
 			? intval($sense->getAttribute('depth'))
@@ -105,8 +110,8 @@ class XML_Importer {
 			$order_label->item(0),
 			$metadata_buffer,
 			[
-				'node_type' => 'sense',
-				'depth' => $depth
+				'node_type'  => 'sense',
+				'depth'      => $depth
 			]
 		);
 	}
@@ -116,7 +121,7 @@ class XML_Importer {
 	// into temporary structure
 	//--------------------------------------------------------------------
 	
-	private function read_order_label_metadata(\DOMElement $order_label, &$metadata_buffer, $data){
+	private function read_order_label_metadata(DOMElement $order_label, &$metadata_buffer, $data){
 		$metadata_buffer
 			[$data['node_type']]
 			[$data['depth']]

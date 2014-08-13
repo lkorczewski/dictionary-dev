@@ -45,5 +45,3 @@ class Category_Label {
 	}
 	
 }
-
-?>

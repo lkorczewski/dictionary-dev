@@ -8,5 +8,3 @@ require_once __DIR__.'/value.php';
 class Pronunciation extends Value {
 
 }
-
-?>
