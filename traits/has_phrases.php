@@ -33,6 +33,7 @@ trait Has_Phrases {
 	
 	function get_phrase(){
 		if(!isset($this->phrases[$this->phrase_iterator])){
+			$this->phrase_iterator = 0;
 			return false;
 		}
 		
@@ -41,6 +42,9 @@ trait Has_Phrases {
 		
 		return $phrase;
 	}
+
+	function get_phrases(){
+		return $this->phrases;
+	}
 	
 }
-

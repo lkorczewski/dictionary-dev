@@ -33,6 +33,7 @@ trait Has_Senses {
 	
 	function get_sense(){
 		if(!isset($this->senses[$this->sense_iterator])){
+			$this->sense_iterator = 0;
 			return false;
 		}
 		
@@ -41,6 +42,9 @@ trait Has_Senses {
 		
 		return $sense;
 	}
+
+	function get_senses(){
+		return $this->senses;
+	}
 	
 }
-

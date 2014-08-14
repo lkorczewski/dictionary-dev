@@ -28,6 +28,7 @@ trait Has_Translations {
 	
 	function get_translation(){
 		if(!isset($this->translations[$this->translation_iterator])){
+			$this->translation_iterator = 0;
 			return false;
 		}
 		
@@ -36,6 +37,9 @@ trait Has_Translations {
 		
 		return $translation;
 	}
+
+	function get_translations(){
+		return $this->translations;
+	}
 	
 }
-
