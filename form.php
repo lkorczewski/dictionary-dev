@@ -2,7 +2,7 @@
 
 namespace Dictionary;
 
-require_once __DIR__.'/dictionary.php';
+require_once __DIR__ . '/dictionary.php';
 
 class Form {
 	private $dictionary;
@@ -56,6 +56,8 @@ class Form {
 	
 	function set_form($form){
 		$this->form = $form;
+
+		return $this;
 	}
 	
 	function get_form(){
