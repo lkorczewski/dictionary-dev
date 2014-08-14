@@ -1,15 +1,15 @@
 <?php
 
-require_once 'dictionary/dictionary.php';
+require_once __DIR__ . '/../dictionary.php';
 
-require_once 'dictionary/entry.php';
-require_once 'dictionary/sense.php';
-require_once 'dictionary/phrase.php';
+require_once __DIR__ . '/../entry.php';
+require_once __DIR__ . '/../sense.php';
+require_once __DIR__ . '/../phrase.php';
 
-require_once 'dictionary/form.php';
-require_once 'dictionary/translation.php';
+require_once __DIR__ . '/../form.php';
+require_once __DIR__ . '/../translation.php';
 
-require_once 'dictionary/layouts/layout.php';
+require_once __DIR__ . '/../layouts/layout.php';
 
 class Table_Layout implements Layout {
 	
@@ -29,27 +29,27 @@ class Table_Layout implements Layout {
 	function parse_entry(Entry $entry){
 		$output = [];
 		
-		while($headword = $sense->get_headwords()){
+		foreach($sense->get_headwords() as $headword){
 			$output['headwords'][] = $this->parse_headword($headword);
 		}
 		
-		while($pronunciation = $sense->get_pronunciation()){
-			$output['pronunciations'][] = $this->parse_headword($headword);
+		foreach($sense->get_pronunciations() as $pronunciation){
+			$output['pronunciations'][] = $this->parse_headword($pronunciation);
 		}
 		
-		while($form = $entry->get_form()){
+		foreach($entry->get_forms() as $form){
 			$output['forms'][] = $this->parse_form($form);
 		}
 		
-		while($translation = $sense->get_translation()){
+		foreach($sense->get_translations() as $translation){
 			$output['translations'][] = $this->parse_translation($translation);
 		}
 
-		while($phrase = $sense->get_phrase()){
+		foreach($sense->get_phrases() as $phrase){
 			$output['phrases'][] = $this->parse_phrase($phrase);
 		}
 		
-		while($sense = $entry->get_sense()){
+		foreach($entry->get_senses() as $sense){
 			$output['senses'][] = $this->parse_sense($sense);
 		}
 		
@@ -65,7 +65,7 @@ class Table_Layout implements Layout {
 		
 		$output['label'] = $sense->get_label();
 		
-		while($form = $entry->get_form()){
+		foreach($entry->get_forms() as $form){
 			$output['forms'][] = $this->parse_form($form);
 		}
 		
@@ -73,15 +73,15 @@ class Table_Layout implements Layout {
 			$output['context'][] = $this->parse_context($context);
 		}
 		
-		while($translation = $sense->get_translation()){
+		foreach($sense->get_translations() as $translation){
 			$output['translations'][] = $this->parse_translation($translation);
 		}
 
-		while($phrase = $sense->get_phrase()){
+		foreach($sense->get_phrases() as $phrase){
 			$output['phrases'][] = $this->parse_phrase($phrase);
 		}
 		
-		while($sense = $sense->get_sense()){
+		foreach($sense->get_senses() as $sense){
 			$output['senses'][] = $this->parse_sense($sense);
 		}
 		
@@ -97,7 +97,7 @@ class Table_Layout implements Layout {
 		
 		$output['headword'] = $phrase->get();
 		
-		while($translation = $phrase->get_translation()){
+		foreach($phrase->get_translations() as $translation){
 			$output['label']['translations'] = $this->parse_translation($translation);
 		}
 		
