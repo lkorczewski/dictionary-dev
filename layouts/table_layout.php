@@ -1,20 +1,20 @@
 <?php
 
-require_once 'dictionary/dictionary.php';
+namespace Dictionary;
 
-require_once 'dictionary/entry.php';
-require_once 'dictionary/sense.php';
-require_once 'dictionary/phrase.php';
+require_once __DIR__ . '/../dictionary.php';
 
-require_once 'dictionary/form.php';
-require_once 'dictionary/translation.php';
+require_once __DIR__ . '/../entry.php';
+require_once __DIR__ . '/../sense.php';
+require_once __DIR__ . '/../phrase.php';
 
-require_once 'dictionary/layouts/layout.php';
+require_once __DIR__ . '/../form.php';
+require_once __DIR__ . '/../translation.php';
+
+require_once __DIR__ . '/layout.php';
 
 class Table_Layout implements Layout {
 	
-	private $output;
-
 	//--------------------------------------------------------------------
 	// konstruktor
 	//--------------------------------------------------------------------
@@ -29,23 +29,27 @@ class Table_Layout implements Layout {
 	function parse_entry(Entry $entry){
 		$output = [];
 		
-		while($headword = $sense->get_headwords()){
+		while($headword = $entry->get_headword()){
 			$output['headwords'][] = $this->parse_headword($headword);
 		}
 		
-		while($pronunciation = $sense->get_pronunciation()){
+		while($pronunciation = $entry->get_pronunciation()){
 			$output['pronunciations'][] = $this->parse_headword($headword);
 		}
-		
+
+		if($category_label = $entry->get_category_label()){
+			$output['category_label'][] = $this->parse_category_label($category_label);
+		}
+
 		while($form = $entry->get_form()){
 			$output['forms'][] = $this->parse_form($form);
 		}
 		
-		while($translation = $sense->get_translation()){
+		while($translation = $entry->get_translation()){
 			$output['translations'][] = $this->parse_translation($translation);
 		}
 
-		while($phrase = $sense->get_phrase()){
+		while($phrase = $entry->get_phrase()){
 			$output['phrases'][] = $this->parse_phrase($phrase);
 		}
 		
@@ -64,8 +68,12 @@ class Table_Layout implements Layout {
 		$output = [];
 		
 		$output['label'] = $sense->get_label();
-		
-		while($form = $entry->get_form()){
+
+		if($category_label = $sense->get_category_label()){
+			$output['category_label'][] = $this->parse_category_label($category_label);
+		}
+
+		while($form = $sense->get_form()){
 			$output['forms'][] = $this->parse_form($form);
 		}
 		
@@ -119,13 +127,24 @@ class Table_Layout implements Layout {
 	// pronunciation parser
 	//--------------------------------------------------------------------
 	
-	function parse_pronunciation(Pronunciation $headword){
+	function parse_pronunciation(Pronunciation $pronunciation){
 		
 		$output = $pronunciation->get();
 		
 		return $output;
 	}
-	
+
+	//--------------------------------------------------------------------
+	// category label parser
+	//--------------------------------------------------------------------
+
+	function parse_category_label(Category_Label $category_label){
+
+		$output = $category_label->get();
+
+		return $output;
+	}
+
 	//--------------------------------------------------------------------
 	// form parser
 	//--------------------------------------------------------------------
@@ -150,7 +169,6 @@ class Table_Layout implements Layout {
 		
 		return $output;
 	}
-	
 
 	//--------------------------------------------------------------------
 	// translation parser
