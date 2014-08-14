@@ -1,4 +1,10 @@
 ----------------------------------------
+ 0.12.5
+----------------------------------------
+ * metadata import/export
+ * stylistic corrections
+
+----------------------------------------
  0.12.4
 ----------------------------------------
  * quickfix enabling access to metadata (ie. order labels by now)
