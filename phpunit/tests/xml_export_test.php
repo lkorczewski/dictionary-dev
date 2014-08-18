@@ -58,6 +58,30 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 		$this->_test_element($sense, $expected_string);
 	}
 
+	function test_full_sense(){
+		$sense = (new Sense($this->dictionary))
+			->set_label('label');
+		$sense->set_context()->set('context');
+		$sense->add_translation()->set('translation 1');
+		$sense->add_translation()->set('translation 2');
+		$sense->add_phrase();
+		$sense->add_phrase();
+		$expected_string =
+			"<Sense>\n" .
+			" <L>label</L>\n" .
+			" <I>context</I>\n" .
+			" <T>translation 1</T>\n" .
+			" <T>translation 2</T>\n" .
+			" <Phrase>\n" .
+			"  <H></H>\n" .
+			" </Phrase>\n" .
+			" <Phrase>\n" .
+			"  <H></H>\n" .
+			" </Phrase>\n" .
+			"</Sense>\n";
+		$this->_test_element($sense, $expected_string);
+	}
+
 	function test_simple_phrase(){
 		$phrase = new Phrase($this->dictionary);
 		$expected_string =

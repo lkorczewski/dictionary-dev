@@ -273,6 +273,8 @@ class XML_Layout implements Layout {
 	//--------------------------------------------------------------------
 	// category label
 	//--------------------------------------------------------------------
+	// TODO:
+	//  * should have some better naming than plural
 
 	function parse_category_labels(Node_With_Category_Label $node){
 		$output = '';
