@@ -137,11 +137,7 @@ class XML_Layout implements Layout {
 
 		$output .= $this->parse_headwords($entry);
 		$output .= $this->parse_pronunciations($entry);
-
-		if($category_label = $entry->get_category_label()){
-			$output .= $this->parse_category_label($category_label);
-		}
-
+		$output .= $this->parse_category_labels($entry);
 		$output .= $this->parse_forms($entry);
 		$output .= $this->parse_translations($entry);
 		$output .= $this->parse_phrases($entry);
@@ -168,6 +164,8 @@ class XML_Layout implements Layout {
 		return $output;
 	}
 
+	//--------------------------------------------------------------------
+
 	function parse_sense(Sense $sense){
 		$output = '';
 
@@ -179,16 +177,9 @@ class XML_Layout implements Layout {
 			$output .= self::get_indent() . '<L>' . $label . '</L>' . "\n";
 		}
 
-		if($category_label = $sense->get_category_label()){
-			$output .= $this->parse_category_label($category_label);
-		}
-
+		$output .= $this->parse_category_labels($sense);
 		$output .= $this->parse_forms($sense);
-
-		if($context = $sense->get_context()){
-			$output .= $this->parse_context($context);
-		}
-
+		$output .= $this->parse_contexts($sense);
 		$output .= $this->parse_translations($sense);
 		$output .= $this->parse_phrases($sense);
 		$output .= $this->parse_senses($sense);
@@ -283,6 +274,18 @@ class XML_Layout implements Layout {
 	// category label
 	//--------------------------------------------------------------------
 
+	function parse_category_labels(Node_With_Category_Label $node){
+		$output = '';
+
+		if($category_label = $node->get_category_label()){
+			$output .= $this->parse_category_label($category_label);
+		}
+
+		return $output;
+	}
+
+	//--------------------------------------------------------------------
+
 	function parse_category_label(Category_Label $category_label){
 		$output = '';
 
@@ -325,6 +328,20 @@ class XML_Layout implements Layout {
 
 	//--------------------------------------------------------------------
 	// parse context
+	//--------------------------------------------------------------------
+	// TODO:
+	//  * should have some better naming than plural
+
+	function parse_contexts(Node_With_Context $node){
+		$output = '';
+
+		if($context = $node->get_context()){
+			$output .= $this->parse_context($context);
+		}
+
+		return $output;
+	}
+
 	//--------------------------------------------------------------------
 
 	function parse_context(Context $context){
