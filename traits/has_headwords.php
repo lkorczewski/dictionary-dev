@@ -33,6 +33,7 @@ trait Has_Headwords {
 	
 	function get_headword(){
 		if(!isset($this->headwords[$this->headword_iterator])){
+			$this->headword_iterator = 0;
 			return false;
 		}
 		
@@ -41,6 +42,9 @@ trait Has_Headwords {
 		
 		return $headword;
 	}
+
+	function get_headwords(){
+		return $this->headwords;
+	}
 	
 }
-

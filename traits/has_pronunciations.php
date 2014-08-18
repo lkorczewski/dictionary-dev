@@ -33,6 +33,7 @@ trait Has_Pronunciations {
 	
 	function get_pronunciation(){
 		if(!isset($this->pronunciations[$this->pronunciation_iterator])){
+			$this->pronunciation_iterator = 0;
 			return false;
 		}
 		
@@ -41,6 +42,9 @@ trait Has_Pronunciations {
 		
 		return $pronunciation;
 	}
+
+	function get_pronunciations(){
+		return $this->pronunciations;
+	}
 	
 }
-

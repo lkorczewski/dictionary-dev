@@ -12,4 +12,3 @@ interface Node_Interface {
 	function get_node_id();
 	
 }
-

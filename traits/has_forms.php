@@ -31,13 +31,18 @@ trait Has_Forms {
 	}
 	
 	function get_form(){
-		if(!isset($this->forms[$this->form_iterator])) return false;
+		if(!isset($this->forms[$this->form_iterator])){
+			$this->form_iterator = 0;
+			return false;
+		}
 		
 		$form = $this->forms[$this->form_iterator];
 		$this->form_iterator++;
 		
 		return $form;
 	}
-	
-}
 
+	function get_forms(){
+		return $this->forms;
+	}
+}

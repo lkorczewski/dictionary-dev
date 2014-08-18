@@ -37,4 +37,3 @@ trait Has_Category_Label {
 	}
 
 }
-
