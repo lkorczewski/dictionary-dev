@@ -14,7 +14,7 @@ class Context {
 	// constructor
 	//------------------------------------------------
 	
-	function __construct(Dictionary $dictionary, $context = NULL){
+	function __construct(Dictionary $dictionary, $context = null){
 		$this->dictionary = $dictionary;
 		
 		if($context) $this->label = $context;
@@ -26,6 +26,8 @@ class Context {
 	
 	function set_id($id){
 		$this->id = $id;
+
+		return $this;
 	}
 	
 	function get_id(){
@@ -38,6 +40,8 @@ class Context {
 	
 	function set($context){
 		$this->context = $context;
+
+		return $this;
 	}
 	
 	function get(){

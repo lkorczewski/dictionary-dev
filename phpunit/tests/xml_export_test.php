@@ -9,6 +9,7 @@ use Dictionary\Headword;
 use Dictionary\Pronunciation;
 use Dictionary\Category_Label;
 use Dictionary\Form;
+use Dictionary\Context;
 use Dictionary\Translation;
 
 use Dictionary\XML_Layout;
@@ -161,7 +162,12 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 		$this->_test_element($form, $expected_string);
 	}
 
-	function test_context
+	function test_context(){
+		$context = (new Context($this->dictionary))->set('context');
+		$expected_string = "<I>context</I>\n";
+
+		$this->_test_element($context, $expected_string);
+	}
 
 	function test_translation(){
 		$translation = new Translation($this->dictionary, 'test value');
