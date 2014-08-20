@@ -28,6 +28,10 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 		$this->dictionary  = $this->getMock('Dictionary\Dictionary', [], [$this->data]);
 	}
 	
+	//--------------------------------------
+	// entry
+	//--------------------------------------
+	
 	function test_simple_entry(){
 		$entry = new Entry($this->dictionary);
 		$expected_string =
@@ -36,7 +40,45 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 
 		$this->_test_element($entry, $expected_string);
 	}
-
+	
+	function test_full_entry(){
+		$entry = new Entry($this->dictionary);
+		$entry->add_headword()->set('headword 1');
+		$entry->add_headword()->set('headword 2');
+		$entry->add_pronunciation()->set('pronunciation 1');
+		$entry->add_pronunciation()->set('pronunciation 2');
+		$entry->add_translation()->set('translation 1');
+		$entry->add_translation()->set('translation 2');
+		$entry->add_phrase()->set('phrase 1');
+		$entry->add_phrase()->set('phrase 2');
+		$entry->add_sense();
+		$entry->add_sense();
+		$expected_string =
+			"<Entry>\n" .
+			" <H>headword 1</H>\n" .
+			" <H>headword 2</H>\n" .
+			" <P>pronunciation 1</P>\n" .
+			" <P>pronunciation 2</P>\n" .
+			" <T>translation 1</T>\n" .
+			" <T>translation 2</T>\n" .
+			" <Phrase>\n" .
+			"  <H>phrase 1</H>\n" .
+			" </Phrase>\n" .
+			" <Phrase>\n" .
+			"  <H>phrase 2</H>\n" .
+			" </Phrase>\n" .
+			" <Sense>\n" .
+			" </Sense>\n" .
+			" <Sense>\n" .
+			" </Sense>\n" .
+			"</Entry>\n";
+		$this->_test_element($entry, $expected_string);
+	}
+	
+	//--------------------------------------
+	// sense
+	//--------------------------------------
+	
 	// should it be allowed?
 	function test_simple_sense(){
 		$sense = new Sense($this->dictionary);
@@ -81,7 +123,11 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 			"</Sense>\n";
 		$this->_test_element($sense, $expected_string);
 	}
-
+	
+	//--------------------------------------
+	// phrase
+	//--------------------------------------
+	
 	function test_simple_phrase(){
 		$phrase = new Phrase($this->dictionary);
 		$expected_string =
@@ -91,7 +137,7 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 
 		$this->_test_element($phrase, $expected_string);
 	}
-
+	
 	function test_full_phrase(){
 		$phrase = new Phrase($this->dictionary);
 		$phrase->set('test phrase');
