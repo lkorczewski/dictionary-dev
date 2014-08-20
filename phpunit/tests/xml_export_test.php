@@ -9,6 +9,7 @@ use Dictionary\Headword;
 use Dictionary\Pronunciation;
 use Dictionary\Category_Label;
 use Dictionary\Form;
+use Dictionary\Context;
 use Dictionary\Translation;
 
 use Dictionary\XML_Layout;
@@ -101,13 +102,15 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 	}
 
 	function test_full_sense(){
-		$sense = (new Sense($this->dictionary))
-			->set_label('label');
+		$sense = new Sense($this->dictionary);
+		$sense->set_label('label');
 		$sense->set_context()->set('context');
 		$sense->add_translation()->set('translation 1');
 		$sense->add_translation()->set('translation 2');
-		$sense->add_phrase();
-		$sense->add_phrase();
+		$sense->add_phrase()->set('phrase 1');
+		$sense->add_phrase()->set('phrase 2');
+		$sense->add_sense();
+		$sense->add_sense();
 		$expected_string =
 			"<Sense>\n" .
 			" <L>label</L>\n" .
@@ -115,11 +118,15 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 			" <T>translation 1</T>\n" .
 			" <T>translation 2</T>\n" .
 			" <Phrase>\n" .
-			"  <H></H>\n" .
+			"  <H>phrase 1</H>\n" .
 			" </Phrase>\n" .
 			" <Phrase>\n" .
-			"  <H></H>\n" .
+			"  <H>phrase 2</H>\n" .
 			" </Phrase>\n" .
+			" <Sense>\n" .
+			" </Sense>\n" .
+			" <Sense>\n" .
+			" </Sense>\n" .
 			"</Sense>\n";
 		$this->_test_element($sense, $expected_string);
 	}
@@ -200,7 +207,14 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 
 		$this->_test_element($form, $expected_string);
 	}
-	
+
+	function test_context(){
+		$context = (new Context($this->dictionary))->set('context');
+		$expected_string = "<I>context</I>\n";
+
+		$this->_test_element($context, $expected_string);
+	}
+
 	function test_translation(){
 		$translation = new Translation($this->dictionary, 'test value');
 		$expected_string = "<T>test value</T>\n";
