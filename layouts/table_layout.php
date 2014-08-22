@@ -1,5 +1,7 @@
 <?php
 
+namespace Dictionary;
+
 require_once __DIR__ . '/../dictionary.php';
 
 require_once __DIR__ . '/../entry.php';
@@ -12,15 +14,7 @@ require_once __DIR__ . '/../translation.php';
 require_once __DIR__ . '/../layouts/layout.php';
 
 class Table_Layout implements Layout {
-	
-	private $output;
-
-	//--------------------------------------------------------------------
-	// konstruktor
-	//--------------------------------------------------------------------
-	
-	function __construct(){
-	}
+	// TODO: metadata
 	
 	//--------------------------------------------------------------------
 	// entry parser
@@ -29,29 +23,13 @@ class Table_Layout implements Layout {
 	function parse_entry(Entry $entry){
 		$output = [];
 		
-		foreach($sense->get_headwords() as $headword){
-			$output['headwords'][] = $this->parse_headword($headword);
-		}
-		
-		foreach($sense->get_pronunciations() as $pronunciation){
-			$output['pronunciations'][] = $this->parse_headword($pronunciation);
-		}
-		
-		foreach($entry->get_forms() as $form){
-			$output['forms'][] = $this->parse_form($form);
-		}
-		
-		foreach($sense->get_translations() as $translation){
-			$output['translations'][] = $this->parse_translation($translation);
-		}
-
-		foreach($sense->get_phrases() as $phrase){
-			$output['phrases'][] = $this->parse_phrase($phrase);
-		}
-		
-		foreach($entry->get_senses() as $sense){
-			$output['senses'][] = $this->parse_sense($sense);
-		}
+		$this->parse_headwords($output, $entry);
+		$this->parse_pronunciations($output, $entry);
+		$this->parse_forms($output, $entry);
+		$this->parse_category_labels($output, $entry);
+		$this->parse_translations($output, $entry);
+		$this->parse_phrases($output, $entry);
+		$this->parse_senses($output, $entry);
 		
 		return $output;
 	}
@@ -60,36 +38,39 @@ class Table_Layout implements Layout {
 	// sense parser
 	//--------------------------------------------------------------------
 	
+	function parse_senses(array &$output, Node_With_Senses $node){
+		foreach($node->get_senses() as $sense){
+			$output['senses'][] = $this->parse_sense($sense);
+		}
+	}
+	
+	//--------------------------------------------------------------------
+	
 	function parse_sense(Sense $sense){
 		$output = [];
 		
 		$output['label'] = $sense->get_label();
 		
-		foreach($entry->get_forms() as $form){
-			$output['forms'][] = $this->parse_form($form);
-		}
-		
-		if($context = $sense->get_context()){
-			$output['context'][] = $this->parse_context($context);
-		}
-		
-		foreach($sense->get_translations() as $translation){
-			$output['translations'][] = $this->parse_translation($translation);
-		}
-
-		foreach($sense->get_phrases() as $phrase){
-			$output['phrases'][] = $this->parse_phrase($phrase);
-		}
-		
-		foreach($sense->get_senses() as $sense){
-			$output['senses'][] = $this->parse_sense($sense);
-		}
+		$this->parse_category_labels($sense->get_category_label());
+		$this->parse_forms($output, $sense);
+		$this->parse_contexts($entry->get_context());
+		$this->parse_translations($output, $sense);
+		$this->parse_phrases($output, $sense);
+		$this->parse_senses($output, $sense);
 		
 		return $output;
 	}
 	
 	//--------------------------------------------------------------------
 	// phrase parser
+	//--------------------------------------------------------------------
+	
+	function parse_phrases(&$output, Node_With_Phrases $node){
+		foreach($node->get_phrases() as $phrase){
+			$output['phrases'][] = $this->parse_phrase($phrase);
+		}
+	}
+	
 	//--------------------------------------------------------------------
 	
 	function parse_phrase(Phrase $phrase){
@@ -103,9 +84,17 @@ class Table_Layout implements Layout {
 		
 		return $output;
 	}
-
+	
 	//--------------------------------------------------------------------
 	// headword parser
+	//--------------------------------------------------------------------
+
+	function parse_headwords(array &$output, Node_With_Headwords $node){
+		foreach($node->get_headwords() as $headword){
+			$output['headwords'][] = $this->parse_headword($headword);
+		}
+	}
+	
 	//--------------------------------------------------------------------
 	
 	function parse_headword(Headword $headword){
@@ -114,9 +103,17 @@ class Table_Layout implements Layout {
 		
 		return $output;
 	}
-
+	
 	//--------------------------------------------------------------------
 	// pronunciation parser
+	//--------------------------------------------------------------------
+	
+	function parse_pronunciations(array &$output, Node_With_Pronunciations $node){
+		foreach($node->get_pronunciation() as $pronunciation){
+			$output['pronunciations'][] = $this->parse_pronunciation($pronunciation);
+		}
+	}
+	
 	//--------------------------------------------------------------------
 	
 	function parse_pronunciation(Pronunciation $headword){
@@ -127,7 +124,34 @@ class Table_Layout implements Layout {
 	}
 	
 	//--------------------------------------------------------------------
+	// category label parser
+	//--------------------------------------------------------------------
+	
+	function parse_category_labels(array &$output, Node_With_Category_Label $node){
+		if($ccategory_label = $node->get_category_label()){
+			$output['category_label'] = $this->parse_category_label($category_label);
+		}
+	}
+	
+	//--------------------------------------------------------------------
+	
+	function parse_category_label(Category_Label $category_label){
+		
+		$output = $category_label->get();
+		
+		return $output;
+	}
+	
+	//--------------------------------------------------------------------
 	// form parser
+	//--------------------------------------------------------------------
+	
+	function parse_forms(array &$output, Node_With_Forms $node){
+		foreach($node->get_forms() as $form){
+			$output[] = $this->parse_form($form);
+		}
+	}
+	
 	//--------------------------------------------------------------------
 	
 	function parse_form(Form $form){
@@ -141,7 +165,15 @@ class Table_Layout implements Layout {
 	}
 	
 	//--------------------------------------------------------------------
-	// translation parser
+	// context parser
+	//--------------------------------------------------------------------
+	
+	function parse_contexts(array &$output, Node_With_Context $node){
+		if($context = $node->get_context()){
+			$output['context'] = $this->parse_context($context);
+		}
+	}
+	
 	//--------------------------------------------------------------------
 	
 	function parse_context(Context $context){
@@ -151,9 +183,16 @@ class Table_Layout implements Layout {
 		return $output;
 	}
 	
-
 	//--------------------------------------------------------------------
 	// translation parser
+	//--------------------------------------------------------------------
+	
+	function parse_translations(array &$output, Node_With_Translations $node){
+		foreach($node->get_translations() as $translation){
+			$output['translations'][] = $this->parse_translation($translation);
+		}
+	}
+	
 	//--------------------------------------------------------------------
 	
 	function parse_translation(Translation $translation){
@@ -164,4 +203,3 @@ class Table_Layout implements Layout {
 	}
 	
 }
-

@@ -9,6 +9,7 @@ require_once __DIR__.'/node_interface.php';
 interface Node_With_Pronunciations extends Node_Interface {
 	function add_pronunciation();
 	function get_pronunciation();
+	function get_pronunciations();
 }
 
 //----------------------------------------------------------------------------

@@ -9,6 +9,7 @@ require_once __DIR__.'/node_interface.php';
 interface Node_With_Headwords extends Node_Interface {
 	function add_headword();
 	function get_headword();
+	function get_headwords();
 }
 
 //----------------------------------------------------------------------------

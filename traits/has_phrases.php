@@ -9,6 +9,7 @@ require_once __DIR__ . '/node_interface.php';
 interface Node_With_Phrases extends Node_Interface {
 	function add_phrase();
 	function get_phrase();
+	function get_phrases();
 }
 
 //----------------------------------------------------------------------------

@@ -8,6 +8,7 @@ require_once __DIR__.'/node_interface.php';
 interface Node_With_Translations extends Node_Interface {
 	function add_translation();
 	function get_translation();
+	function get_translations();
 }
 
 trait Has_Translations {

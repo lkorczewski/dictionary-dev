@@ -9,6 +9,7 @@ require_once __DIR__ . '/node_interface.php';
 interface Node_With_Forms extends Node_Interface {
 	function add_form();
 	function get_form();
+	function get_forms();
 }
 
 //----------------------------------------------------------------------------

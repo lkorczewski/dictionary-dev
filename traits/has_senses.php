@@ -9,6 +9,7 @@ require_once __DIR__ . '/node_interface.php';
 interface Node_With_Senses extends Node_Interface {
 	function add_sense();
 	function get_sense();
+	function get_senses();
 }
 
 //----------------------------------------------------------------------------
