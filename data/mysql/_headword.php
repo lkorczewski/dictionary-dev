@@ -2,26 +2,26 @@
 
 namespace Dictionary;
 
-class MySQL_Pronunciation {
+trait MySQL_Headword_Trait {
 	
 	//==================================================================
-	// atomic operations: pronunciations
+	// atomic operations: headwords
 	//==================================================================
 	
 	//------------------------------------------------------------------
-	// creating pronunciations storage (table)
+	// creating headword storage (table)
 	//------------------------------------------------------------------
 	
-	function create_storage(){
+	function create_headword_storage(){
 		$query =
-			'CREATE TABLE IF NOT EXISTS `pronunciations` (' .
-			' `pronunciation_id` int(10) NOT NULL AUTO_INCREMENT COMMENT \'pronunciation identifier\',' .
+			'CREATE TABLE IF NOT EXISTS `headwords` (' .
+			' `headword_id` int(10) NOT NULL AUTO_INCREMENT COMMENT \'headword identifier\',' .
 			' `parent_node_id` int(10) unsigned NOT NULL COMMENT \'parent node identifier\',' .
 			' `order` int(10) unsigned NOT NULL COMMENT \'order within parent node\',' .
-			' `pronunciation` varchar(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT \'pronunciation\',' .
-			' PRIMARY KEY (`pronunciation_id`),' .
+			' `headword` varchar(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT \'headword\',' .
+			' PRIMARY KEY (`headword_id`),' .
 			' KEY `parent_node_id` (`parent_node_id`),' .
-			' KEY `pronunciation` (`pronunciation`)' .
+			' KEY `headword` (`headword`)' .
 			') ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin' .
 			';';
 		$result = $this->database->execute($query);
@@ -30,13 +30,13 @@ class MySQL_Pronunciation {
 	}
 	
 	//------------------------------------------------------------------
-	// linking pronunciation storage (creating table relations)
+	// linking headword storage (creating table relations)
 	//------------------------------------------------------------------
 	
-	function link_storage(){
+	function link_headword_storage(){
 		$query =
-			'ALTER TABLE `pronunciations`' .
-			' ADD CONSTRAINT `pronunciations_ibfk_1`' .
+			'ALTER TABLE `headwords`' .
+			' ADD CONSTRAINT `headwords_ibfk_1`' .
 			' FOREIGN KEY (`parent_node_id`)' .
 			' REFERENCES `nodes` (`node_id`)' .
 			' ON DELETE CASCADE' .
@@ -47,78 +47,53 @@ class MySQL_Pronunciation {
 	}
 	
 	//------------------------------------------------------------------
-	// adding pronunciation
+	// adding headword
 	//------------------------------------------------------------------
 	
-	function add($parent_node_id, $pronunciation = ''){
+	function add_headword($parent_node_id, $headword = ''){
 		
 		// inserting new translation
 		
 		$query =
-			'INSERT pronunciations (parent_node_id, `order`, pronunciation)' .
+			'INSERT headwords (parent_node_id, `order`, headword)' .
 			' SELECT' .
 			"  $parent_node_id as parent_node_id," .
 			'  MAX(new_order) AS `order`,' .
-			"  '{$this->database->escape_string($pronunciation)}' AS pronunciation" .
+			"  '{$this->database->escape_string($headword)}' AS headword" .
 			'  FROM (' .
 			'   SELECT MAX(`order`) + 1 AS new_order' .
-			'    FROM pronunciations' .
+			'    FROM headwords' .
 			"    WHERE parent_node_id = $parent_node_id" .
 			'    GROUP BY parent_node_id' .
 			'   UNION SELECT 1 AS new_order' .
-			'  ) p' .
+			'  ) h' .
 			';';
 		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
 		
-		// obtaining new pronunciation id
+		// obtaining new translation id
 		
-		$query = 'SELECT last_insert_id() AS `pronunciation_id`;';
+		$query = 'SELECT last_insert_id() AS `headword_id`;';
 		$result = $this->database->fetch_one($query);
 		
 		if($result === false) return false;
 		
-		$pronunciation_id = $result['pronunciation_id'];
+		$headword_id = $result['headword_id'];
 		
-		return $pronunciation_id;
+		return $headword_id;
 	}
 	
 	//------------------------------------------------------------------
-	// updating pronunciation
+	// updating headword
 	//------------------------------------------------------------------
 	
-	function update($pronunciation_id, $pronunciation){
+	function update_headword($headword_id, $headword){
 		$query =
-			'UPDATE pronunciations' .
+			'UPDATE headwords' .
 			' SET' .
-			"  pronunciation = '$pronunciation'" .
-			" WHERE pronunciation_id = $pronunciation_id" .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false) return false;
-		
-		$affected_rows = $this->database->get_affected_rows();
-		
-		return $affected_rows;
-		
-	}
-	
-	//------------------------------------------------------------------
-	// moving pronunciation up
-	//------------------------------------------------------------------
-	
-	function move_up($pronunciation_id){
-		
-		$query =
-			'UPDATE pronunciations p1, pronunciations p2' .
-			' SET' .
-			'  p1.order = p2.order,' .
-			'  p2.order = p1.order' .
-			" WHERE p1.pronunciation_id = $pronunciation_id" .
-			'  AND p1.parent_node_id = p2.parent_node_id' .
-			'  AND p1.order = p2.order + 1' .
+			"  headword = '$headword'" .
+			" WHERE headword_id = $headword_id" .
 			';';
 		$result = $this->database->execute($query);
 		
@@ -130,19 +105,19 @@ class MySQL_Pronunciation {
 	}
 	
 	//------------------------------------------------------------------
-	// moving pronunciation down
+	// moving headword up
 	//------------------------------------------------------------------
 	
-	function move_down($pronunciation_id){
+	function move_headword_up($headword_id){
 		
 		$query =
-			'UPDATE pronunciations p1, pronunciations p2' .
+			'UPDATE headwords h1, headwords h2' .
 			' SET' .
-			'  p1.order = p2.order,' .
-			'  p2.order = p1.order' .
-			" WHERE p1.pronunciation_id = $pronunciation_id" .
-			'  AND p1.parent_node_id = p2.parent_node_id' .
-			'  AND p1.order = p2.order - 1' .
+			'  h1.order = h2.order,' .
+			'  h2.order = h1.order' .
+			" WHERE h1.headword_id = $headword_id" .
+			'  AND h1.parent_node_id = h2.parent_node_id' .
+			'  AND h1.order = h2.order + 1' .
 			';';
 		$result = $this->database->execute($query);
 		
@@ -154,10 +129,34 @@ class MySQL_Pronunciation {
 	}
 	
 	//------------------------------------------------------------------
-	// deleting pronunciation
+	// moving headword down
 	//------------------------------------------------------------------
 	
-	function delete($pronunciation_id){
+	function move_headword_down($headword_id){
+		
+		$query =
+			'UPDATE headwords h1, headwords h2' .
+			' SET' .
+			'  h1.order = h2.order,' .
+			'  h2.order = h1.order' .
+			" WHERE h1.headword_id = $headword_id" .
+			'  AND h1.parent_node_id = h2.parent_node_id' .
+			'  AND h1.order = h2.order - 1' .
+			';';
+		$result = $this->database->execute($query);
+		
+		if($result === false) return false;
+		
+		$affected_rows = $this->database->get_affected_rows();
+		
+		return $affected_rows;
+	}
+	
+	//------------------------------------------------------------------
+	// deleting headword
+	//------------------------------------------------------------------
+	
+	function delete_headword($headword_id){
 		
 		// it should be much simplier
 		// maybe combined queries
@@ -166,17 +165,17 @@ class MySQL_Pronunciation {
 		$this->database->start_transaction();
 		
 		// the order of operations doesn't permit
-		// a unique (pronunciation_id, order) key that would be useful otherwise
+		// a unique (headword_id, order) key that would be useful otherwise
 		// maybe deleting by order would be better
 		
 		// moving forms with greater order
 		
 		$query =
-			'UPDATE pronunciations p1, pronunciations p2' .
-			' SET p1.order = p1.order - 1' .
-			" WHERE p2.pronunciation_id = $pronunciation_id" .
-			'  AND p1.parent_node_id = p2.parent_node_id' .
-			'  AND p1.order > p2.order' .
+			'UPDATE headwords h1, headwords h2' .
+			' SET h1.order = h1.order - 1' .
+			" WHERE h2.headword_id = $headword_id" .
+			'  AND h1.parent_node_id = h2.parent_node_id' .
+			'  AND h1.order > h2.order' .
 			';';
 		$result = $this->database->execute($query);
 		
@@ -188,8 +187,8 @@ class MySQL_Pronunciation {
 		// deleting translation
 		
 		$query =
-			'DELETE FROM pronunciations' .
-			" WHERE pronunciation_id = $pronunciation_id" .
+			'DELETE FROM headwords' .
+			" WHERE headword_id = $headword_id" .
 			';';
 		$result = $this->database->execute($query);
 		

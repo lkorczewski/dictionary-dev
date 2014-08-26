@@ -27,6 +27,8 @@ require_once __DIR__ . '/data/mysql/context.php';
 require_once __DIR__ . '/data/mysql/translation.php';
 
 // for removal
+require_once __DIR__ . '/data/mysql/_headword.php';
+require_once __DIR__ . '/data/mysql/_pronunciation.php';
 require_once __DIR__ . '/data/mysql/_translation.php';
 
 class MySQL_Data implements Data {
@@ -37,13 +39,13 @@ class MySQL_Data implements Data {
 	use MySQL_Entry;
 	use MySQL_Sense;
 	use MySQL_Phrase;
-	use MySQL_Headword;
-	use MySQL_Pronunciation;
 	use MySQL_Category_Label;
 	use MySQL_Form;
 	use MySQL_Context;
 	
 	// for removal
+	use MySQL_Headword_Trait;
+	use MySQL_Pronunciation_Trait;
 	use MySQL_Translation_Trait;
 	
 	private $database;
@@ -112,6 +114,28 @@ class MySQL_Data implements Data {
 		}
 		
 		return true;
+	}
+
+	//------------------------------------------------------------------
+	
+	function get_headwords(){
+		
+		if(!isset($this->mappers['headword'])){
+			$this->mappers['headword'] = new MySQL_Headword();
+		}
+		
+		return $this->mappers['headword'];
+	}
+	
+	//------------------------------------------------------------------
+	
+	function get_pronunciation(){
+		
+		if(!isset($this->mappers['pronunciation'])){
+			$this->mappers['pronunciation'] = new MySQL_Pronunciation();
+		}
+		
+		return $this->mappers['pronunciation'];
 	}
 	
 	//------------------------------------------------------------------

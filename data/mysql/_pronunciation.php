@@ -2,17 +2,17 @@
 
 namespace Dictionary;
 
-class MySQL_Pronunciation {
-	
+trait MySQL_Pronunciation_Trait {
+
 	//==================================================================
 	// atomic operations: pronunciations
 	//==================================================================
-	
+
 	//------------------------------------------------------------------
 	// creating pronunciations storage (table)
 	//------------------------------------------------------------------
 	
-	function create_storage(){
+	function create_pronunciation_storage(){
 		$query =
 			'CREATE TABLE IF NOT EXISTS `pronunciations` (' .
 			' `pronunciation_id` int(10) NOT NULL AUTO_INCREMENT COMMENT \'pronunciation identifier\',' .
@@ -33,7 +33,7 @@ class MySQL_Pronunciation {
 	// linking pronunciation storage (creating table relations)
 	//------------------------------------------------------------------
 	
-	function link_storage(){
+	function link_pronunciation_storage(){
 		$query =
 			'ALTER TABLE `pronunciations`' .
 			' ADD CONSTRAINT `pronunciations_ibfk_1`' .
@@ -50,7 +50,7 @@ class MySQL_Pronunciation {
 	// adding pronunciation
 	//------------------------------------------------------------------
 	
-	function add($parent_node_id, $pronunciation = ''){
+	function add_pronunciation($parent_node_id, $pronunciation = ''){
 		
 		// inserting new translation
 		
@@ -73,7 +73,7 @@ class MySQL_Pronunciation {
 		if($result === false) return false;
 		
 		// obtaining new pronunciation id
-		
+
 		$query = 'SELECT last_insert_id() AS `pronunciation_id`;';
 		$result = $this->database->fetch_one($query);
 		
@@ -88,7 +88,7 @@ class MySQL_Pronunciation {
 	// updating pronunciation
 	//------------------------------------------------------------------
 	
-	function update($pronunciation_id, $pronunciation){
+	function update_pronunciation($pronunciation_id, $pronunciation){
 		$query =
 			'UPDATE pronunciations' .
 			' SET' .
@@ -109,7 +109,7 @@ class MySQL_Pronunciation {
 	// moving pronunciation up
 	//------------------------------------------------------------------
 	
-	function move_up($pronunciation_id){
+	function move_pronunciation_up($pronunciation_id){
 		
 		$query =
 			'UPDATE pronunciations p1, pronunciations p2' .
@@ -133,7 +133,7 @@ class MySQL_Pronunciation {
 	// moving pronunciation down
 	//------------------------------------------------------------------
 	
-	function move_down($pronunciation_id){
+	function move_pronunciation_down($pronunciation_id){
 		
 		$query =
 			'UPDATE pronunciations p1, pronunciations p2' .
@@ -157,7 +157,7 @@ class MySQL_Pronunciation {
 	// deleting pronunciation
 	//------------------------------------------------------------------
 	
-	function delete($pronunciation_id){
+	function delete_pronunciation($pronunciation_id){
 		
 		// it should be much simplier
 		// maybe combined queries

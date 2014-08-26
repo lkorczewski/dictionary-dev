@@ -2,7 +2,7 @@
 
 namespace Dictionary;
 
-trait MySQL_Headword {
+class MySQL_Headword {
 	
 	//==================================================================
 	// atomic operations: headwords
@@ -12,7 +12,7 @@ trait MySQL_Headword {
 	// creating headword storage (table)
 	//------------------------------------------------------------------
 	
-	function create_headword_storage(){
+	function create_storage(){
 		$query =
 			'CREATE TABLE IF NOT EXISTS `headwords` (' .
 			' `headword_id` int(10) NOT NULL AUTO_INCREMENT COMMENT \'headword identifier\',' .
@@ -33,7 +33,7 @@ trait MySQL_Headword {
 	// linking headword storage (creating table relations)
 	//------------------------------------------------------------------
 	
-	function link_headword_storage(){
+	function link_storage(){
 		$query =
 			'ALTER TABLE `headwords`' .
 			' ADD CONSTRAINT `headwords_ibfk_1`' .
@@ -50,7 +50,7 @@ trait MySQL_Headword {
 	// adding headword
 	//------------------------------------------------------------------
 	
-	function add_headword($parent_node_id, $headword = ''){
+	function add($parent_node_id, $headword = ''){
 		
 		// inserting new translation
 		
@@ -88,7 +88,7 @@ trait MySQL_Headword {
 	// updating headword
 	//------------------------------------------------------------------
 	
-	function update_headword($headword_id, $headword){
+	function update($headword_id, $headword){
 		$query =
 			'UPDATE headwords' .
 			' SET' .
@@ -108,7 +108,7 @@ trait MySQL_Headword {
 	// moving headword up
 	//------------------------------------------------------------------
 	
-	function move_headword_up($headword_id){
+	function move_up($headword_id){
 		
 		$query =
 			'UPDATE headwords h1, headwords h2' .
@@ -132,7 +132,7 @@ trait MySQL_Headword {
 	// moving headword down
 	//------------------------------------------------------------------
 	
-	function move_headword_down($headword_id){
+	function move_down($headword_id){
 		
 		$query =
 			'UPDATE headwords h1, headwords h2' .
@@ -156,7 +156,7 @@ trait MySQL_Headword {
 	// deleting headword
 	//------------------------------------------------------------------
 	
-	function delete_headword($headword_id){
+	function delete($headword_id){
 		
 		// it should be much simplier
 		// maybe combined queries
@@ -203,4 +203,3 @@ trait MySQL_Headword {
 	}
 	
 }
-
