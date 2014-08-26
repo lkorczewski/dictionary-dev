@@ -38,7 +38,7 @@ class Table_Layout implements Layout {
 	// sense parser
 	//--------------------------------------------------------------------
 	
-	function parse_senses(array &$output, Node_With_Senses $node){
+	protected function parse_senses(array &$output, Node_With_Senses $node){
 		foreach($node->get_senses() as $sense){
 			$output['senses'][] = $this->parse_sense($sense);
 		}
@@ -51,9 +51,9 @@ class Table_Layout implements Layout {
 		
 		$output['label'] = $sense->get_label();
 		
-		$this->parse_category_labels($sense->get_category_label());
+		$this->parse_category_labels($output, $sense);
 		$this->parse_forms($output, $sense);
-		$this->parse_contexts($entry->get_context());
+		$this->parse_contexts($output, $sense);
 		$this->parse_translations($output, $sense);
 		$this->parse_phrases($output, $sense);
 		$this->parse_senses($output, $sense);
@@ -65,7 +65,7 @@ class Table_Layout implements Layout {
 	// phrase parser
 	//--------------------------------------------------------------------
 	
-	function parse_phrases(&$output, Node_With_Phrases $node){
+	protected function parse_phrases(&$output, Node_With_Phrases $node){
 		foreach($node->get_phrases() as $phrase){
 			$output['phrases'][] = $this->parse_phrase($phrase);
 		}
@@ -78,9 +78,7 @@ class Table_Layout implements Layout {
 		
 		$output['headword'] = $phrase->get();
 		
-		foreach($phrase->get_translations() as $translation){
-			$output['label']['translations'] = $this->parse_translation($translation);
-		}
+		$this->parse_translations($output, $phrase);
 		
 		return $output;
 	}
@@ -88,8 +86,8 @@ class Table_Layout implements Layout {
 	//--------------------------------------------------------------------
 	// headword parser
 	//--------------------------------------------------------------------
-
-	function parse_headwords(array &$output, Node_With_Headwords $node){
+	
+	protected function parse_headwords(array &$output, Node_With_Headwords $node){
 		foreach($node->get_headwords() as $headword){
 			$output['headwords'][] = $this->parse_headword($headword);
 		}
@@ -108,15 +106,15 @@ class Table_Layout implements Layout {
 	// pronunciation parser
 	//--------------------------------------------------------------------
 	
-	function parse_pronunciations(array &$output, Node_With_Pronunciations $node){
-		foreach($node->get_pronunciation() as $pronunciation){
+	protected function parse_pronunciations(array &$output, Node_With_Pronunciations $node){
+		foreach($node->get_pronunciations() as $pronunciation){
 			$output['pronunciations'][] = $this->parse_pronunciation($pronunciation);
 		}
 	}
 	
 	//--------------------------------------------------------------------
 	
-	function parse_pronunciation(Pronunciation $headword){
+	function parse_pronunciation(Pronunciation $pronunciation){
 		
 		$output = $pronunciation->get();
 		
@@ -127,8 +125,8 @@ class Table_Layout implements Layout {
 	// category label parser
 	//--------------------------------------------------------------------
 	
-	function parse_category_labels(array &$output, Node_With_Category_Label $node){
-		if($ccategory_label = $node->get_category_label()){
+	protected function parse_category_labels(array &$output, Node_With_Category_Label $node){
+		if($category_label = $node->get_category_label()){
 			$output['category_label'] = $this->parse_category_label($category_label);
 		}
 	}
@@ -146,9 +144,9 @@ class Table_Layout implements Layout {
 	// form parser
 	//--------------------------------------------------------------------
 	
-	function parse_forms(array &$output, Node_With_Forms $node){
+	protected function parse_forms(array &$output, Node_With_Forms $node){
 		foreach($node->get_forms() as $form){
-			$output[] = $this->parse_form($form);
+			$output['forms'][] = $this->parse_form($form);
 		}
 	}
 	
@@ -168,7 +166,7 @@ class Table_Layout implements Layout {
 	// context parser
 	//--------------------------------------------------------------------
 	
-	function parse_contexts(array &$output, Node_With_Context $node){
+	protected function parse_contexts(array &$output, Node_With_Context $node){
 		if($context = $node->get_context()){
 			$output['context'] = $this->parse_context($context);
 		}
@@ -187,7 +185,7 @@ class Table_Layout implements Layout {
 	// translation parser
 	//--------------------------------------------------------------------
 	
-	function parse_translations(array &$output, Node_With_Translations $node){
+	protected function parse_translations(array &$output, Node_With_Translations $node){
 		foreach($node->get_translations() as $translation){
 			$output['translations'][] = $this->parse_translation($translation);
 		}
