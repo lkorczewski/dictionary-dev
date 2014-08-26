@@ -17,7 +17,7 @@ class Context {
 	function __construct(Dictionary $dictionary, $context = null){
 		$this->dictionary = $dictionary;
 		
-		if($context) $this->label = $context;
+		if($context) $this->context = $context;
 	}
 	
 	//------------------------------------------------
