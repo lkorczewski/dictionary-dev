@@ -2,17 +2,17 @@
 
 namespace Dictionary;
 
-trait MySQL_Translation {
+class MySQL_Translation {
 	
 	//==================================================================
 	// atomic operations: translations
 	//==================================================================
-
+	
 	//------------------------------------------------------------------
 	// creating translation storage (table)
 	//------------------------------------------------------------------
 	
-	function create_translation_storage(){
+	function create_storage(){
 		
 		$query =
 			'CREATE TABLE IF NOT EXISTS `translations` (' .
@@ -33,7 +33,7 @@ trait MySQL_Translation {
 	// linking translation storage (creating table relations)
 	//------------------------------------------------------------------
 		
-	function link_translation_storage(){
+	function link_storage(){
 		
 		$query =
 			'ALTER TABLE `translations`' .
@@ -50,8 +50,8 @@ trait MySQL_Translation {
 	//------------------------------------------------------------------
 	// creating translation
 	//------------------------------------------------------------------
-
-	function add_translation($parent_node_id, $translation = ''){
+	
+	function add($parent_node_id, $translation = ''){
 		
 		// inserting new translation
 		
@@ -74,7 +74,7 @@ trait MySQL_Translation {
 		if($result === false) return false;
 		
 		// obtaining new translation id
-
+		
 		$query = 'SELECT last_insert_id() AS `translation_id`;';
 		$result = $this->database->fetch_one($query);
 		
@@ -89,7 +89,7 @@ trait MySQL_Translation {
 	// updating translation
 	//------------------------------------------------------------------
 	
-	function update_translation($translation_id, $text){
+	function update($translation_id, $text){
 		
 		$query =
 			'UPDATE translations' .
@@ -106,8 +106,8 @@ trait MySQL_Translation {
 	//------------------------------------------------------------------
 	// moving translation up
 	//------------------------------------------------------------------
-
-	function move_translation_up($translation_id){
+	
+	function move_up($translation_id){
 		
 		$query =
 			'UPDATE translations t1, translations t2' .
@@ -131,7 +131,7 @@ trait MySQL_Translation {
 	// moving translation down
 	//------------------------------------------------------------------
 	
-	function move_translation_down($translation_id){
+	function move_down($translation_id){
 		
 		$query =
 			'UPDATE translations t1, translations t2' .
@@ -155,14 +155,14 @@ trait MySQL_Translation {
 	// deleting translation
 	//------------------------------------------------------------------
 	
-	function delete_translation($translation_id){
+	function delete($translation_id){
 		
 		// it should be much simplier
 		// maybe combined queries
 		// maybe the translation should be called by order, not id
-
+		
 		$this->database->start_transaction();
-
+		
 		// the order of operations doesn't permit
 		// a unique (sense_id, order) key, that would be useful otherwise
 		// maybe deleting by order would be better
@@ -177,7 +177,7 @@ trait MySQL_Translation {
 			'  AND t1.order > t2.order' .
 			';';
 		$result = $this->database->execute($query);
-
+		
 		if($result === false) return false;
 		
 		// deleting translation
@@ -196,4 +196,3 @@ trait MySQL_Translation {
 	}
 	
 }
-

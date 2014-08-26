@@ -84,7 +84,7 @@ trait MySQL_Category_Label {
 		if($result === false) return false;
 		
 		// obtaining new category label id
-
+		
 		$query =
 			'SELECT *' .
 			' FROM category_labels' .

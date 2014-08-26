@@ -151,7 +151,7 @@ trait MySQL_Order_Label {
 			'  (6, 10, \'κ\')' .
 			';';
 		$result = $this->database->execute($query);
-
+		
 		if(!$result){
 			return false;
 		}

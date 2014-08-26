@@ -3,11 +3,11 @@
 namespace Dictionary;
 
 trait MySQL_Pronunciation {
-
+	
 	//==================================================================
 	// atomic operations: pronunciations
 	//==================================================================
-
+	
 	//------------------------------------------------------------------
 	// creating pronunciations storage (table)
 	//------------------------------------------------------------------
@@ -73,7 +73,7 @@ trait MySQL_Pronunciation {
 		if($result === false) return false;
 		
 		// obtaining new pronunciation id
-
+		
 		$query = 'SELECT last_insert_id() AS `pronunciation_id`;';
 		$result = $this->database->fetch_one($query);
 		

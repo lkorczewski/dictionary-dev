@@ -49,7 +49,7 @@ trait MySQL_Form {
 	//------------------------------------------------------------------
 	// creating form
 	//------------------------------------------------------------------
-
+	
 	function add_form($parent_node_id, $label = '', $form = ''){
 		
 		// inserting new translation
@@ -74,7 +74,7 @@ trait MySQL_Form {
 		if($result === false) { echo $query; return false; }
 		
 		// obtaining new form id
-
+		
 		$query = 'SELECT last_insert_id() AS form_id;';
 		$result = $this->database->fetch_one($query);
 		
@@ -110,7 +110,7 @@ trait MySQL_Form {
 	//------------------------------------------------------------------
 	// moving form up
 	//------------------------------------------------------------------
-
+	
 	function move_form_up($form_id){
 		
 		$query =

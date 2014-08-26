@@ -3,11 +3,11 @@
 namespace Dictionary;
 
 trait MySQL_Entry {
-
+	
 	//==================================================================
 	// atomic operations: entries
 	//==================================================================
-
+	
 	//------------------------------------------------------------------
 	// creating entry storage (table)
 	//------------------------------------------------------------------
@@ -95,7 +95,7 @@ trait MySQL_Entry {
 			}
 			
 		}
-				
+		
 		// commiting transaction
 		
 		$this->database->commit_transaction();

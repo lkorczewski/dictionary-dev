@@ -26,6 +26,9 @@ require_once __DIR__ . '/data/mysql/form.php';
 require_once __DIR__ . '/data/mysql/context.php';
 require_once __DIR__ . '/data/mysql/translation.php';
 
+// for removal
+require_once __DIR__ . '/data/mysql/_translation.php';
+
 class MySQL_Data implements Data {
 	use MySQL_Metadata;
 	use MySQL_Order_Label;
@@ -39,12 +42,16 @@ class MySQL_Data implements Data {
 	use MySQL_Category_Label;
 	use MySQL_Form;
 	use MySQL_Context;
-	use MySQL_Translation;
+	
+	// for removal
+	use MySQL_Translation_Trait;
 	
 	private $database;
 	
 	private $sense_depth = 0;
-
+	
+	private $mappers = [];
+	
 	//------------------------------------------------------------------
 	// constructor
 	//------------------------------------------------------------------
@@ -83,7 +90,7 @@ class MySQL_Data implements Data {
 			'link_context_storage',
 			'link_translation_storage',
 			'link_order_label_storage',
-
+			
 			'fill_order_label_storage',
 		];
 		
@@ -105,6 +112,17 @@ class MySQL_Data implements Data {
 		}
 		
 		return true;
+	}
+	
+	//------------------------------------------------------------------
+	
+	function get_translation(){
+		
+		if(!isset($this->mappers['translation'])){
+			$this->mappers['translation'] = new MySQL_Translation();
+		}
+		
+		return $this->mappers['translation'];
 	}
 	
 	//------------------------------------------------------------------
@@ -402,7 +420,7 @@ class MySQL_Data implements Data {
 	}
 	
 	//------------------------------------------------------------------
-
+	
 	private function _pull_category_label(Node_With_Category_Label $node){
 	
 		$query =
