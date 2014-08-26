@@ -28,4 +28,3 @@ interface Layout {
 	function parse_translation( Translation $translation );
 	
 }
-
