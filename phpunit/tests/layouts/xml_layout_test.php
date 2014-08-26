@@ -44,14 +44,15 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 	
 	function test_full_entry(){
 		$entry = new Entry($this->dictionary);
-		$entry->add_headword()->set('headword 1');
-		$entry->add_headword()->set('headword 2');
-		$entry->add_pronunciation()->set('pronunciation 1');
-		$entry->add_pronunciation()->set('pronunciation 2');
+		$entry->add_headword('headword 1');
+		$entry->add_headword('headword 2');
+		$entry->add_pronunciation('pronunciation 1');
+		$entry->add_pronunciation('pronunciation 2');
+		$entry->set_category_label('test category label');
 		$entry->add_form()->set_label('form label 1')->set_form('form 1');
 		$entry->add_form()->set_label('form label 2')->set_form('form 2');
-		$entry->add_translation()->set('translation 1');
-		$entry->add_translation()->set('translation 2');
+		$entry->add_translation('translation 1');
+		$entry->add_translation('translation 2');
 		$entry->add_phrase()->set('phrase 1');
 		$entry->add_phrase()->set('phrase 2');
 		$entry->add_sense();
@@ -62,6 +63,7 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 			" <H>headword 2</H>\n" .
 			" <P>pronunciation 1</P>\n" .
 			" <P>pronunciation 2</P>\n" .
+			" <CL>test category label</CL>\n" .
 			" <Form>\n" .
 			"  <L>form label 1</L>\n" .
 			"  <H>form 1</H>\n" .
@@ -114,12 +116,12 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 	function test_full_sense(){
 		$sense = new Sense($this->dictionary);
 		$sense->set_label('test label');
-		$sense->set_category_label()->set('test category label');
+		$sense->set_category_label('test category label');
 		$sense->add_form()->set_label('form label 1')->set_form('form 1');
 		$sense->add_form()->set_label('form label 2')->set_form('form 2');
-		$sense->set_context()->set('test context');
-		$sense->add_translation()->set('translation 1');
-		$sense->add_translation()->set('translation 2');
+		$sense->set_context('test context');
+		$sense->add_translation('translation 1');
+		$sense->add_translation('translation 2');
 		$sense->add_phrase()->set('phrase 1');
 		$sense->add_phrase()->set('phrase 2');
 		$sense->add_sense();
@@ -170,8 +172,8 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 	function test_full_phrase(){
 		$phrase = new Phrase($this->dictionary);
 		$phrase->set('test phrase');
-		$phrase->add_translation()->set('test translation 1');
-		$phrase->add_translation()->set('test translation 2');
+		$phrase->add_translation('test translation 1');
+		$phrase->add_translation('test translation 2');
 		$expected_string =
 			"<Phrase>\n" .
 			" <H>test phrase</H>\n" .
@@ -183,22 +185,22 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 	}
 	
 	function test_headword(){
-		$headword = new Headword($this->dictionary, 'test value');
-		$expected_string = "<H>test value</H>\n";
+		$headword = new Headword($this->dictionary, 'test headword');
+		$expected_string = "<H>test headword</H>\n";
 		
 		$this->_test_element($headword, $expected_string);
 	}
 	
 	function test_pronunciation(){
-		$pronunciation = new Pronunciation($this->dictionary, 'test value');
-		$expected_string = "<P>test value</P>\n";
+		$pronunciation = new Pronunciation($this->dictionary, 'test pronunciation');
+		$expected_string = "<P>test pronunciation</P>\n";
 	
 		$this->_test_element($pronunciation, $expected_string);
 	}
 	
 	function test_category_label(){
-		$category_label = new Category_Label($this->dictionary, 'test value');
-		$expected_string = "<CL>test value</CL>\n";
+		$category_label = new Category_Label($this->dictionary, 'test category label');
+		$expected_string = "<CL>test category label</CL>\n";
 	
 		$this->_test_element($category_label, $expected_string);
 	}
@@ -231,15 +233,15 @@ class XML_Layout_Test extends PHPUnit_Framework_TestCase {
 	}
 	
 	function test_context(){
-		$context = (new Context($this->dictionary))->set('context');
-		$expected_string = "<I>context</I>\n";
+		$context = new Context($this->dictionary, 'test context');
+		$expected_string = "<I>test context</I>\n";
 		
 		$this->_test_element($context, $expected_string);
 	}
 	
 	function test_translation(){
-		$translation = new Translation($this->dictionary, 'test value');
-		$expected_string = "<T>test value</T>\n";
+		$translation = new Translation($this->dictionary, 'test translation');
+		$expected_string = "<T>test translation</T>\n";
 		
 		$this->_test_element($translation, $expected_string);
 	}

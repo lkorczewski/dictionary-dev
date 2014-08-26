@@ -20,8 +20,10 @@ trait Has_Translations {
 	// translation management
 	//------------------------------------------------------------------------
 	
-	function add_translation(){
-		$translation = new Translation($this->dictionary);
+	function add_translation($translation = null){
+		if(!$translation instanceof Translation){
+			$translation = new Translation($this->dictionary, $translation);
+		}
 		$this->translations[] = $translation;
 		
 		return $translation;

@@ -23,8 +23,10 @@ trait Has_Category_Label {
 	// category label management
 	//------------------------------------------------
 	
-	function set_category_label(){
-		$category_label = new Category_Label($this->dictionary);
+	function set_category_label($category_label = null){
+		if(!$category_label instanceof Category_Label){
+			$category_label = new Category_Label($this->dictionary, $category_label);
+		}
 		$this->category_label = $category_label;
 		
 		return $category_label;

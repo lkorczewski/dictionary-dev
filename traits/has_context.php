@@ -23,11 +23,13 @@ trait Has_Context {
 	// context management
 	//------------------------------------------------
 	
-	function set_context(){
-		$context = new Context($this->dictionary);
+	function set_context($context = null){
+		if(!$context instanceof Context){
+			$context = new Context($this->dictionary, $context);
+		}
 		$this->context = $context;
 		
-		return $context;		
+		return $context;
 	}
 	
 	function get_context(){

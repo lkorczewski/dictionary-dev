@@ -25,8 +25,10 @@ trait Has_Headwords {
 	// headword management
 	//------------------------------------------------------------------------
 	
-	function add_headword(){
-		$headword = new Headword($this->dictionary);
+	function add_headword($headword = null){
+		if(!$headword instanceof Headword){
+			$headword = new Headword($this->dictionary, $headword);
+		}
 		$this->headwords[] = $headword;
 		
 		return $headword;

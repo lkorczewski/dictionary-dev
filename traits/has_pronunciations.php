@@ -25,8 +25,10 @@ trait Has_Pronunciations {
 	// pronunciation management
 	//------------------------------------------------------------------------
 	
-	function add_pronunciation(){
-		$pronunciation = new Pronunciation($this->dictionary);
+	function add_pronunciation($pronunciation = null){
+		if(!$pronunciation instanceof Pronunciation){
+			$pronunciation = new Pronunciation($this->dictionary, $pronunciation);
+		}
 		$this->pronunciations[] = $pronunciation;
 		
 		return $pronunciation;
