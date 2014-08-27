@@ -11,10 +11,9 @@ require_once __DIR__ . '/../phrase.php';
 require_once __DIR__ . '/../form.php';
 require_once __DIR__ . '/../translation.php';
 
-require_once __DIR__ . '/../layouts/layout.php';
+require_once __DIR__ . '/layout.php';
 
 class Table_Layout implements Layout {
-	// TODO: metadata
 	
 	//--------------------------------------------------------------------
 	// entry parser
@@ -23,6 +22,7 @@ class Table_Layout implements Layout {
 	function parse_entry(Entry $entry){
 		$output = [];
 		
+
 		$this->parse_headwords($output, $entry);
 		$this->parse_pronunciations($output, $entry);
 		$this->parse_forms($output, $entry);

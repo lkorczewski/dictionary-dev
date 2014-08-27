@@ -4,6 +4,12 @@ namespace Dictionary;
 
 //require_once 'dictionary/data';
 
+use XMLReader;
+use DOMDocument;
+
+//====================================================
+// TODO:
+//  - metadata
 //====================================================
 
 class XML_Importer {
@@ -18,12 +24,17 @@ class XML_Importer {
 	
 	//--------------------------------------------------------------------
 	
+<<<<<<< HEAD
 	function parse($XML_file){
 		$reader = new \XMLReader();
+=======
+	public function parse($XML_file){
+		$reader = new XMLReader();
+>>>>>>> master
 		$reader->open($XML_file);
 		while($reader->read()){
-			if($reader->nodeType == \XMLReader::ELEMENT && $reader->name == 'Entry'){
-				$document = new \DOMDocument('1.0', 'UTF-8');
+			if($reader->nodeType == XMLReader::ELEMENT && $reader->name == 'Entry'){
+				$document = new DOMDocument('1.0', 'UTF-8');
 				$entry = simplexml_import_dom($document->appendChild($reader->expand()));
 				$this->parse_entry($entry);
 			}

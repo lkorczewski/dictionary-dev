@@ -31,6 +31,8 @@ require_once __DIR__ . '/data/mysql/_headword.php';
 require_once __DIR__ . '/data/mysql/_pronunciation.php';
 require_once __DIR__ . '/data/mysql/_translation.php';
 
+use Database\Database;
+
 class MySQL_Data implements Data {
 	use MySQL_Metadata;
 	use MySQL_Order_Label;
@@ -58,7 +60,7 @@ class MySQL_Data implements Data {
 	// constructor
 	//------------------------------------------------------------------
 	
-	function __construct($database){
+	function __construct(Database $database){
 		
 		$this->database = $database;
 		
@@ -118,7 +120,7 @@ class MySQL_Data implements Data {
 
 	//------------------------------------------------------------------
 	
-	function get_headwords(){
+	function get_headword(){
 		
 		if(!isset($this->mappers['headword'])){
 			$this->mappers['headword'] = new MySQL_Headword();
@@ -153,72 +155,42 @@ class MySQL_Data implements Data {
 	// pulling list of headwords
 	//------------------------------------------------------------------
 	
-	function pull_headwords($mask = '', $number = NULL){
+	function get_headwords($mask = '', $limit = false){
 		
 		$mask_sql = $mask ? "  AND h.headword LIKE '$mask%'" : '';
-		$number_sql = $number ? " LIMIT $number" : '';
+		$limit_sql = $limit ? " LIMIT $limit" : '';
 		
 		$query =
-			'SELECT h.headword' .
-			' FROM entries e, headwords h' .
+			'SELECT DISTINCT h.headword' .
+			' FROM' .
+			'  entries e,' .
+			'  headwords h' .
 			' WHERE e.node_id = h.parent_node_id' .
 			'  AND h.order = 1' .
 			$mask_sql .
-			' ORDER BY `headword`' .
-			$number_sql .
+			' ORDER BY h.headword' .
+			$limit_sql .
 			';';
-		$result = $this->database->fetch_all($query);
-		
-		$headwords = [];
-		
-		foreach($result as $row){
-			$headwords[] = $row['headword'];
-		}
+		$headwords = $this->database->fetch_column($query);
 		
 		return $headwords;
 	}
 	
 	//------------------------------------------------------------------
-	// pulling entry from database
+	// getting entries from database by headword
 	//------------------------------------------------------------------
 	
-	function pull_entry(Dictionary $dictionary, $headword){
-		// to do: only the first headword if all are the same
+	function get_entries_by_headword(Dictionary $dictionary, $headword){
 		
 		$query =
-			'SELECT e.*' .
-			' FROM headwords h, entries e' .
-			" WHERE h.headword = '{$this->database->escape_string($headword)}'" .
-			'  AND e.node_id = h.parent_node_id' .
-			';';
-		$entry_result = $this->database->fetch_one($query);
-		
-		// poniższe do poprawki
-		if($entry_result == false || count($entry_result) == 0){
-			return false;
-		}
-		
-		$entry = new Entry($dictionary);
-		
-		$entry->set_id($entry_result['entry_id']);
-		$entry->set_node_id($entry_result['node_id']);
-		
-		$this->pull_entry_children($entry);
-		
-		return $entry;
-	}
-	
-	//------------------------------------------------------------------
-	// pulling entries from database by headword
-	//------------------------------------------------------------------
-	
-	function pull_entries(Dictionary $dictionary, $headword){
-		
-		$query =
-			'SELECT DISTINCT e.*' .
-			' FROM headwords h, entries e' .
-			" WHERE h.headword = '{$this->database->escape_string($headword)}'" .
-			'  AND e.node_id = h.parent_node_id' .
+			'SELECT DISTINCT e.*' . // why distinct?
+			' FROM' .
+				' headwords h,' .
+				' entries e' .
+			' WHERE' .
+				" h.headword = '{$this->database->escape_string($headword)}'" .
+			' AND' .
+				' e.node_id = h.parent_node_id' .
 			';';
 		$entries_result = $this->database->fetch_all($query);
 		
@@ -230,18 +202,70 @@ class MySQL_Data implements Data {
 		$entries = [];
 		
 		foreach($entries_result as $entry_result){
-			$entry = new Entry($dictionary);
-			
-			$entry->set_id($entry_result['entry_id']);
-			$entry->set_node_id($entry_result['node_id']);
-			
-			$this->pull_entry_children($entry);
-			
-			$entries[] = $entry;
+			$entries[] = $this->make_entry($dictionary, $entry_result);
 		}
 		
 		return $entries;
 		
+	}
+	
+	//==================================================================
+	// parser access
+	//==================================================================
+	// there needs to be a way to access all the entries one by one
+	// in order to dump all the data; the current method is a bit
+	// imperfect, because it outputs an inner id data that should be
+	// of no interest to the user; possible sollution:
+	//  - some sort of custom iterator
+	//     while($entry = $dictionary->get_one_entry())
+	//  - iterator trait
+	//     foreach($dictionary as $entry)
+	
+	//------------------------------------------------------------------
+	// getting a list of entry node ids
+	//------------------------------------------------------------------
+	// the result is alphabetical to the extent of alphabetic order
+	// of MySQL's utf8_bin
+	//------------------------------------------------------------------
+	
+	function get_entry_ids(){
+	
+		$query =
+			'SELECT' .
+				' n.node_id' .
+			' FROM' .
+				' nodes n,' .
+				' entries e,' .
+				' headwords h' .
+			' WHERE' .
+				' e.node_id = n.node_id' .
+			' AND' .
+				' h.parent_node_id = n.node_id' .
+			' AND' .
+				' h.order = 1' .
+			' ORDER BY' .
+				' h.headword' .
+			';';
+		$entry_node_ids = $this->database->fetch_column($query);
+		
+		return $entry_node_ids;
+	}
+	
+	//------------------------------------------------------------------
+	// getting entry by node id
+	//------------------------------------------------------------------
+	
+	function get_entry_by_id(Dictionary $dictionary, $node_id){
+		$query =
+			'SELECT *' .
+			' FROM entries' .
+			" WHERE node_id = '$node_id'" .
+			';';
+		$entry_result = $this->database->fetch_one($query);
+		
+		$entry = $this->make_entry($dictionary, $entry_result);
+		
+		return $entry;
 	}
 	
 	//------------------------------------------------------------------
@@ -502,6 +526,21 @@ class MySQL_Data implements Data {
 			$translation->set($translation_result['text']);
 		}
 		
+	}
+	
+	//==================================================================
+	// making ...
+	//==================================================================
+	
+	private function make_entry(Dictionary $dictionary, $entry_result){
+		$entry = new Entry($dictionary);
+
+		$entry->set_id($entry_result['entry_id']);
+		$entry->set_node_id($entry_result['node_id']);
+		
+		$this->pull_entry_children($entry);
+		
+		return $entry;
 	}
 	
 }

@@ -5,6 +5,19 @@ namespace Dictionary;
 //require_once 'dictionary/data';
 
 //====================================================
+// XML Importer
+//====================================================
+// TODO:
+//  * XML error handling
+//  * good data error handling
+//  * warnings:
+//   - (?) order label system not matched in the database
+//====================================================
+
+use XMLReader;
+use DOMDocument;
+use DOMElement;
+use DOMXPath;
 
 class XML_Importer {
 	
@@ -12,27 +25,112 @@ class XML_Importer {
 	protected $xpath;
 	
 	//--------------------------------------------------------------------
+	// constructing
+	//--------------------------------------------------------------------
 	
 	function __construct(Data $data){
 		$this->data = $data;
 	}
 	
 	//--------------------------------------------------------------------
+	// parsing XML file
+	//--------------------------------------------------------------------
 	
 	function parse($XML_file){
-		$reader = new \XMLReader();
+		$reader = new XMLReader();
 		$reader->open($XML_file);
+		$parsed_elements = ['Entry', 'Metadata'];
 		while($reader->read()){
-			if($reader->nodeType == \XMLReader::ELEMENT && $reader->name == 'Entry'){
-				$document = new \DOMDocument('1.0', 'UTF-8');
-				$entry = $reader->expand();
-				$document->appendChild($entry);
-				$this->xpath = new \DOMXPath($document);
-				$this->parse_entry($entry);
+			if(
+				$reader->nodeType == XMLReader::ELEMENT
+				&& in_array($reader->name, $parsed_elements)
+			){
+				$document = new DOMDocument('1.0', 'UTF-8');
+				$element = $reader->expand();
+				$document->appendChild($element);
+				$this->xpath = new DOMXPath($document);
+				switch($reader->name){
+					case 'Entry' :
+						$status = $this->parse_entry($element);
+						break;
+					case 'Metadata' :
+						$status = $this->parse_metadata($element);
+						break;
+				}
+				if($status === false){
+					return false;
+				}
 			}
+		}
+		return true;
+	}
+	
+	//--------------------------------------------------------------------
+	// parsing <metadata/> tag
+	//--------------------------------------------------------------------
+	// using temporary associative array
+	// should be an object instead
+	//--------------------------------------------------------------------
+	
+	private function parse_metadata(DOMElement $metadata){
+		$metadata_buffer = [];
+		
+		$this->read_metadata($metadata, $metadata_buffer);
+		
+		$result = $this->data->set_metadata($metadata_buffer);
+		
+		return $result;
+	}
+	
+	//--------------------------------------------------------------------
+	// reading <metadata/> tag
+	// into temporary structure
+	//--------------------------------------------------------------------
+	
+	private function read_metadata(DOMElement $metadata, &$metadata_buffer){
+		$senses = $this->xpath->query('Sense', $metadata);
+		foreach($senses as $sense){
+			$this->read_sense_metadata($sense, $metadata_buffer);
 		}
 	}
 	
+	//--------------------------------------------------------------------
+	// reading metadata from <sense/> tag
+	// into temporary structure
+	//--------------------------------------------------------------------
+	
+	private function read_sense_metadata(DOMElement $sense, &$metadata_buffer){
+		$depth =
+			$sense->hasAttribute('depth')
+			? intval($sense->getAttribute('depth'))
+			: 1
+		;		
+		$order_label = $this->xpath->query('OrderLabel', $sense);
+		$this->read_order_label_metadata(
+			$order_label->item(0),
+			$metadata_buffer,
+			[
+				'node_type'  => 'sense',
+				'depth'      => $depth
+			]
+		);
+	}
+	
+	//--------------------------------------------------------------------
+	// reading metadata from <order_label/> tag
+	// into temporary structure
+	//--------------------------------------------------------------------
+	
+	private function read_order_label_metadata(DOMElement $order_label, &$metadata_buffer, $data){
+		$metadata_buffer
+			[$data['node_type']]
+			[$data['depth']]
+			['order_label_system']
+			= $order_label->getAttribute('system');
+	}
+	
+	//--------------------------------------------------------------------
+	// parsing entry
 	//--------------------------------------------------------------------
 	
 	protected function parse_entry($entry){
@@ -45,7 +143,7 @@ class XML_Importer {
 			$this->parse_headword($node_id, $headword);
 		}
 		
-		// headwords
+		// pronunciations
 		$pronunciations = $this->xpath->query('P', $entry);
 		foreach($pronunciations as $pronunciation){
 			$this->parse_pronunciation($node_id, $pronunciation);
@@ -83,6 +181,8 @@ class XML_Importer {
 		
 	}
 	
+	//--------------------------------------------------------------------
+	// parsing sense
 	//--------------------------------------------------------------------
 	
 	protected function parse_sense($parent_node_id, $sense){
@@ -128,6 +228,8 @@ class XML_Importer {
 	}
 	
 	//--------------------------------------------------------------------
+	// parsing phrase
+	//--------------------------------------------------------------------
 	
 	protected function parse_phrase($parent_node_id, $phrase){
 		
@@ -143,11 +245,15 @@ class XML_Importer {
 	}
 	
 	//--------------------------------------------------------------------
+	// parsing headword
+	//--------------------------------------------------------------------
 	
 	protected function parse_headword($parent_node_id, $headword){
 		$this->data->add_headword($parent_node_id, $headword->nodeValue);
 	}
-
+	
+	//--------------------------------------------------------------------
+	// parsing pronunciation
 	//--------------------------------------------------------------------
 	
 	protected function parse_pronunciation($parent_node_id, $pronunciation){
@@ -155,16 +261,20 @@ class XML_Importer {
 	}
 	
 	//--------------------------------------------------------------------
+	// parsing category label
+	//--------------------------------------------------------------------
 	
 	protected function parse_category_label($parent_node_id, $category_label){
 		$this->data->set_category_label($parent_node_id, $category_label->nodeValue);
 	}
-
+	
+	//--------------------------------------------------------------------
+	// parsing form
 	//--------------------------------------------------------------------
 	
 	protected function parse_form($parent_node_id, $form){
-		$label = $this->xpath->query('L', $form)->item(0);
-		$headword = $this->xpath->query('H', $form)->item(0);
+		$label     = $this->xpath->query('L', $form)->item(0);
+		$headword  = $this->xpath->query('H', $form)->item(0);
 		
 		$this->data->add_form($parent_node_id, $label->nodeValue, $headword->nodeValue);
 	}
@@ -182,4 +292,3 @@ class XML_Importer {
 	}
 	
 }
-

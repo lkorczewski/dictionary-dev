@@ -88,8 +88,8 @@ class XML_Layout implements Layout {
 	// dictionary parser
 	//--------------------------------------------------------------------
 	// $stream:
-	//   PHP stream identifier; if false, output is returned as return
-	//     value
+	//   PHP stream identifier; if self::RETURN_RESULT, output is returned
+	//   as return value
 	//--------------------------------------------------------------------
 	
 	function parse_dictionary(Dictionary $dictionary, $stream = self::RETURN_RESULT){
@@ -106,10 +106,18 @@ class XML_Layout implements Layout {
 		fwrite($stream, self::get_indent() . '<Dictionary>'."\n");
 		$this->depth++;
 		
-		$headwords = $dictionary->get_headwords();
+		// metadata
 		
-		foreach($headwords as $headword){
-			$entry = $dictionary->get_entry($headword);
+		$metadata = $dictionary->get_metadata();
+		
+		fwrite($stream, $this->parse_metadata($metadata));
+		
+		// entries
+		
+		$entry_ids = $dictionary->get_entry_ids();
+		
+		foreach($entry_ids as $entry_id){
+			$entry = $dictionary->get_entry_by_id($entry_id);
 			fwrite($stream, $this->parse_entry($entry));
 		}
 		
@@ -123,6 +131,66 @@ class XML_Layout implements Layout {
 		}
 	}
 	
+	//====================================================================
+	// metadata
+	//====================================================================
+	
+	//--------------------------------------------------------------------
+	// parser for metadata
+	//--------------------------------------------------------------------
+	// protected?
+	
+	function parse_metadata(Array $metadata){
+		$output = '';
+		
+		$output .= self::get_indent() . '<Metadata>' . "\n";
+		$this->depth++;
+		
+		// senses
+		$number_of_senses = count($metadata['sense']);
+		foreach($metadata['sense'] as $depth => $sense_metadata){
+			if($number_of_senses == 1){
+				$output .= self::get_indent() . '<Sense>';
+			} else {
+				$output .= self::get_indent() . '<Sense depth="' . $depth . '">' . "\n";
+			}
+			$this->depth++;
+			
+			$output .= $this->parse_order_label_metadata($sense_metadata);
+			
+			$this->depth--;
+			$output .= self::get_indent() . '</Sense>' . "\n";
+		}
+		
+		$this->depth--;
+		$output .= self::get_indent() . '</Metadata>' . "\n";
+		
+		return $output;
+	}
+	
+	//--------------------------------------------------------------------
+	// parser for order label metadata
+	//--------------------------------------------------------------------
+	// protected?
+	
+	private function parse_order_label_metadata($node_metadata){
+		$output = '';
+		
+		if(isset($node_metadata['order_label_system'])){
+			$output .=
+				self::get_indent() .
+				'<OrderLabel system="' .
+					$node_metadata['order_label_system'] .
+				'"/>' .
+				"\n";
+		}
+		return $output;
+	}
+	
+	//====================================================================
+	// entries
+	//====================================================================
+
 	//--------------------------------------------------------------------
 	// entry parser
 	//--------------------------------------------------------------------

@@ -2,16 +2,12 @@
 
 namespace Dictionary;
 
-require_once 'database/database.php';
 require_once __DIR__ . '/data.php';
 
 class Dictionary {
 	
 	private $data;
-	private $database;
-	
-	private $sources;
-	
+
 	//------------------------------------------------------------------------
 	// constructor
 	//------------------------------------------------------------------------
@@ -29,39 +25,71 @@ class Dictionary {
 	}
 	
 	//------------------------------------------------------------------------
+	// get metadata
+	//------------------------------------------------------------------------
+	
+	function get_metadata(){
+		
+		$metadata = $this->data->get_metadata();
+		
+		return $metadata;
+	}
+	
+	//------------------------------------------------------------------------
 	// getting list of headwords
 	//------------------------------------------------------------------------
 	
-	function get_headwords(){
+	function get_headwords($mask = '', $limit){
 		
-		$headwords = $this->data->pull_headwords();
+		$headwords = $this->data->get_headwords($mask, $limit);
 		
 		return $headwords;
 	}
 	
 	//------------------------------------------------------------------------
-	// getting entry
+	// getting list of entry ids
 	//------------------------------------------------------------------------
 	// WARNING! it is possible there are two entries with the same mask
 	//------------------------------------------------------------------------
 	
+	function get_entry_ids(){
+		
+		$entry_ids = $this->data->get_entry_ids();
+		
+		//return $entry;
+		return $entry_ids === false ? [] : $entry_ids;
+	}
+	
+	//------------------------------------------------------------------------
+	// getting entry
+	//------------------------------------------------------------------------
+	// deprecated!
+	/*
 	function get_entry($headword){
 		
 		$entry = $this->data->pull_entry($this, $headword);
 		
 		return $entry;
 	}
-	
+	*/
 	//------------------------------------------------------------------------
 	// getting entries
 	//------------------------------------------------------------------------
 	// to consider:
 	//  - headwords by mask
+	//  - rename: get_entries_by_headword
 	//------------------------------------------------------------------------
-
-	function get_entries($headword_mask){
+	
+	function get_entry_by_id($entry_id){
 		
-		$entries = $this->data->pull_entries($this, $headword_mask);
+		$entry = $this->data->get_entry_by_id($this, $entry_id);
+		
+		return $entry;
+	}
+	
+	function get_entries_by_headword($headword){
+		
+		$entries = $this->data->get_entries_by_headword($this, $headword);
 		
 		return $entries;
 	}

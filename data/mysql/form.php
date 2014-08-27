@@ -71,14 +71,18 @@ trait MySQL_Form {
 			';';
 		$result = $this->database->execute($query);
 		
-		if($result === false) { echo $query; return false; }
+		if($result === false) {
+			return false;
+		}
 		
 		// obtaining new form id
 		
 		$query = 'SELECT last_insert_id() AS form_id;';
 		$result = $this->database->fetch_one($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			return false;
+		}
 		
 		$form_id = $result['form_id'];
 		
@@ -100,7 +104,9 @@ trait MySQL_Form {
 			';';
 		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			return false;
+		}
 		
 		$affected_rows = $this->database->get_affected_rows();
 		
@@ -124,7 +130,9 @@ trait MySQL_Form {
 			';';
 		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			return false;
+		}
 		
 		$affected_rows = $this->database->get_affected_rows();
 		
@@ -148,7 +156,9 @@ trait MySQL_Form {
 			';';
 		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			return false;
+		}
 		
 		$affected_rows = $this->database->get_affected_rows();
 		
