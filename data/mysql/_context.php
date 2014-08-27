@@ -2,9 +2,7 @@
 
 namespace Dictionary;
 
-require_once __DIR__ . '/mapper.php';
-
-class MySQL_Context extends MySQL_Mapper {
+trait MySQL_Context_Trait {
 	
 	//==================================================================
 	// atomic operations: contexts
@@ -14,7 +12,7 @@ class MySQL_Context extends MySQL_Mapper {
 	// creating context storage (table)
 	//------------------------------------------------------------------
 	
-	function create_storage(){
+	function create_context_storage(){
 		$query =
 			'CREATE TABLE IF NOT EXISTS `contexts` (' .
 			' `context_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT \'context identifier\', ' .
@@ -33,7 +31,7 @@ class MySQL_Context extends MySQL_Mapper {
 	// linking context storage (creating table relations)
 	//------------------------------------------------------------------
 	
-	function link_storage(){
+	function link_context_storage(){
 		$query =
 			'ALTER TABLE `contexts`' .
 			' ADD CONSTRAINT `contexts_ibfk_1`' .
@@ -44,51 +42,6 @@ class MySQL_Context extends MySQL_Mapper {
 		$result = $this->database->execute($query);
 		
 		return $result;
-	}
-	
-	//------------------------------------------------------------------
-	// setting context
-	//------------------------------------------------------------------
-	
-	function set($parent_node_id, $context){
-		
-		// inserting node to category label relation
-		
-		$query =
-			'INSERT contexts' .
-			' SET' .
-			"  parent_node_id = $parent_node_id," .
-			"  context = '{$this->database->escape_string($context)}'" .
-			' ON DUPLICATE KEY UPDATE' .
-			"  context = '{$this->database->escape_string($context)}'" .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false) return false;
-		
-		$affected_rows = $this->database->get_affected_rows();
-		
-		return $affected_rows;
-		
-	}
-	
-	//------------------------------------------------------------------
-	// deleting context
-	//------------------------------------------------------------------
-	
-	function delete($parent_node_id){
-		
-		$query =
-			'DELETE FROM contexts' .
-			" WHERE parent_node_id = $parent_node_id" .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false) return false;
-		
-		$affected_rows = $this->database->get_affected_rows();
-		
-		return $affected_rows;
 	}
 	
 }

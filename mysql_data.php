@@ -27,8 +27,15 @@ require_once __DIR__ . '/data/mysql/context.php';
 require_once __DIR__ . '/data/mysql/translation.php';
 
 // for removal
+require_once __DIR__ . '/data/mysql/_entry.php';
+require_once __DIR__ . '/data/mysql/_sense.php';
+require_once __DIR__ . '/data/mysql/_phrase.php';
+
 require_once __DIR__ . '/data/mysql/_headword.php';
 require_once __DIR__ . '/data/mysql/_pronunciation.php';
+require_once __DIR__ . '/data/mysql/_category_label.php';
+require_once __DIR__ . '/data/mysql/_form.php';
+require_once __DIR__ . '/data/mysql/_context.php';
 require_once __DIR__ . '/data/mysql/_translation.php';
 
 use Database\Database;
@@ -38,17 +45,19 @@ class MySQL_Data implements Data {
 	use MySQL_Order_Label;
 	
 	use MySQL_Node;
-	use MySQL_Entry;
-	use MySQL_Sense;
-	use MySQL_Phrase;
-	use MySQL_Category_Label;
-	use MySQL_Form;
-	use MySQL_Context;
 	
 	// for removal
+	use MySQL_Entry_Trait;
+	use MySQL_Sense_Trait;
+	use MySQL_Phrase_Trait;
+	
 	use MySQL_Headword_Trait;
 	use MySQL_Pronunciation_Trait;
+	use MySQL_Category_Label_Trait;
+	use MySQL_Form_Trait;
+	use MySQL_Context_Trait;
 	use MySQL_Translation_Trait;
+	
 	
 	private $database;
 	
@@ -73,26 +82,26 @@ class MySQL_Data implements Data {
 	function create_storage(&$log){
 		$actions = [
 			'create_node_storage',
-			'create_entry_storage',
-			'create_sense_storage',
-			'create_phrase_storage',
-			'create_headword_storage',
-			'create_pronunciation_storage',
-			'create_category_label_storage',
-			'create_form_storage',
-			'create_context_storage',
-			'create_translation_storage',
+			//'create_entry_storage',
+			//'create_sense_storage',
+			//'create_phrase_storage',
+			//'create_headword_storage',
+			//'create_pronunciation_storage',
+			//'create_category_label_storage',
+			//'create_form_storage',
+			//'create_context_storage',
+			//'create_translation_storage',
 			'create_order_label_storage',
 			
-			'link_entry_storage',
-			'link_sense_storage',
-			'link_phrase_storage',
-			'link_headword_storage',
-			'link_pronunciation_storage',
-			'link_category_label_storage',
-			'link_form_storage',
-			'link_context_storage',
-			'link_translation_storage',
+			//'link_entry_storage',
+			//'link_sense_storage',
+			//'link_phrase_storage',
+			//'link_headword_storage',
+			//'link_pronunciation_storage',
+			//'link_category_label_storage',
+			//'link_form_storage',
+			//'link_context_storage',
+			//'link_translation_storage',
 			'link_order_label_storage',
 			
 			'fill_order_label_storage',
@@ -115,15 +124,85 @@ class MySQL_Data implements Data {
 			}
 		}
 		
+		$entities = [
+			'entry',
+			'sense',
+			'phrase',
+			
+			'headword',
+			'pronunciation',
+			'category_label',
+			'form',
+			'context',
+			'translation',
+		];
+		
+		$log = array_merge($log, $this->iterate_over_mappers('create_storage', $entities));
+		$log = array_merge($log, $this->iterate_over_mappers('link_storage', $entities));
+		$log = array_merge($log, $this->iterate_over_mappers('fill_storage', $entities));
+		
 		return true;
 	}
-
+	
+	//------------------------------------------------------------------
+	
+	private function iterate_over_mappers($method, array $entities){
+		$log = [];
+		
+		foreach($entities as $entity){
+			if(method_exists($this->{"get_$entity"}(), $method)){
+				$result = $this->{"get_$entity"}()->{$method}();
+				$log[] = [
+					'action' => "$method @ $entity",
+					'result' => $result,
+				];
+			}
+		}
+		
+		return $log;
+	}
+	
+	//------------------------------------------------------------------
+	
+	//------------------------------------------------------------------
+	
+	function get_entry(){
+		
+		if(!isset($this->mappers['entry'])){
+			$this->mappers['entry'] = new MySQL_Entry($this->database, $this);
+		}
+		
+		return $this->mappers['entry'];
+	}
+	
+	//------------------------------------------------------------------
+	
+	function get_sense(){
+		
+		if(!isset($this->mappers['sense'])){
+			$this->mappers['sense'] = new MySQL_Sense($this->database, $this);
+		}
+		
+		return $this->mappers['sense'];
+	}
+	
+	//------------------------------------------------------------------
+	
+	function get_phrase(){
+		
+		if(!isset($this->mappers['phrase'])){
+			$this->mappers['phrase'] = new MySQL_Phrase($this->database, $this);
+		}
+		
+		return $this->mappers['phrase'];
+	}
+	
 	//------------------------------------------------------------------
 	
 	function get_headword(){
 		
 		if(!isset($this->mappers['headword'])){
-			$this->mappers['headword'] = new MySQL_Headword();
+			$this->mappers['headword'] = new MySQL_Headword($this->database, $this);
 		}
 		
 		return $this->mappers['headword'];
@@ -134,7 +213,7 @@ class MySQL_Data implements Data {
 	function get_pronunciation(){
 		
 		if(!isset($this->mappers['pronunciation'])){
-			$this->mappers['pronunciation'] = new MySQL_Pronunciation();
+			$this->mappers['pronunciation'] = new MySQL_Pronunciation($this->database, $this);
 		}
 		
 		return $this->mappers['pronunciation'];
@@ -142,10 +221,43 @@ class MySQL_Data implements Data {
 	
 	//------------------------------------------------------------------
 	
+	function get_category_label(){
+		
+		if(!isset($this->mappers['category_label'])){
+			$this->mappers['category_label'] = new MySQL_Category_Label($this->database, $this);
+		}
+		
+		return $this->mappers['category_label'];
+	}
+	
+	//------------------------------------------------------------------
+	
+	function get_form(){
+		
+		if(!isset($this->mappers['form'])){
+			$this->mappers['form'] = new MySQL_Form($this->database, $this);
+		}
+		
+		return $this->mappers['form'];
+	}
+	
+	//------------------------------------------------------------------
+	
+	function get_context(){
+		
+		if(!isset($this->mappers['context'])){
+			$this->mappers['context'] = new MySQL_Context($this->database, $this);
+		}
+		
+		return $this->mappers['context'];
+	}
+	
+	//------------------------------------------------------------------
+	
 	function get_translation(){
 		
 		if(!isset($this->mappers['translation'])){
-			$this->mappers['translation'] = new MySQL_Translation();
+			$this->mappers['translation'] = new MySQL_Translation($this->database, $this);
 		}
 		
 		return $this->mappers['translation'];

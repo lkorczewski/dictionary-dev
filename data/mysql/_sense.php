@@ -2,27 +2,27 @@
 
 namespace Dictionary;
 
-trait MySQL_Translation_Trait {
+trait MySQL_Sense_Trait {
 	
 	//==================================================================
-	// atomic operations: translations
+	// atomic operations: senses
 	//==================================================================
 	
 	//------------------------------------------------------------------
 	// creating translation storage (table)
 	//------------------------------------------------------------------
 	
-	function create_translation_storage(){
-		
+	function create_sense_storage(){
 		$query =
-			'CREATE TABLE IF NOT EXISTS `translations` (' .
-			' `translation_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT \'translation identifier\',' .
-			' `parent_node_id` int(10) unsigned NOT NULL COMMENT \'parent node identifier\',' .
-			' `order` int(11) NOT NULL COMMENT \'order of translations within node\',' .
-			' `text` varchar(64) COLLATE utf8_bin NOT NULL COMMENT \'translation text\',' .
-			' PRIMARY KEY (`translation_id`),' .
+			'CREATE TABLE IF NOT EXISTS `senses` (' .
+			' `sense_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT \'sense identifier\',' .
+			' `node_id` int(10) unsigned NOT NULL COMMENT \'node identifier\',' .
+			' `parent_node_id` int(10) unsigned NOT NULL COMMENT \'node identifier of parent node\',' .
+			' `order` tinyint(11) unsigned NOT NULL COMMENT \'order of senses within node\',' .
+			' PRIMARY KEY (`sense_id`),' .
+			' UNIQUE KEY `node_id` (`node_id`),' .
 			' KEY `parent_node_id` (`parent_node_id`)' .
-			') ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin' . 
+			') ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin' .
 			';';
 		$result = $this->database->execute($query);
 		
@@ -32,12 +32,15 @@ trait MySQL_Translation_Trait {
 	//------------------------------------------------------------------
 	// linking translation storage (creating table relations)
 	//------------------------------------------------------------------
-		
-	function link_translation_storage(){
-		
+	
+	function link_sense_storage(){
 		$query =
-			'ALTER TABLE `translations`' .
-			' ADD CONSTRAINT `translations_ibfk_1`' .
+			'ALTER TABLE `senses`' .
+			' ADD CONSTRAINT `senses_ibfk_1`' .
+			'  FOREIGN KEY (`node_id`) ' .
+			'  REFERENCES `nodes` (`node_id`)' .
+			'  ON DELETE CASCADE,' .
+			' ADD CONSTRAINT `senses_ibfk_2`' .
 			'  FOREIGN KEY (`parent_node_id`)' .
 			'  REFERENCES `nodes` (`node_id`)' .
 			'  ON DELETE CASCADE' .

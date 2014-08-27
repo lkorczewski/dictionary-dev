@@ -24,13 +24,8 @@ class XML_Importer {
 	
 	//--------------------------------------------------------------------
 	
-<<<<<<< HEAD
 	function parse($XML_file){
-		$reader = new \XMLReader();
-=======
-	public function parse($XML_file){
 		$reader = new XMLReader();
->>>>>>> master
 		$reader->open($XML_file);
 		while($reader->read()){
 			if($reader->nodeType == XMLReader::ELEMENT && $reader->name == 'Entry'){
@@ -146,7 +141,7 @@ class XML_Importer {
 	
 	//--------------------------------------------------------------------
 	
-	protected funtion parse_category_label($parent_node_id, $category_label){
+	protected function parse_category_label($parent_node_id, $category_label){
 		$this->data->set_category_label($parent_node_id, (string) $category_label);
 	}
 	

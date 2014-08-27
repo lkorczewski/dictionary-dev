@@ -2,7 +2,9 @@
 
 namespace Dictionary;
 
-class MySQL_Pronunciation {
+require_once __DIR__ . '/mapper.php';
+
+class MySQL_Pronunciation extends MySQL_Mapper {
 	
 	//==================================================================
 	// atomic operations: pronunciations

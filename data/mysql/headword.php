@@ -2,7 +2,9 @@
 
 namespace Dictionary;
 
-class MySQL_Headword {
+require_once __DIR__ . '/mapper.php';
+
+class MySQL_Headword extends MySQL_Mapper {
 	
 	//==================================================================
 	// atomic operations: headwords

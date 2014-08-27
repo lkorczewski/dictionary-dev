@@ -12,9 +12,20 @@ interface Data {
 	function get_entry_by_id(Dictionary $dictionary, $id);
 	function get_entries_by_headword(Dictionary $dictionary, $headword);
 	
+	function get_entry();
+	function get_sense();
+	function get_phrase();
+
+	function get_headword();
+	function get_pronunciation();
+	function get_category_label();
+	function get_form();
+	function get_context();
+	function get_translation();
 	
 	// atomic operations
 	
+	/*
 	// entries
 	function add_entry($headword = '');
 	//function update_entry($node_id, $headword);
@@ -46,6 +57,5 @@ interface Data {
 	function move_translation_up($translation_id);
 	function move_translation_down($translation_id);
 	function delete_translation($translation_id);
-	
+	*/
 }
-

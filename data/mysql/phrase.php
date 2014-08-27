@@ -2,7 +2,9 @@
 
 namespace Dictionary;
 
-trait MySQL_Phrase {
+require_once __DIR__ . '/mapper.php';
+
+class MySQL_Phrase extends MySQL_Mapper{
 	
 	//==================================================================
 	// atomic operations: phrases
@@ -12,7 +14,7 @@ trait MySQL_Phrase {
 	// creating translation storage (table)
 	//------------------------------------------------------------------
 	
-	function create_phrase_storage(){
+	function create_storage(){
 		$query =
 			'CREATE TABLE IF NOT EXISTS `phrases` (' .
 			' `phrase_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT \'phrase identifier\',' .
@@ -34,7 +36,7 @@ trait MySQL_Phrase {
 	// linking translation storage (creating table relations)
 	//------------------------------------------------------------------
 	
-	function link_phrase_storage(){
+	function link_storage(){
 		$query =
 			'ALTER TABLE `phrases`' .
 			' ADD CONSTRAINT `phrases_ibfk_1`' .
@@ -57,15 +59,15 @@ trait MySQL_Phrase {
 	// adding phrase
 	//------------------------------------------------------------------
 	
-	function add_phrase($parent_node_id, $phrase = ''){
+	function add($parent_node_id, $phrase = ''){
 		
-		// strarting transaction
+		// starting transaction
 		
 		$this->database->start_transaction();
 		
 		// inserting new node
 		
-		$node_id = $this->add_node();
+		$node_id = $this->data->add_node();
 		
 		if($node_id === false){
 			$this->database->rollback_transaction();
@@ -97,7 +99,7 @@ trait MySQL_Phrase {
 			return false;
 		}
 		
-		// commiting transaction
+		// committing transaction
 		
 		$this->database->commit_transaction();
 		
@@ -108,7 +110,7 @@ trait MySQL_Phrase {
 	// updating phrase
 	//------------------------------------------------------------------
 	
-	function update_phrase($node_id, $phrase){
+	function update($node_id, $phrase){
 		
 		$query =
 			'UPDATE phrases' .
@@ -128,7 +130,7 @@ trait MySQL_Phrase {
 	// moving phrase up
 	//------------------------------------------------------------------
 	
-	function move_phrase_up($node_id){
+	function move_up($node_id){
 		
 		$query =
 			'UPDATE phrases ph1, phrases ph2' .
@@ -153,7 +155,7 @@ trait MySQL_Phrase {
 	// moving phrase down
 	//------------------------------------------------------------------
 	
-	function move_phrase_down($node_id){
+	function move_down($node_id){
 		
 		$query =
 			'UPDATE phrases ph1, phrases ph2' .
@@ -177,7 +179,7 @@ trait MySQL_Phrase {
 	// deleting phrase
 	//------------------------------------------------------------------
 	
-	function delete_phrase($node_id){
+	function delete($node_id){
 		
 		// starting transaction
 		
@@ -213,7 +215,7 @@ trait MySQL_Phrase {
 			return false;
 		}
 		
-		// commiting transaction
+		// committing transaction
 		
 		$this->database->commit_transaction();
 		

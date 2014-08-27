@@ -2,7 +2,9 @@
 
 namespace Dictionary;
 
-class MySQL_Translation {
+require_once __DIR__ . '/mapper.php';
+
+class MySQL_Translation extends MySQL_Mapper {
 	
 	//==================================================================
 	// atomic operations: translations

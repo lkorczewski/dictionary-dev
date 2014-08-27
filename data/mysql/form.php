@@ -2,7 +2,9 @@
 
 namespace Dictionary;
 
-trait MySQL_Form {
+require_once __DIR__ . '/mapper.php';
+
+class MySQL_Form extends MySQL_Mapper {
 	
 	//==================================================================
 	// atomic operations: forms
@@ -12,7 +14,7 @@ trait MySQL_Form {
 	// creating form storage (table)
 	//------------------------------------------------------------------
 	
-	function create_form_storage(){
+	function create_storage(){
 		$query =
 			'CREATE TABLE IF NOT EXISTS `forms` (' .
 			' `form_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT \'form identifier\',' .
@@ -33,7 +35,7 @@ trait MySQL_Form {
 	// linking form storage (creating table relations)
 	//------------------------------------------------------------------
 	
-	function link_form_storage(){
+	function link_storage(){
 		$query =
 			'ALTER TABLE `forms`' .
 			' ADD CONSTRAINT `forms_ibfk_1`' .
@@ -50,7 +52,7 @@ trait MySQL_Form {
 	// creating form
 	//------------------------------------------------------------------
 	
-	function add_form($parent_node_id, $label = '', $form = ''){
+	function add($parent_node_id, $label = '', $form = ''){
 		
 		// inserting new translation
 		
@@ -93,7 +95,7 @@ trait MySQL_Form {
 	// updating form
 	//------------------------------------------------------------------
 	
-	function update_form($form_id, $label, $form){
+	function update($form_id, $label, $form){
 		
 		$query =
 			'UPDATE forms' .
@@ -117,7 +119,7 @@ trait MySQL_Form {
 	// moving form up
 	//------------------------------------------------------------------
 	
-	function move_form_up($form_id){
+	function move_up($form_id){
 		
 		$query =
 			'UPDATE forms f1, forms f2' .
@@ -143,7 +145,7 @@ trait MySQL_Form {
 	// moving form down
 	//------------------------------------------------------------------
 	
-	function move_form_down($form_id){
+	function move_down($form_id){
 		
 		$query =
 			'UPDATE forms f1, forms f2' .
@@ -169,7 +171,7 @@ trait MySQL_Form {
 	// deleting translation
 	//------------------------------------------------------------------
 	
-	function delete_form($form_id){
+	function delete($form_id){
 		
 		// it should be much simplier
 		// maybe combined queries

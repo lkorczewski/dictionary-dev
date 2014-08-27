@@ -2,7 +2,9 @@
 
 namespace Dictionary;
 
-trait MySQL_Sense {
+require_once __DIR__ . '/mapper.php';
+
+class MySQL_Sense extends MySQL_Mapper{
 	
 	//==================================================================
 	// atomic operations: senses
@@ -12,7 +14,7 @@ trait MySQL_Sense {
 	// creating translation storage (table)
 	//------------------------------------------------------------------
 	
-	function create_sense_storage(){
+	function create_storage(){
 		$query =
 			'CREATE TABLE IF NOT EXISTS `senses` (' .
 			' `sense_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT \'sense identifier\',' .
@@ -33,7 +35,7 @@ trait MySQL_Sense {
 	// linking translation storage (creating table relations)
 	//------------------------------------------------------------------
 	
-	function link_sense_storage(){
+	function link_storage(){
 		$query =
 			'ALTER TABLE `senses`' .
 			' ADD CONSTRAINT `senses_ibfk_1`' .
@@ -54,7 +56,7 @@ trait MySQL_Sense {
 	// adding sense
 	//------------------------------------------------------------------
 	
-	function add_sense($parent_node_id){
+	function add($parent_node_id){
 		
 		// strarting transaction
 		
@@ -62,7 +64,7 @@ trait MySQL_Sense {
 		
 		// inserting new node
 		
-		$node_id = $this->add_node();
+		$node_id = $this->data->add_node();
 		
 		if($node_id === false){
 			$this->database->rollback_transaction();
@@ -93,7 +95,7 @@ trait MySQL_Sense {
 			return false;
 		}
 		
-		// commiting transaction
+		// committing transaction
 		
 		$this->database->commit_transaction();
 		
@@ -104,7 +106,7 @@ trait MySQL_Sense {
 	// moving sense up
 	//------------------------------------------------------------------
 	
-	function move_sense_up($node_id){
+	function move_up($node_id){
 		
 		$query =
 			'UPDATE senses s1, senses s2' .
@@ -128,7 +130,7 @@ trait MySQL_Sense {
 	// moving translation down
 	//------------------------------------------------------------------
 	
-	function move_sense_down($node_id){
+	function move_down($node_id){
 		
 		$query =
 			'UPDATE senses s1, senses s2' .
@@ -154,7 +156,7 @@ trait MySQL_Sense {
 	// this relatively slow recursive solution shows that the way
 	// the tree structure was implemented is a bit cumbersome
 	
-	function get_sense_depth($node_id){
+	function get_depth($node_id){
 		$current_node_id = $node_id;
 		$depth = 0;
 		
@@ -185,9 +187,9 @@ trait MySQL_Sense {
 	// getting sense label
 	//------------------------------------------------------------------
 	
-	function get_sense_label($node_id){
+	function get_label($node_id){
 		
-		$depth = $this->get_sense_depth($node_id);
+		$depth = $this->get_depth($node_id);
 		
 		$query =
 			'SELECT ol.label' .
@@ -214,7 +216,7 @@ trait MySQL_Sense {
 	// deleting sense
 	//------------------------------------------------------------------
 	
-	function delete_sense($node_id){
+	function delete($node_id){
 		
 		// starting transaction
 		
@@ -251,7 +253,7 @@ trait MySQL_Sense {
 			return false;
 		}
 		
-		// commiting transaction
+		// committing transaction
 		
 		$this->database->commit_transaction();
 		

@@ -2,27 +2,27 @@
 
 namespace Dictionary;
 
-trait MySQL_Headword_Trait {
+trait MySQL_Form_Trait {
 	
 	//==================================================================
-	// atomic operations: headwords
+	// atomic operations: forms
 	//==================================================================
 	
 	//------------------------------------------------------------------
-	// creating headword storage (table)
+	// creating form storage (table)
 	//------------------------------------------------------------------
 	
-	function create_headword_storage(){
+	function create_form_storage(){
 		$query =
-			'CREATE TABLE IF NOT EXISTS `headwords` (' .
-			' `headword_id` int(10) NOT NULL AUTO_INCREMENT COMMENT \'headword identifier\',' .
+			'CREATE TABLE IF NOT EXISTS `forms` (' .
+			' `form_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT \'form identifier\',' .
 			' `parent_node_id` int(10) unsigned NOT NULL COMMENT \'parent node identifier\',' .
-			' `order` int(10) unsigned NOT NULL COMMENT \'order within parent node\',' .
-			' `headword` varchar(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT \'headword\',' .
-			' PRIMARY KEY (`headword_id`),' .
-			' KEY `parent_node_id` (`parent_node_id`),' .
-			' KEY `headword` (`headword`)' .
-			') ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin' .
+			' `order` int(11) NOT NULL COMMENT \'order of forms within node\',' .
+			' `label` varchar(32) COLLATE utf8_bin NOT NULL COMMENT \'label\',' .
+			' `form` varchar(256) COLLATE utf8_bin NOT NULL COMMENT \'form\',' .
+			' PRIMARY KEY (`form_id`),' .
+			' KEY `parent_node_id` (`parent_node_id`)' .
+			') ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT=\'grammatical forms of headword\'' .
 			';';
 		$result = $this->database->execute($query);
 		
@@ -30,13 +30,13 @@ trait MySQL_Headword_Trait {
 	}
 	
 	//------------------------------------------------------------------
-	// linking headword storage (creating table relations)
+	// linking form storage (creating table relations)
 	//------------------------------------------------------------------
 	
-	function link_headword_storage(){
+	function link_form_storage(){
 		$query =
-			'ALTER TABLE `headwords`' .
-			' ADD CONSTRAINT `headwords_ibfk_1`' .
+			'ALTER TABLE `forms`' .
+			' ADD CONSTRAINT `forms_ibfk_1`' .
 			' FOREIGN KEY (`parent_node_id`)' .
 			' REFERENCES `nodes` (`node_id`)' .
 			' ON DELETE CASCADE' .

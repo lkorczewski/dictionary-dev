@@ -31,7 +31,7 @@ trait MySQL_Node {
 	// adding node
 	//------------------------------------------------------------------
 	
-	private function add_node(){
+	function add_node(){
 		
 		// inserting new node
 		
