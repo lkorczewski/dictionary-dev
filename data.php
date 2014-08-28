@@ -12,6 +12,9 @@ interface Data {
 	function get_entry_by_id(Dictionary $dictionary, $id);
 	function get_entries_by_headword(Dictionary $dictionary, $headword);
 	
+	function access($entity);
+	
+	/*
 	function get_entry();
 	function get_sense();
 	function get_phrase();
@@ -22,6 +25,7 @@ interface Data {
 	function get_form();
 	function get_context();
 	function get_translation();
+	*/
 	
 	// atomic operations
 	

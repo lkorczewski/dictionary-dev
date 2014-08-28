@@ -2,13 +2,15 @@
 
 namespace Dictionary;
 
+require_once __DIR__ . '/mapper.php';
+
 // TODO: Ugly system of filling metadata array.
 //  - ugly parameters to append_order_labels_metadata
 // Possible improvements:
 //  - $metadata as object
 //  - Metadata as class
 
-trait MySQL_Metadata {
+class MySQL_Metadata extends MySQL_Mapper {
 	
 	//==========================================================
 	// reading metadata from database
@@ -18,7 +20,7 @@ trait MySQL_Metadata {
 	// getting metadata
 	//----------------------------------------------------------
 	
-	function get_metadata(){
+	function get(){
 		$metadata = [];
 		
 		$this->append_senses_metadata($metadata);
@@ -74,7 +76,7 @@ trait MySQL_Metadata {
 	// writing metadata to database
 	//==========================================================
 	
-	function set_metadata($metadata){
+	function set($metadata){
 		
 		$result = $this->set_sense_metadata($metadata);
 		if($result === false){
@@ -113,7 +115,7 @@ trait MySQL_Metadata {
 	private function set_order_label_metadata($node_metadata, $element, $depth = 1){
 		
 		if(isset($node_metadata['order_label_system'])){
-			$result = $this->set_order_label_system_assignment(
+			$result = $this->data->access('order_label')->set_system_assignment(
 				$element,
 				$depth,
 				$node_metadata['order_label_system']

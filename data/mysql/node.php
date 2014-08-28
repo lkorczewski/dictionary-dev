@@ -2,7 +2,9 @@
 
 namespace Dictionary;
 
-trait MySQL_Node {
+require_once __DIR__ . '/mapper.php';
+
+class MySQL_Node extends MySQL_Mapper {
 	
 	//==================================================================
 	// auxiliary operations: nodes
@@ -12,7 +14,7 @@ trait MySQL_Node {
 	// creating node storage (table)
 	//------------------------------------------------------------------
 	
-	private function create_node_storage(){
+	function create_storage(){
 		
 		$query =
 			'CREATE TABLE IF NOT EXISTS `nodes` (' .
@@ -31,7 +33,7 @@ trait MySQL_Node {
 	// adding node
 	//------------------------------------------------------------------
 	
-	function add_node(){
+	function add(){
 		
 		// inserting new node
 		

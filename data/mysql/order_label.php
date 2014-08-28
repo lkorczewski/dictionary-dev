@@ -2,13 +2,13 @@
 
 namespace Dictionary;
 
-trait MySQL_Order_Label {
-
+class MySQL_Order_Label extends MySQL_Mapper {
+	
 	//------------------------------------------------------------------
 	// creating category label storage (table)
 	//------------------------------------------------------------------
 	
-	function create_order_label_storage(){
+	function create_storage(){
 		$query =
 			'CREATE TABLE `order_label_systems` (' .
 			' `order_label_system_id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,' .
@@ -51,7 +51,39 @@ trait MySQL_Order_Label {
 		return true;
 	}
 	
-	function fill_order_label_storage(){
+	//------------------------------------------------------------------
+	// linking category label storage (creating table relations)
+	//------------------------------------------------------------------
+	
+	function link_storage(){
+		$query =
+			'ALTER TABLE `order_labels`' .
+			' ADD CONSTRAINT `order_labels_ibfk_1`' .
+			'  FOREIGN KEY (`order_label_system_id`)' .
+			'  REFERENCES `order_label_systems` (`order_label_system_id`)' .
+			';';
+		$result = $this->database->execute($query);
+		
+		if($result === false){
+			return false;
+		}
+		
+		$query =
+			'ALTER TABLE `order_label_system_assignments`' .
+			' ADD CONSTRAINT `order_label_system_assignments_ibfk_1`' .
+			'  FOREIGN KEY (`order_label_system_id`)' .
+			'  REFERENCES `order_label_systems` (`order_label_system_id`)' .
+			';';
+		$result = $this->database->execute($query);
+		
+		if($result === false){
+			return false;
+		}
+		
+		return true;
+	}
+	
+	function fill_storage(){
 		
 		$query =
 			'INSERT INTO `order_label_systems` (`order_label_system_id`, `name`)' .
@@ -155,43 +187,11 @@ trait MySQL_Order_Label {
 	}
 	
 	//------------------------------------------------------------------
-	// linking category label storage (creating table relations)
-	//------------------------------------------------------------------
-	
-	function link_order_label_storage(){
-		$query =
-			'ALTER TABLE `order_labels`' .
-			' ADD CONSTRAINT `order_labels_ibfk_1`' .
-			'  FOREIGN KEY (`order_label_system_id`)' .
-			'  REFERENCES `order_label_systems` (`order_label_system_id`)' .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false){
-			return false;
-		}
-		
-		$query =
-			'ALTER TABLE `order_label_system_assignments`' .
-			' ADD CONSTRAINT `order_label_system_assignments_ibfk_1`' .
-			'  FOREIGN KEY (`order_label_system_id`)' .
-			'  REFERENCES `order_label_systems` (`order_label_system_id`)' .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false){
-			return false;
-		}
-		
-		return true;
-	}
-	
-	//------------------------------------------------------------------
 	// setting order label assignment
 	//------------------------------------------------------------------
 	// TODO: "element" should be "node_type" ?
 	
-	function set_order_label_system_assignment($element, $depth, $system){
+	function set_system_assignment($element, $depth, $system){
 		$query =
 			'REPLACE order_label_system_assignments' .
 			' (' .
@@ -220,7 +220,7 @@ trait MySQL_Order_Label {
 	//------------------------------------------------------------------
 	// TODO: "element" should be "node_type" ?
 	
-	function delete_order_label_system_assignment($element, $depth){
+	function delete_system_assignment($element, $depth){
 		$query = 
 			'DELETE FROM order_label_system_assignments' .
 			" WHERE element = '$element'" .

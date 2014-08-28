@@ -40,7 +40,7 @@ class XML_Importer {
 	
 	protected function parse_entry($entry){
 		
-		$node_id = $this->data->add_entry();
+		$node_id = $this->data->access('entry')->add();
 		
 		// headwords
 		$headwords = $entry->H;
@@ -84,7 +84,7 @@ class XML_Importer {
 	
 	protected function parse_sense($parent_node_id, $sense){
 		
-		$node_id = $this->data->add_sense($parent_node_id);
+		$node_id = $this->data->access('sense')->add($parent_node_id);
 		
 		// context
 		$context = $sense->I[0];
@@ -124,7 +124,7 @@ class XML_Importer {
 		
 		$headwords = $phrase->H;
 		$headword = $headwords[0];
-		$node_id = $this->data->add_phrase($parent_node_id, (string) $headword);
+		$node_id = $this->data->access('phrase')->add($parent_node_id, (string) $headword);
 		
 		// translations
 		$translations = $phrase->T;
@@ -136,13 +136,13 @@ class XML_Importer {
 	//--------------------------------------------------------------------
 	
 	protected function parse_headword($parent_node_id, $headword){
-		$this->data->add_headword($parent_node_id, (string) $headword);
+		$this->data->access('headword')->add($parent_node_id, (string) $headword);
 	}
 	
 	//--------------------------------------------------------------------
 	
 	protected function parse_category_label($parent_node_id, $category_label){
-		$this->data->set_category_label($parent_node_id, (string) $category_label);
+		$this->data->access('category_label')->set($parent_node_id, (string) $category_label);
 	}
 	
 	//--------------------------------------------------------------------
@@ -153,19 +153,19 @@ class XML_Importer {
 		
 		$headword = $form->H[0]; 
 		
-		$this->data->add_form($parent_node_id, (string) $label, (string) $headword);
+		$this->data->access('form')->add($parent_node_id, (string) $label, (string) $headword);
 	}
 	
 	//--------------------------------------------------------------------
 	
 	protected function parse_context($parent_node_id, $context){
-		$this->data->set_context($parent_node_id, (string) $context);
+		$this->data->access('context')->set($parent_node_id, (string) $context);
 	}
 	
 	//--------------------------------------------------------------------
 	
 	protected function parse_translation($parent_node_id, $translation){
-		$this->data->add_translation($parent_node_id, (string) $translation);
+		$this->data->access('translation')->add($parent_node_id, (string) $translation);
 	}
 	
 }

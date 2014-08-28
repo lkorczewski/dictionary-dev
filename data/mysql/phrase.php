@@ -67,7 +67,7 @@ class MySQL_Phrase extends MySQL_Mapper{
 		
 		// inserting new node
 		
-		$node_id = $this->data->add_node();
+		$node_id = $this->data->access('node')->add();
 		
 		if($node_id === false){
 			$this->database->rollback_transaction();
