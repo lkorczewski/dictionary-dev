@@ -58,7 +58,7 @@ class MySQL_Sense extends MySQL_Mapper{
 	
 	function add($parent_node_id){
 		
-		// strarting transaction
+		// starting transaction
 		
 		$this->database->start_transaction();
 		
