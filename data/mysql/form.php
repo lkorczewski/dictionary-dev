@@ -49,6 +49,29 @@ class MySQL_Form extends MySQL_Mapper {
 	}
 	
 	//------------------------------------------------------------------
+	// hydrate a node with forms
+	//------------------------------------------------------------------
+	
+	function hydrate_node(Node_With_Forms $node){
+		
+		$query =
+			'SELECT *' .
+			' FROM forms' .
+			" WHERE parent_node_id = {$node->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
+		$forms_result = $this->database->fetch_all($query);
+		
+		foreach($forms_result as $form_result){
+			$form = $node->add_form();
+			$form->set_id($form_result['form_id']);
+			$form->set_label($form_result['label']);
+			$form->set_form($form_result['form']);
+		}
+		
+	}
+	
+	//------------------------------------------------------------------
 	// creating form
 	//------------------------------------------------------------------
 	

@@ -50,6 +50,28 @@ class MySQL_Translation extends MySQL_Mapper {
 	}
 	
 	//------------------------------------------------------------------
+	// hydrating a node with translations
+	//------------------------------------------------------------------
+	
+	function hydrate_node(Node_With_Translations $node){
+		
+		$query =
+			'SELECT *' .
+			' FROM translations' .
+			" WHERE parent_node_id = {$node->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
+		$translations_result = $this->database->fetch_all($query);
+		
+		foreach($translations_result as $translation_result){
+			$translation = $node->add_translation();
+			$translation->set_id($translation_result['translation_id']);
+			$translation->set($translation_result['text']);
+		}
+		
+	}
+	
+	//------------------------------------------------------------------
 	// creating translation
 	//------------------------------------------------------------------
 	
