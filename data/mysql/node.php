@@ -6,10 +6,6 @@ require_once __DIR__ . '/mapper.php';
 
 class MySQL_Node extends MySQL_Mapper {
 	
-	//==================================================================
-	// auxiliary operations: nodes
-	//==================================================================
-	
 	//------------------------------------------------------------------
 	// creating node storage (table)
 	//------------------------------------------------------------------
@@ -27,6 +23,29 @@ class MySQL_Node extends MySQL_Mapper {
 		if($result === false) return false;
 		
 		return true;
+	}
+	
+	//------------------------------------------------------------------
+	// pulling node children
+	//------------------------------------------------------------------
+	
+	function pull_headword_node_children(Headword_Node $node){
+		
+		// category label
+		$this->data->access('category_label')->hydrate_node($node);
+		
+		// forms
+		$this->data->access('form')->hydrate_node($node);
+		
+		// node
+		$this->pull_children($node);
+	}
+	
+	function pull_children(Node $node){
+		
+		// translations
+		$this->data->access('translation')->hydrate_node($node);
+		
 	}
 	
 	//------------------------------------------------------------------

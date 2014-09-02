@@ -6,10 +6,6 @@ require_once __DIR__ . '/mapper.php';
 
 class MySQL_Phrase extends MySQL_Mapper{
 	
-	//==================================================================
-	// atomic operations: phrases
-	//==================================================================
-	
 	//------------------------------------------------------------------
 	// creating translation storage (table)
 	//------------------------------------------------------------------
@@ -53,6 +49,37 @@ class MySQL_Phrase extends MySQL_Mapper{
 		$result = $this->database->execute($query);
 		
 		return $result;
+	}
+	
+	//------------------------------------------------------------------
+	// hydrating a node with phrases
+	//------------------------------------------------------------------
+	
+	function hydrate_node(Node_With_Phrases $node){
+		
+		$query =
+			'SELECT *' .
+			' FROM phrases' .
+			" WHERE parent_node_id = {$node->get_node_id()}" .
+			' ORDER BY `order`' .
+			';';
+		$phrases_result = $this->database->fetch_all($query);
+		
+		foreach($phrases_result as $phrase_result){
+			$phrase = $node->add_phrase();
+			$phrase->set_id($phrase_result['phrase_id']);
+			$phrase->set_node_id($phrase_result['node_id']);
+			$phrase->set($phrase_result['phrase']);
+			$this->pull_phrase_children($phrase);
+		}
+		
+	}
+	
+	private function pull_phrase_children(Phrase $phrase){
+		
+		// node
+		$this->data->access('node')->pull_children($phrase);
+		
 	}
 	
 	//------------------------------------------------------------------

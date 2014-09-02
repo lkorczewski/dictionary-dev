@@ -101,6 +101,72 @@ class MySQL_Sense extends MySQL_Mapper{
 		
 		return $node_id;
 	}
+
+	//------------------------------------------------------------------
+	// hydrate a node with senses
+	//------------------------------------------------------------------
+	// todo:
+	//  - replacing public sense_depth from MySQL_Data
+	//  - separate acquiring order labels into order label mapper
+	//------------------------------------------------------------------
+	
+	function hydrate_node(Node_With_Senses $node){
+		
+		$this->data->sense_depth++;
+		
+		$order_labels_query =
+			'SELECT ol.order, ol.label' .
+			' FROM' .
+			'  order_label_system_assignments olsa,' .
+			'  order_labels ol' .
+			' WHERE olsa.order_label_system_id = ol.order_label_system_id' .
+			'  AND olsa.element = \'sense\'' .
+			"  AND olsa.depth = {$this->data->sense_depth}"
+		;
+		$query =
+			'SELECT s.*, ol.label AS order_label' .
+			' FROM' .
+			'  senses s' .
+			'   LEFT JOIN (' . $order_labels_query . ') ol' .
+			'    ON ol.order = s.order' .
+			" WHERE parent_node_id = {$node->get_node_id()}" .
+			' ORDER BY s.`order`' .
+			';';
+		$senses_result = $this->database->fetch_all($query);
+		
+		foreach($senses_result as $sense_result){
+			$sense = $node->add_sense();
+			$sense->set_id($sense_result['sense_id']);
+			$sense->set_node_id($sense_result['node_id']);
+			$sense->set_label($sense_result['order_label']);
+			$this->pull_children($sense);
+		}
+		
+		$this->data->sense_depth--;
+		
+	}
+	
+	//------------------------------------------------------------------
+	// pulling sense children from database
+	//------------------------------------------------------------------
+	
+	private function pull_children(Sense $sense){
+		
+		// context
+		$this->data->access('context')->hydrate_node($sense);
+		
+		// headword_node
+		$this->data->access('node')->pull_headword_node_children($sense);
+		
+		// phrases
+		$this->data->access('phrase')->hydrate_node($sense);
+		
+		// senses
+		$this->data->access('sense')->hydrate_node($sense);
+		
+		return $sense;
+		
+	}
 	
 	//------------------------------------------------------------------
 	// moving sense up
@@ -261,4 +327,3 @@ class MySQL_Sense extends MySQL_Mapper{
 	}
 	
 }
-

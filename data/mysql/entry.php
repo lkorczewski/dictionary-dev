@@ -6,10 +6,6 @@ require_once __DIR__ . '/mapper.php';
 
 class MySQL_Entry extends MySQL_Mapper {
 	
-	//==================================================================
-	// atomic operations: entries
-	//==================================================================
-	
 	//------------------------------------------------------------------
 	// creating entry storage (table)
 	//------------------------------------------------------------------
@@ -46,12 +42,105 @@ class MySQL_Entry extends MySQL_Mapper {
 	}
 	
 	//------------------------------------------------------------------
+	// getting entries from database by headword
+	//------------------------------------------------------------------
+	
+	function find_by_headword(Dictionary $dictionary, $headword){
+		
+		$query =
+			'SELECT DISTINCT e.*' . // why distinct?
+			' FROM' .
+			'  headwords h,' .
+			'  entries e' .
+			' WHERE' .
+			"  h.headword = '{$this->database->escape_string($headword)}'" .
+			' AND' .
+			'  e.node_id = h.parent_node_id' .
+			';';
+		$entries_result = $this->database->fetch_all($query);
+		
+		// poniższe do poprawki
+		if($entries_result == false || count($entries_result) == 0){
+			return false;
+		}
+		
+		$entries = [];
+		
+		foreach($entries_result as $entry_result){
+			$entries[] = $this->make($dictionary, $entry_result);
+		}
+		
+		return $entries;
+		
+	}
+	
+	//------------------------------------------------------------------
+	// getting entry by id
+	//------------------------------------------------------------------
+	
+	function find_by_id(Dictionary $dictionary, $node_id){
+		$query =
+			'SELECT *' .
+			' FROM entries' .
+			" WHERE node_id = '$node_id'" .
+			';';
+		$entry_result = $this->database->fetch_one($query);
+		
+		if($entry_result === false){
+			return false;
+		}
+		
+		$entry = $this->make($dictionary, $entry_result);
+		
+		return $entry;
+	}
+	
+	//------------------------------------------------------------------
+	// making entry from data
+	//------------------------------------------------------------------
+	
+	private function make(Dictionary $dictionary, $entry_result){
+		$entry = new Entry($dictionary);
+		
+		$entry->set_id($entry_result['entry_id']);
+		$entry->set_node_id($entry_result['node_id']);
+		
+		$this->pull_children($entry);
+		
+		return $entry;
+	}
+	
+	//------------------------------------------------------------------
+	// pulling entry children from database
+	//------------------------------------------------------------------
+	
+	private function pull_children(Entry $entry){
+		
+		// headwords
+		$this->data->access('headword')->hydrate_node($entry);
+		
+		// pronunciation
+		$this->data->access('pronunciation')->hydrate_node($entry);
+		
+		// headword node
+		$this->data->access('node')->pull_headword_node_children($entry);
+		
+		// phrases
+		$this->data->access('phrase')->hydrate_node($entry);
+		
+		// senses
+		$this->data->access('sense')->hydrate_node($entry);
+		
+		return $entry;
+	}
+	
+	//------------------------------------------------------------------
 	// adding entry
 	//------------------------------------------------------------------
 	
 	function add($headword = ''){
 		
-		// strarting transaction
+		// starting transaction
 		
 		$this->database->start_transaction();
 		
