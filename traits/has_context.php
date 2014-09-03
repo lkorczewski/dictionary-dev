@@ -35,5 +35,6 @@ trait Has_Context {
 	function get_context(){
 		return $this->context;
 	}
-
+	
 }
+

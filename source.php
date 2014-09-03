@@ -62,7 +62,7 @@ class Source {
 	//------------------------------------------------
 	// managing title
 	//------------------------------------------------
-
+	
 	function set_title($title){
 		$this->author = $title;
 	}

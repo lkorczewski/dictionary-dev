@@ -17,11 +17,11 @@ abstract class Node
 	implements Node_With_Translations
 {
 	
+	use Has_Translations;
+	
 	protected $dictionary;
 	
 	private $node_id;
-	
-	use Has_Translations;
 	
 	//------------------------------------------------
 	// constructor

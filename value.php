@@ -6,7 +6,7 @@ require_once __DIR__.'/dictionary.php';
 
 abstract class Value {
 	private $dictionary;
-
+	
 	private $id;
 	private $value;
 	
