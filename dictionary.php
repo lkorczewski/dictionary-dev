@@ -30,7 +30,7 @@ class Dictionary {
 	
 	function get_metadata(){
 		
-		$metadata = $this->data->get_metadata();
+		$metadata = $this->data->access('metadata')->get();
 		
 		return $metadata;
 	}

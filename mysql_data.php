@@ -27,6 +27,7 @@ require_once __DIR__ . '/data/mysql/storage_creator.php';
 use Database\Database;
 
 class MySQL_Data implements Data {
+	
 	private $database;
 	
 	public $sense_depth = 0;
@@ -152,7 +153,7 @@ class MySQL_Data implements Data {
 	//------------------------------------------------------------------
 	
 	function get_entry_by_id(Dictionary $dictionary, $node_id){
-		$entry = $this->access('entry')->find_by_id($node_id);
+		$entry = $this->access('entry')->find_by_id($dictionary, $node_id);
 		
 		return $entry;
 	}
