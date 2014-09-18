@@ -18,6 +18,9 @@ class Entry extends Headword_Node
 		Node_With_Senses
 {
 	
+	protected static $snakized_name   = 'entry';
+	protected static $camelized_name  = 'Entry';
+	
 	private $id;
 	
 	use Has_Headwords;

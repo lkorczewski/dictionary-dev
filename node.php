@@ -10,10 +10,12 @@
 
 namespace Dictionary;
 
-require_once __DIR__.'/dictionary.php';
-require_once __DIR__.'/traits/has_translations.php';
+require_once __DIR__ . '/element.php';
 
-abstract class Node
+require_once __DIR__ . '/dictionary.php';
+require_once __DIR__ . '/traits/has_translations.php';
+
+abstract class Node extends Element
 	implements Node_With_Translations
 {
 	

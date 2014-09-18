@@ -7,6 +7,9 @@ require_once __DIR__.'/node.php';
 
 class Phrase extends Node {
 	
+	protected static $snakized_name     = 'phrase';
+	protected static $camelized_name  = 'Phrase';
+	
 	private $id;
 	
 	private $phrase;

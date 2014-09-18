@@ -2,9 +2,11 @@
 
 namespace Dictionary;
 
+require_once __DIR__.'/element.php';
+
 require_once __DIR__.'/dictionary.php';
 
-abstract class Value {
+abstract class Value extends Element{
 	private $dictionary;
 	
 	private $id;

@@ -19,6 +19,9 @@ class Sense extends Headword_Node
 		Node_With_Senses
 {
 	
+	protected static $snakized_name     = 'sense';
+	protected static $camelized_name  = 'Sense';
+	
 	private $id;
 	
 	private $label;
