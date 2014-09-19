@@ -14,7 +14,7 @@ class Example {
 	private $example;
 	private $source;
 	
-	private $translation;
+	private $translations;
 	private $translation_iterator;
 	
 	//------------------------------------------------
