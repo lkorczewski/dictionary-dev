@@ -1,4 +1,13 @@
 ----------------------------------------
+ 0.13.0
+----------------------------------------
+ * separation of mappers
+ * tests of entities and layouts
+ * short creation of elements from parent level
+ * entity names
+ * Element abstract class
+
+----------------------------------------
  0.12.5
 ----------------------------------------
  * metadata import/export
