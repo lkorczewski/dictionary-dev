@@ -1,11 +1,12 @@
 ----------------------------------------
  0.13.0
 ----------------------------------------
- * separation of mappers
+ * separation of mappers (compatibility breaker)
  * tests of entities and layouts
  * short creation of elements from parent level
  * entity names
  * Element abstract class
+ * refactorization of entities
 
 ----------------------------------------
  0.12.5
