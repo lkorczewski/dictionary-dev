@@ -9,8 +9,8 @@ require_once __DIR__ . '/dictionary.php';
 class Form extends Element {
 	private $dictionary;
 	
-	protected static $snakized_name   = 'headword';
-	protected static $camelized_name  = 'Headword';
+	protected static $snakized_name   = 'form';
+	protected static $camelized_name  = 'Form';
 	
 	private $id;
 	private $label;
