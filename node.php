@@ -21,18 +21,21 @@ abstract class Node extends Element
 	
 	use Has_Translations;
 	
-	protected $dictionary;
-	
+	private $id;
 	private $node_id;
 	
-	//------------------------------------------------
-	// constructor
-	//------------------------------------------------
+	//------------------------------------------------------------------------
+	// id management
+	//------------------------------------------------------------------------
 	
-	function __construct(Dictionary $dictionary){
+	function set_id($id){
+		$this->id = $id;
 		
-		$this->dictionary = $dictionary;
-		
+		return $this;
+	}
+	
+	function get_id(){
+		return $this->id;
 	}
 	
 	//------------------------------------------------

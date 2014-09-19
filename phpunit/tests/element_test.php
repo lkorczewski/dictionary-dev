@@ -1,9 +1,8 @@
 <?php
 
 use \Dictionary\Dictionary;
-use \Dictionary\Value;
 
-abstract class Element_Test extends PHPUnit_Framework_TestCase {
+class Element_Test extends PHPUnit_Framework_TestCase {
 	
 	protected $class_name = 'Element';
 	protected $snake_case_name  = '';

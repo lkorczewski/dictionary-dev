@@ -7,7 +7,6 @@ require_once __DIR__ . '/element.php';
 require_once __DIR__ . '/dictionary.php';
 
 class Form extends Element {
-	private $dictionary;
 	
 	protected static $snakized_name   = 'form';
 	protected static $camelized_name  = 'Form';
@@ -21,7 +20,7 @@ class Form extends Element {
 	//------------------------------------------------
 	
 	function __construct(Dictionary $dictionary, $label = null, $form = null){
-		$this->dictionary = $dictionary;
+		parent::__construct($dictionary);
 		
 		if($label) $this->label = $label;
 		if($form) $this->form = $form;

@@ -24,17 +24,6 @@ abstract class Headword_Node extends Node
 	
 	use Has_Category_Label;
 	use Has_Forms;
-
-	//------------------------------------------------
-	// constructor
-	//------------------------------------------------
-	
-	function __construct($dictionary){
-		parent::__construct($dictionary);
-		
-		$this->dictionary = $dictionary;
-		
-	}
 	
 }
 

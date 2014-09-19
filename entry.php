@@ -28,37 +28,10 @@ class Entry extends Headword_Node
 	use Has_Phrases;
 	use Has_Senses;
 	
-	private $comment;
-	
-	//------------------------------------------------------------------------
-	// constructor
-	//------------------------------------------------------------------------
-	
-	function __construct(Dictionary $dictionary){
-		parent::__construct($dictionary);
-		
-		$this->dictionary = $dictionary;
-		
-	}
-	
-	//------------------------------------------------------------------------
-	// id management
-	//------------------------------------------------------------------------
-	
-	function set_id($id){
-		$this->id = $id;
-		
-		return $this;
-	}
-	
-	function get_id(){
-		return $this->id;
-	}
-	
 	//------------------------------------------------------------------------
 	// comment management
 	//------------------------------------------------------------------------
-	
+	/*
 	function set_comment($comment = ''){
 		$comment = new Comment($this->dictionary);
 		$this->comment = $comment;
@@ -69,6 +42,7 @@ class Entry extends Headword_Node
 	function get_comment(){
 		return $comment;
 	}
+	*/
 	
 }
 

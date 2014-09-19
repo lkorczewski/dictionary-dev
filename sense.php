@@ -19,41 +19,14 @@ class Sense extends Headword_Node
 		Node_With_Senses
 {
 	
-	protected static $snakized_name     = 'sense';
+	protected static $snakized_name   = 'sense';
 	protected static $camelized_name  = 'Sense';
-	
-	private $id;
 	
 	private $label;
 	
 	use Has_Context;
 	use Has_Phrases;
 	use Has_Senses;
-	
-	//------------------------------------------------
-	// constructor
-	//------------------------------------------------
-	
-	function __construct(Dictionary $dictionary){
-		parent::__construct($dictionary);
-		
-		$this->dictionary = $dictionary;
-		
-	}
-	
-	//------------------------------------------------
-	// id management
-	//------------------------------------------------
-	
-	function set_id($id){
-		$this->id = $id;
-		
-		return $this;
-	}
-	
-	function get_id(){
-		return $this->id;
-	}
 	
 	//------------------------------------------------
 	// label management

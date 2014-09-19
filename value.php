@@ -7,7 +7,6 @@ require_once __DIR__.'/element.php';
 require_once __DIR__.'/dictionary.php';
 
 abstract class Value extends Element{
-	private $dictionary;
 	
 	private $id;
 	private $value;
@@ -17,7 +16,8 @@ abstract class Value extends Element{
 	//------------------------------------------------
 	
 	function __construct(Dictionary $dictionary, $value = null){
-		$this->dictionary = $dictionary;
+		parent::__construct($dictionary);
+		
 		if($value) $this->value = $value;
 	}
 	
