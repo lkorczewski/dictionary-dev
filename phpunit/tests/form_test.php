@@ -1,36 +1,31 @@
 <?php
 
-use \Dictionary\Dictionary;
+require_once __DIR__ . '/element_test.php';
+
 use \Dictionary\Form;
 
-class Form_Test extends PHPUnit_Framework_TestCase {
+class Form_Test extends Element_Test {
 	
-	protected $dictionary;
-	protected $form;
-	
-	function setup(){
-		$data = $this->getMock('\Dictionary\Data');
-		
-		$this->dictionary = new Dictionary($data);
-		$this->form = new Form($this->dictionary);
-	}
+	protected $class_name       = 'Form';
+	protected $snake_case_name  = 'form';
+	protected $camel_case_name  = 'Form';
 	
 	function test_id(){
 		$id = 4;
-		$this->form->set_id($id);
-		$this->assertEquals($this->form->get_id(), $id);
+		$this->element->set_id($id);
+		$this->assertEquals($this->element->get_id(), $id);
 	}
 	
 	function test_label(){
 		$label = 'test';
-		$this->form->set_label($label);
-		$this->assertEquals($this->form->get_label(), $label);
+		$this->element->set_label($label);
+		$this->assertEquals($this->element->get_label(), $label);
 	}
 	
 	function test_form(){
 		$form = 'test';
-		$this->form->set_form($form);
-		$this->assertEquals($this->form->get_form(), $form);
+		$this->element->set_form($form);
+		$this->assertEquals($this->element->get_form(), $form);
 	}
 	
 }

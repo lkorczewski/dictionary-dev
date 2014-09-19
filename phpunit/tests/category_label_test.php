@@ -6,6 +6,8 @@ use \Dictionary\Category_Label;
 
 class Category_Label_Test extends Value_Test {
 	
-	protected $value_name = 'Category_Label';
+	protected $class_name       = 'Category_Label';
+	protected $snake_case_name  = 'category_label';
+	protected $camel_case_name  = 'CategoryLabel';
 	
 }
