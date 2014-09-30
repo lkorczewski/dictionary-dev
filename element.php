@@ -20,11 +20,11 @@ abstract class Element {
 	// names
 	//------------------------------------------------
 	
-	function get_snakized_name(){
+	static function get_snakized_name(){
 		return static::$snakized_name;
 	}
 	
-	function get_camelized_name(){
+	static function get_camelized_name(){
 		return static::$camelized_name;
 	}
 } 
