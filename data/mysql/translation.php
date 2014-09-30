@@ -2,9 +2,12 @@
 
 namespace Dictionary;
 
-require_once __DIR__ . '/mapper.php';
+require_once __DIR__ . '/value.php';
 
-class MySQL_Translation extends MySQL_Mapper {
+class MySQL_Translation extends MySQL_Value {
+	
+	protected $table_name    = 'translations';
+	protected $element_name  = 'translation';
 	
 	//==================================================================
 	// atomic operations: translations
@@ -123,98 +126,6 @@ class MySQL_Translation extends MySQL_Mapper {
 		$result = $this->database->execute($query);
 		
 		if($result === false) return false;
-		
-		return true;
-	}
-	
-	//------------------------------------------------------------------
-	// moving translation up
-	//------------------------------------------------------------------
-	
-	function move_up($translation_id){
-		
-		$query =
-			'UPDATE translations t1, translations t2' .
-			' SET' .
-			'  t1.order = t2.order,' .
-			'  t2.order = t1.order' .
-			" WHERE t1.translation_id = $translation_id" .
-			'  AND t1.parent_node_id = t2.parent_node_id' .
-			'  AND t1.order = t2.order + 1' .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false) return false;
-		
-		$affected_rows = $this->database->get_affected_rows();
-		
-		return $affected_rows;
-	}
-	
-	//------------------------------------------------------------------
-	// moving translation down
-	//------------------------------------------------------------------
-	
-	function move_down($translation_id){
-		
-		$query =
-			'UPDATE translations t1, translations t2' .
-			' SET' .
-			'  t1.order = t2.order,' .
-			'  t2.order = t1.order' .
-			" WHERE t1.translation_id = $translation_id" .
-			'  AND t1.parent_node_id = t2.parent_node_id' .
-			'  AND t1.order = t2.order - 1' .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false) return false;
-		
-		$affected_rows = $this->database->get_affected_rows();
-		
-		return $affected_rows;
-	}
-	
-	//------------------------------------------------------------------
-	// deleting translation
-	//------------------------------------------------------------------
-	
-	function delete($translation_id){
-		
-		// it should be much simplier
-		// maybe combined queries
-		// maybe the translation should be called by order, not id
-		
-		$this->database->start_transaction();
-		
-		// the order of operations doesn't permit
-		// a unique (sense_id, order) key, that would be useful otherwise
-		// maybe deleting by order would be better
-		
-		// moving translations with greater order
-		
-		$query =
-			'UPDATE translations t1, translations t2' .
-			' SET t1.order = t1.order - 1' .
-			" WHERE t2.translation_id = $translation_id" .
-			'  AND t1.parent_node_id = t2.parent_node_id' .
-			'  AND t1.order > t2.order' .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false) return false;
-		
-		// deleting translation
-		
-		$query =
-			'DELETE FROM `translations`' .
-			" WHERE `translation_id` = $translation_id" .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false) return false;
-		
-		$this->database->commit_transaction();
 		
 		return true;
 	}

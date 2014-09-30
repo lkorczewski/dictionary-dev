@@ -2,9 +2,12 @@
 
 namespace Dictionary;
 
-require_once __DIR__ . '/mapper.php';
+require_once __DIR__ . '/value.php';
 
-class MySQL_Pronunciation extends MySQL_Mapper {
+class MySQL_Pronunciation extends MySQL_Value {
+	
+	protected $table_name    = 'pronunciations';
+	protected $element_name  = 'pronunciation';
 	
 	//------------------------------------------------------------------
 	// creating pronunciations storage (table)
@@ -123,104 +126,6 @@ class MySQL_Pronunciation extends MySQL_Mapper {
 		
 		return $affected_rows;
 		
-	}
-	
-	//------------------------------------------------------------------
-	// moving pronunciation up
-	//------------------------------------------------------------------
-	
-	function move_up($pronunciation_id){
-		
-		$query =
-			'UPDATE pronunciations p1, pronunciations p2' .
-			' SET' .
-			'  p1.order = p2.order,' .
-			'  p2.order = p1.order' .
-			" WHERE p1.pronunciation_id = $pronunciation_id" .
-			'  AND p1.parent_node_id = p2.parent_node_id' .
-			'  AND p1.order = p2.order + 1' .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false) return false;
-		
-		$affected_rows = $this->database->get_affected_rows();
-		
-		return $affected_rows;
-	}
-	
-	//------------------------------------------------------------------
-	// moving pronunciation down
-	//------------------------------------------------------------------
-	
-	function move_down($pronunciation_id){
-		
-		$query =
-			'UPDATE pronunciations p1, pronunciations p2' .
-			' SET' .
-			'  p1.order = p2.order,' .
-			'  p2.order = p1.order' .
-			" WHERE p1.pronunciation_id = $pronunciation_id" .
-			'  AND p1.parent_node_id = p2.parent_node_id' .
-			'  AND p1.order = p2.order - 1' .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false) return false;
-		
-		$affected_rows = $this->database->get_affected_rows();
-		
-		return $affected_rows;
-	}
-	
-	//------------------------------------------------------------------
-	// deleting pronunciation
-	//------------------------------------------------------------------
-	
-	function delete($pronunciation_id){
-		
-		// it should be much simplier
-		// maybe combined queries
-		// maybe the translation should be called by order, not id
-		
-		$this->database->start_transaction();
-		
-		// the order of operations doesn't permit
-		// a unique (pronunciation_id, order) key that would be useful otherwise
-		// maybe deleting by order would be better
-		
-		// moving forms with greater order
-		
-		$query =
-			'UPDATE pronunciations p1, pronunciations p2' .
-			' SET p1.order = p1.order - 1' .
-			" WHERE p2.pronunciation_id = $pronunciation_id" .
-			'  AND p1.parent_node_id = p2.parent_node_id' .
-			'  AND p1.order > p2.order' .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false){
-			$this->database->rollback_transaction();
-			return false;
-		}
-		
-		// deleting translation
-		
-		$query =
-			'DELETE FROM pronunciations' .
-			" WHERE pronunciation_id = $pronunciation_id" .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false){
-			$this->database->rollback_transaction();
-			return false;
-		}
-		
-		$this->database->commit_transaction();
-		
-		return true;
 	}
 	
 }

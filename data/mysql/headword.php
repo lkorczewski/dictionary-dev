@@ -2,9 +2,12 @@
 
 namespace Dictionary;
 
-require_once __DIR__ . '/mapper.php';
+require_once __DIR__ . '/value.php';
 
-class MySQL_Headword extends MySQL_Mapper {
+class MySQL_Headword extends MySQL_Value {
+	
+	protected $table_name    = 'headwords';
+	protected $element_name  = 'headword';
 	
 	//------------------------------------------------------------------
 	// creating headword storage (table)
@@ -124,102 +127,5 @@ class MySQL_Headword extends MySQL_Mapper {
 		return $affected_rows;
 	}
 	
-	//------------------------------------------------------------------
-	// moving headword up
-	//------------------------------------------------------------------
-	
-	function move_up($headword_id){
-		
-		$query =
-			'UPDATE headwords h1, headwords h2' .
-			' SET' .
-			'  h1.order = h2.order,' .
-			'  h2.order = h1.order' .
-			" WHERE h1.headword_id = $headword_id" .
-			'  AND h1.parent_node_id = h2.parent_node_id' .
-			'  AND h1.order = h2.order + 1' .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false) return false;
-		
-		$affected_rows = $this->database->get_affected_rows();
-		
-		return $affected_rows;
-	}
-	
-	//------------------------------------------------------------------
-	// moving headword down
-	//------------------------------------------------------------------
-	
-	function move_down($headword_id){
-		
-		$query =
-			'UPDATE headwords h1, headwords h2' .
-			' SET' .
-			'  h1.order = h2.order,' .
-			'  h2.order = h1.order' .
-			" WHERE h1.headword_id = $headword_id" .
-			'  AND h1.parent_node_id = h2.parent_node_id' .
-			'  AND h1.order = h2.order - 1' .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false) return false;
-		
-		$affected_rows = $this->database->get_affected_rows();
-		
-		return $affected_rows;
-	}
-	
-	//------------------------------------------------------------------
-	// deleting headword
-	//------------------------------------------------------------------
-	
-	function delete($headword_id){
-		
-		// it should be much simplier
-		// maybe combined queries
-		// maybe the translation should be called by order, not id
-		
-		$this->database->start_transaction();
-		
-		// the order of operations doesn't permit
-		// a unique (headword_id, order) key that would be useful otherwise
-		// maybe deleting by order would be better
-		
-		// moving forms with greater order
-		
-		$query =
-			'UPDATE headwords h1, headwords h2' .
-			' SET h1.order = h1.order - 1' .
-			" WHERE h2.headword_id = $headword_id" .
-			'  AND h1.parent_node_id = h2.parent_node_id' .
-			'  AND h1.order > h2.order' .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false){
-			$this->database->rollback_transaction();
-			return false;
-		}
-		
-		// deleting translation
-		
-		$query =
-			'DELETE FROM headwords' .
-			" WHERE headword_id = $headword_id" .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false){
-			$this->database->rollback_transaction();
-			return false;
-		}
-		
-		$this->database->commit_transaction();
-		
-		return true;
-	}
-	
 }
+
