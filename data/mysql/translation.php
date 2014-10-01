@@ -4,7 +4,7 @@ namespace Dictionary;
 
 require_once __DIR__ . '/value.php';
 
-class MySQL_Translation extends MySQL_Value {
+class MySQL_Translation extends MySQL_Multiple_Value {
 	
 	protected $table_name    = 'translations';
 	protected $element_name  = 'translation';
@@ -12,45 +12,6 @@ class MySQL_Translation extends MySQL_Value {
 	//==================================================================
 	// atomic operations: translations
 	//==================================================================
-	
-	//------------------------------------------------------------------
-	// creating translation storage (table)
-	//------------------------------------------------------------------
-	
-	function create_storage(){
-		
-		$query =
-			'CREATE TABLE IF NOT EXISTS `translations` (' .
-			' `translation_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT \'translation identifier\',' .
-			' `parent_node_id` int(10) unsigned NOT NULL COMMENT \'parent node identifier\',' .
-			' `order` int(11) NOT NULL COMMENT \'order of translations within node\',' .
-			' `text` varchar(64) COLLATE utf8_bin NOT NULL COMMENT \'translation text\',' .
-			' PRIMARY KEY (`translation_id`),' .
-			' KEY `parent_node_id` (`parent_node_id`)' .
-			') ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin' . 
-			';';
-		$result = $this->database->execute($query);
-		
-		return $result;
-	}
-	
-	//------------------------------------------------------------------
-	// linking translation storage (creating table relations)
-	//------------------------------------------------------------------
-		
-	function link_storage(){
-		
-		$query =
-			'ALTER TABLE `translations`' .
-			' ADD CONSTRAINT `translations_ibfk_1`' .
-			'  FOREIGN KEY (`parent_node_id`)' .
-			'  REFERENCES `nodes` (`node_id`)' .
-			'  ON DELETE CASCADE' .
-			';';
-		$result = $this->database->execute($query);
-		
-		return $result;
-	}
 	
 	//------------------------------------------------------------------
 	// hydrating a node with translations
@@ -69,65 +30,10 @@ class MySQL_Translation extends MySQL_Value {
 		foreach($translations_result as $translation_result){
 			$translation = $node->add_translation();
 			$translation->set_id($translation_result['translation_id']);
-			$translation->set($translation_result['text']);
+			$translation->set($translation_result['translation']);
 		}
 		
 	}
 	
-	//------------------------------------------------------------------
-	// creating translation
-	//------------------------------------------------------------------
-	
-	function add($parent_node_id, $translation = ''){
-		
-		// inserting new translation
-		
-		$query =
-			'INSERT translations (parent_node_id, `order`, text)' .
-			' SELECT' .
-			"  $parent_node_id as parent_node_id," .
-			'  MAX(new_order) AS `order`,' .
-			"  '{$this->database->escape_string($translation)}' AS text" .
-			'  FROM (' .
-			'   SELECT MAX(`order`) + 1 AS new_order' .
-			'    FROM translations' .
-			"    WHERE parent_node_id = $parent_node_id" .
-			'    GROUP BY parent_node_id' .
-			'   UNION SELECT 1 AS new_order' .
-			'  ) t' .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false) return false;
-		
-		// obtaining new translation id
-		
-		$query = 'SELECT last_insert_id() AS `translation_id`;';
-		$result = $this->database->fetch_one($query);
-		
-		if($result === false) return false;
-		
-		$translation_id = $result['translation_id'];
-		
-		return $translation_id;
-	}
-	
-	//------------------------------------------------------------------
-	// updating translation
-	//------------------------------------------------------------------
-	
-	function update($translation_id, $text){
-		
-		$query =
-			'UPDATE translations' .
-			" SET text = '{$this->database->escape_string($text)}'" .
-			" WHERE translation_id = $translation_id" .
-			';';
-		$result = $this->database->execute($query);
-		
-		if($result === false) return false;
-		
-		return true;
-	}
-	
 }
+
