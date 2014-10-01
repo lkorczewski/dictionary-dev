@@ -309,10 +309,7 @@ class MySQL_Sense extends MySQL_Mapper{
 		
 		// deleting node
 		
-		$query =
-			'DELETE FROM nodes' .
-			" WHERE node_id = $node_id;";
-		$result = $this->database->execute($query);
+		$result = $this->data->access('node')->delete($node_id);
 		
 		if($result === false){
 			$this->database->rollback_transaction();

@@ -192,7 +192,7 @@ class MySQL_Form extends MySQL_Mapper {
 	
 	function delete($form_id){
 		
-		// it should be much simplier
+		// it should be much simpler
 		// maybe combined queries
 		// maybe the translation should be called by order, not id
 		

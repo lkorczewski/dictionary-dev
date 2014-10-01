@@ -73,5 +73,18 @@ class MySQL_Node extends MySQL_Mapper {
 		return $node_id;
 	}
 	
+	//------------------------------------------------------------------
+	// adding node
+	//------------------------------------------------------------------
+	
+	function delete($node_id){
+		$query =
+			'DELETE FROM nodes' .
+			" WHERE node_id = $node_id;";
+		$result = $this->database->execute($query);
+		
+		return $result;
+	}
+	
 }
 
