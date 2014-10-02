@@ -18,7 +18,7 @@ abstract class MySQL_Value_Test extends PHPUnit_Framework_TestCase {
 	/** @var  MySQL_Node */
 	protected $node_access;
 	
-	/** @var  Dictionary\MySQL_Headword|Dictionary\MySQL_Pronunciation */
+	/** @var  Dictionary\MySQL_Multiple_Value */
 	protected $value_access;
 	
 	function setup(){
