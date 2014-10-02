@@ -24,7 +24,7 @@ abstract class MySQL_Multiple_Value extends MySQL_Mapper {
 			' `order` int(11) unsigned NOT NULL COMMENT \'order of values within node\',' .
 			" `{$this->element_name}` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'value text'," .
 			" PRIMARY KEY (`{$this->element_name}_id`)," .
-			' KEY `parent_node_id` (`parent_node_id`)' .
+			' KEY `parent_node_id` (`parent_node_id`),' .
 			" KEY `$this->element_name` (`$this->element_name`)" .
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin' . 
 			';';
