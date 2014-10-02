@@ -10,4 +10,3 @@ class Translation extends Value {
 	protected static $camelized_name  = 'Translation';
 	
 }
-

@@ -32,4 +32,3 @@ class MySQL_Headword extends MySQL_Multiple_Value {
 	}
 	
 }
-

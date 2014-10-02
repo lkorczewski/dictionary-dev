@@ -190,7 +190,7 @@ class XML_Layout implements Layout {
 	//====================================================================
 	// entries
 	//====================================================================
-
+	
 	//--------------------------------------------------------------------
 	// entry parser
 	//--------------------------------------------------------------------
@@ -208,10 +208,10 @@ class XML_Layout implements Layout {
 		$output .= $this->parse_translations($entry);
 		$output .= $this->parse_phrases($entry);
 		$output .= $this->parse_senses($entry);
-
+		
 		$this->depth--;
 		$output .= self::get_indent() . '</Entry>'."\n";
-
+		
 		return $output;
 		
 	}

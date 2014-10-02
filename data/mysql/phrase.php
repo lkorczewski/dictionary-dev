@@ -246,4 +246,3 @@ class MySQL_Phrase extends MySQL_Mapper{
 	}
 	
 }
-

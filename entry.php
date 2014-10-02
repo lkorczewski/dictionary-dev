@@ -45,4 +45,3 @@ class Entry extends Headword_Node
 	*/
 	
 }
-

@@ -109,4 +109,3 @@ class MySQL_Context extends MySQL_Mapper {
 	}
 	
 }
-

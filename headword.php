@@ -10,4 +10,3 @@ class Headword extends Value {
 	protected static $camelized_name  = 'Headword';
 	
 }
-

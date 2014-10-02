@@ -26,4 +26,3 @@ abstract class Headword_Node extends Node
 	use Has_Forms;
 	
 }
-

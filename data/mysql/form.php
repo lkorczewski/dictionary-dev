@@ -237,4 +237,3 @@ class MySQL_Form extends MySQL_Mapper {
 	}
 	
 }
-

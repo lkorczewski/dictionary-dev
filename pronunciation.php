@@ -10,4 +10,3 @@ class Pronunciation extends Value {
 	protected static $camelized_name    = 'Pronunciation';
 	
 }
-

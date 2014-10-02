@@ -27,4 +27,4 @@ abstract class Element {
 	static function get_camelized_name(){
 		return static::$camelized_name;
 	}
-} 
+}

@@ -10,4 +10,3 @@ class Category_Label extends Value {
 	protected static $camelized_name  = 'CategoryLabel';
 	
 }
-

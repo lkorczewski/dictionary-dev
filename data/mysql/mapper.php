@@ -15,4 +15,4 @@ abstract class MySQL_Mapper {
 		$this->database  = $database;
 		$this->data      = $data;
 	}
-} 
+}

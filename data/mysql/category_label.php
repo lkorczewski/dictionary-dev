@@ -155,4 +155,3 @@ class MySQL_Category_Label extends MySQL_Mapper {
 	}
 	
 }
-

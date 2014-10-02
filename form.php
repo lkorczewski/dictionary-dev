@@ -78,4 +78,3 @@ class Form extends Element {
 		return $this->get_form();
 	}
 }
-

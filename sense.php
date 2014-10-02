@@ -43,4 +43,3 @@ class Sense extends Headword_Node
 	}
 	
 }
-

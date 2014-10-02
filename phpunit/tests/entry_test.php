@@ -43,4 +43,3 @@ class Entry_Test extends Node_Test {
 	}
 	
 }
-

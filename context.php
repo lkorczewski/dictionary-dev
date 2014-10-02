@@ -10,4 +10,3 @@ class Context extends Value {
 	protected static $camelized_name  = 'Context';
 	
 }
-

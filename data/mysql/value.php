@@ -214,4 +214,3 @@ abstract class MySQL_Multiple_Value extends MySQL_Mapper {
 	}
 	
 }
-

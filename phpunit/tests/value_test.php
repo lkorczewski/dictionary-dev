@@ -23,4 +23,3 @@ class Value_Test extends Element_Test {
 	}
 	
 }
-

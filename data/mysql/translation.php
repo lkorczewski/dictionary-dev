@@ -36,4 +36,3 @@ class MySQL_Translation extends MySQL_Multiple_Value {
 	}
 	
 }
-

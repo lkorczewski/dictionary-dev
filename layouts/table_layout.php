@@ -22,7 +22,7 @@ class Table_Layout implements Layout {
 	function parse_entry(Entry $entry){
 		$output = [];
 		
-
+		
 		$this->parse_headwords($output, $entry);
 		$this->parse_pronunciations($output, $entry);
 		$this->parse_forms($output, $entry);

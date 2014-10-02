@@ -32,4 +32,3 @@ class MySQL_Pronunciation extends MySQL_Multiple_Value {
 	}
 	
 }
-
