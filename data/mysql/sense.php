@@ -2,7 +2,7 @@
 
 namespace Dictionary;
 
-require_once __DIR__ . '/mapper.php';
+require_once __DIR__ . '/abstracts/mapper.php';
 
 class MySQL_Sense extends MySQL_Mapper{
 	

@@ -2,7 +2,7 @@
 
 namespace Dictionary;
 
-require_once __DIR__ . '/value.php';
+require_once __DIR__ . '/abstracts/value.php';
 
 class MySQL_Headword extends MySQL_Multiple_Value {
 	

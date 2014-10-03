@@ -5,24 +5,23 @@ namespace Dictionary;
 require_once 'database/database.php';
 require_once __DIR__ . '/data.php';
 
-require_once __DIR__ . '/dictionary.php';
-require_once __DIR__ . '/entry.php';
+require_once __DIR__ . '/../dictionary.php';
 
-require_once __DIR__ . '/data/mysql/metadata.php';
-require_once __DIR__ . '/data/mysql/order_label.php';
+require_once __DIR__ . '/mysql/metadata.php';
+require_once __DIR__ . '/mysql/order_label.php';
 
-require_once __DIR__ . '/data/mysql/node.php';
-require_once __DIR__ . '/data/mysql/entry.php';
-require_once __DIR__ . '/data/mysql/sense.php';
-require_once __DIR__ . '/data/mysql/phrase.php';
-require_once __DIR__ . '/data/mysql/headword.php';
-require_once __DIR__ . '/data/mysql/pronunciation.php';
-require_once __DIR__ . '/data/mysql/category_label.php';
-require_once __DIR__ . '/data/mysql/form.php';
-require_once __DIR__ . '/data/mysql/context.php';
-require_once __DIR__ . '/data/mysql/translation.php';
+require_once __DIR__ . '/mysql/node.php';
+require_once __DIR__ . '/mysql/entry.php';
+require_once __DIR__ . '/mysql/sense.php';
+require_once __DIR__ . '/mysql/phrase.php';
+require_once __DIR__ . '/mysql/headword.php';
+require_once __DIR__ . '/mysql/pronunciation.php';
+require_once __DIR__ . '/mysql/category_label.php';
+require_once __DIR__ . '/mysql/form.php';
+require_once __DIR__ . '/mysql/context.php';
+require_once __DIR__ . '/mysql/translation.php';
 
-require_once __DIR__ . '/data/mysql/storage_creator.php';
+require_once __DIR__ . '/mysql/storage_creator.php';
 
 use Database\Database;
 

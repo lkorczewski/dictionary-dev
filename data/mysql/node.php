@@ -2,7 +2,7 @@
 
 namespace Dictionary;
 
-require_once __DIR__ . '/mapper.php';
+require_once __DIR__ . '/abstracts/mapper.php';
 
 class MySQL_Node extends MySQL_Mapper {
 	
@@ -59,16 +59,17 @@ class MySQL_Node extends MySQL_Mapper {
 		$query = 'INSERT nodes () VALUES ();';
 		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			return false;
+		}
 		
 		// obtaining node id
 		
-		$query = 'SELECT last_insert_id() AS node_id;';
-		$result = $this->database->fetch_one($query);
+		$node_id = $this->database->get_last_insert_id();
 		
-		if($result === false) return false;
-		
-		$node_id = $result['node_id'];
+		if($node_id === 0){
+			return false;
+		}
 		
 		return $node_id;
 	}
@@ -80,7 +81,8 @@ class MySQL_Node extends MySQL_Mapper {
 	function delete($node_id){
 		$query =
 			'DELETE FROM nodes' .
-			" WHERE node_id = $node_id;";
+			" WHERE node_id = $node_id" .
+			';';
 		$result = $this->database->execute($query);
 		
 		return $result;

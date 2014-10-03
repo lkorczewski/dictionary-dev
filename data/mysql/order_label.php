@@ -2,6 +2,8 @@
 
 namespace Dictionary;
 
+require_once __DIR__ . '/abstracts/mapper.php';
+
 class MySQL_Order_Label extends MySQL_Mapper {
 	
 	//------------------------------------------------------------------

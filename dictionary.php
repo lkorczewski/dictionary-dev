@@ -2,7 +2,7 @@
 
 namespace Dictionary;
 
-require_once __DIR__ . '/data.php';
+require_once __DIR__ . '/data/data.php';
 
 class Dictionary {
 	

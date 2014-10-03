@@ -2,16 +2,12 @@
 
 namespace Dictionary;
 
-require_once __DIR__ . '/value.php';
+require_once __DIR__ . '/abstracts/value.php';
 
 class MySQL_Translation extends MySQL_Multiple_Value {
 	
 	protected $table_name    = 'translations';
 	protected $element_name  = 'translation';
-	
-	//==================================================================
-	// atomic operations: translations
-	//==================================================================
 	
 	//------------------------------------------------------------------
 	// hydrating a node with translations

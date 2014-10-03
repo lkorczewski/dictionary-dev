@@ -2,7 +2,7 @@
 
 namespace Dictionary;
 
-require_once __DIR__ . '/mapper.php';
+require_once __DIR__ . '/abstracts/mapper.php';
 
 // TODO: Ugly system of filling metadata array.
 //  - ugly parameters to append_order_labels_metadata

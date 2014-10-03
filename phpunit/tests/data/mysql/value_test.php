@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../../../data/mysql_data.php';
+
 use Database\Database;
 use Dictionary\MySQL_Data;
 use Dictionary\MySQL_Node;
