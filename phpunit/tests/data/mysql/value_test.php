@@ -1,21 +1,13 @@
 <?php
 
-require_once __DIR__ . '/../../../../data/mysql_data.php';
+require_once __DIR__ . '/mapper_test.php';
 
-use Database\Database;
-use Dictionary\MySQL_Data;
 use Dictionary\MySQL_Node;
 
-abstract class MySQL_Value_Test extends PHPUnit_Framework_TestCase {
+abstract class MySQL_Value_Test extends Mapper_Test {
 	
 	protected $value_name;
 	protected $values_name;
-	
-	/** @var  Database */
-	protected $database;
-	
-	/** @var  MySQL_Data */
-	protected $data;
 	
 	/** @var  MySQL_Node */
 	protected $node_access;
@@ -24,13 +16,7 @@ abstract class MySQL_Value_Test extends PHPUnit_Framework_TestCase {
 	protected $value_access;
 	
 	function setup(){
-		$this->database = new Database([
-			'user'      => 'test',
-			'password'  => 'test',
-			'database'  => 'test',
-		]);
-		
-		$this->data = new MySQL_Data($this->database);
+		parent::setup();
 		
 		$this->node_access   = $this->data->access('node');
 		$this->value_access  = $this->data->access($this->value_name);

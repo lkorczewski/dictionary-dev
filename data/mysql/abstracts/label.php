@@ -137,7 +137,7 @@ abstract class MySQL_Label extends MySQL_Mapper {
 	
 	protected function insert_label_if_not_exists($label){
 		$query =
-			"INSERT IGNORE " .
+			"INSERT IGNORE {$this->table_name}" .
 			" SET label = '{$this->database->escape_string($label)}'" .
 			';';
 		$result = $this->database->execute($query);
@@ -153,7 +153,7 @@ abstract class MySQL_Label extends MySQL_Mapper {
 			" FROM {$this->table_name}" .
 			" WHERE label = '{$this->database->escape_string($label)}'" .
 			';';
-		$result = $this->database->fetch_one($query);
+		$result = $this->database->fetch_value($query);
 		
 		return $result;
 	}
