@@ -10,9 +10,8 @@ abstract class MySQL_Multiple_Value extends MySQL_Mapper {
 	protected $element_name;
 	
 	//------------------------------------------------------------------
-	// creating translation storage (table)
+	// creating value storage (table)
 	//------------------------------------------------------------------
-	// todo: test
 	// todo: naming in comments
 	
 	function create_storage(){
@@ -22,7 +21,7 @@ abstract class MySQL_Multiple_Value extends MySQL_Mapper {
 			" `{$this->element_name}_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'value identifier'," .
 			' `parent_node_id` int(10) unsigned NOT NULL COMMENT \'parent node identifier\',' .
 			' `order` int(11) unsigned NOT NULL COMMENT \'order of values within node\',' .
-			" `{$this->element_name}` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'value text'," .
+			" `$this->element_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'value text'," .
 			" PRIMARY KEY (`{$this->element_name}_id`)," .
 			' KEY `parent_node_id` (`parent_node_id`),' .
 			" KEY `$this->element_name` (`$this->element_name`)" .
@@ -34,9 +33,8 @@ abstract class MySQL_Multiple_Value extends MySQL_Mapper {
 	}
 	
 	//------------------------------------------------------------------
-	// linking translation storage (creating table relations)
+	// linking value storage (creating table relations)
 	//------------------------------------------------------------------
-	// todo: test 
 	
 	function link_storage(){
 		
@@ -144,7 +142,7 @@ abstract class MySQL_Multiple_Value extends MySQL_Mapper {
 	}
 	
 	//------------------------------------------------------------------
-	// updating translation
+	// updating value
 	//------------------------------------------------------------------
 	
 	function update($id, $value){
