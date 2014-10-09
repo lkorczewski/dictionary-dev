@@ -1,0 +1,12 @@
+TASKS:
+ * namespaces
+ * naming convention of data mappers
+ 
+IDEAS:
+ * translation_id, pronunciation_id -> id
+ * translation, pronunciation -> value
+ * unification of unique values (labels)
+ * example
+ * form as node
+ * variant
+ * example
