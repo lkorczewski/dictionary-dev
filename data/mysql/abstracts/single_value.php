@@ -81,7 +81,6 @@ abstract class MySQL_Single_Value extends MySQL_Mapper {
 			" SET $this->element_name = '{$this->database->escape_string($value)}'" .
 			" WHERE {$this->element_name}_id = $id" .
 			';';
-		echo($query);
 		$result = $this->database->execute($query);
 		
 		if($result === false){
