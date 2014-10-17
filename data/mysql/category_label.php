@@ -25,7 +25,7 @@ class MySQL_Category_Label extends MySQL_Label {
 		
 		if(is_array($category_label_result) && count($category_label_result)){
 			$category_label = $node->set_category_label();
-			$category_label->set_id($category_label_result['category_label_id']);
+			$category_label->set_id($category_label_result['node_category_label_id']);
 			$category_label->set($category_label_result['label']);
 		}
 	}

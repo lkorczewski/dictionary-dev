@@ -44,8 +44,10 @@ abstract class MySQL_Label extends MySQL_Mapper {
 	protected function create_label_assignment_storage(){
 		$query =
 			"CREATE TABLE IF NOT EXISTS `node_$this->table_name` (" .
+			" `node_category_label_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'assignment identifier'," .
 			' `parent_node_id` int(10) unsigned NOT NULL COMMENT \'parent node identifier\',' .
 			" `{$this->element_name}_id` int(10) unsigned NOT NULL COMMENT 'label identifier'," .
+			" PRIMARY KEY (`node_{$this->element_name}_id`)" .
 			' UNIQUE KEY `parent_node_id` (`parent_node_id`),' .
 			" KEY `{$this->element_name}_id` (`{$this->element_name}_id`)" .
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin' .
@@ -127,7 +129,7 @@ abstract class MySQL_Label extends MySQL_Mapper {
 	
 	//------------------------------------------------------------------
 	
-	protected function replace_label_assignment($parent_node_id, $label_id){
+	protected function replace_label_assignment_by_node_id($parent_node_id, $label_id){
 		$query =
 			"REPLACE node_$this->table_name" .
 			' SET' .
@@ -141,12 +143,27 @@ abstract class MySQL_Label extends MySQL_Mapper {
 	}
 	
 	//------------------------------------------------------------------
+	
+	protected function replace_label_assignment_by_assignment_id($assignment_id, $label_id){
+		$query =
+			"REPLACE node_$this->table_name" .
+			' SET' .
+			"  {$this->element_name}_id = $label_id," .
+			"  node_{$this->element_name}_id = $assignment_id" .
+			';';
+		
+		$result = $this->database->execute($query);
+		
+		return $result;
+	}
+	
+	//------------------------------------------------------------------
 	// deleting label
 	//------------------------------------------------------------------
 	
-	function delete($parent_node_id){
+	function delete($assignment_id){
 		
-		$result = $this->delete_label_assignment($parent_node_id);
+		$result = $this->delete_label_assignment($assignment_id);
 		
 		if($result === false){
 			return false;
@@ -165,10 +182,10 @@ abstract class MySQL_Label extends MySQL_Mapper {
 	
 	//------------------------------------------------------------------
 	
-	protected function delete_label_assignment($parent_node_id){
+	protected function delete_label_assignment($assignment_id){
 		$query =
 			"DELETE FROM node_$this->table_name" .
-			" WHERE parent_node_id = $parent_node_id" .
+			" WHERE node_{$this->element_name}_id = $assignment_id" .
 			';';
 		$result = $this->database->execute($query);
 		
