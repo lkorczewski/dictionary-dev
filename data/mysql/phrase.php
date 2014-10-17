@@ -170,7 +170,9 @@ class MySQL_Phrase extends MySQL_Mapper{
 			';';
 		$result = $this->database->execute($query);
 		
-		if($result === false) return false;
+		if($result === false){
+			return false;
+		}
 		
 		$affected_rows = $this->database->get_affected_rows();
 		
@@ -195,7 +197,9 @@ class MySQL_Phrase extends MySQL_Mapper{
 			';';
 		$result = $this->database->execute($query);
 		
-		if($result === false) { echo $query; return false; }
+		if($result === false){
+			return false;
+		}
 		
 		$affected_rows = $this->database->get_affected_rows();
 		
