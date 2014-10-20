@@ -14,8 +14,8 @@ abstract class MySQL_Label extends MySQL_Mapper {
 	function create_storage(){
 		
 		$result =
-			$this->create_label_storage() &&
-			$this->create_label_assignment_storage();
+			$this->create_label_storage()
+			&& $this->create_label_assignment_storage();
 		
 		if($result === false)
 			return false;
@@ -79,7 +79,7 @@ abstract class MySQL_Label extends MySQL_Mapper {
 	}
 	
 	//------------------------------------------------------------------
-	// setting label
+	// setting new label
 	//------------------------------------------------------------------
 	
 	function set($parent_node_id, $label){
@@ -87,10 +87,34 @@ abstract class MySQL_Label extends MySQL_Mapper {
 		$this->database->start_transaction();
 		
 		$result =
-			$this->insert_label_if_not_exists($label) &&
-			($label_id = $this->select_label_id($label)) &&
-			$this->replace_label_assignment($parent_node_id, $label_id) &&
-			$this->delete_orphaned_labels();
+			$this->insert_label_if_not_exists($label)
+			&& ($label_id = $this->select_label_id($label))
+			&& $this->replace_label_assignment($parent_node_id, $label_id)
+			&& $this->delete_orphaned_labels();
+		
+		if($result === false){
+			$this->database->rollback_transaction();
+			return false;
+		}
+		
+		$this->database->commit_transaction();
+		
+		return true;
+	}
+	
+	//------------------------------------------------------------------
+	// updating existing label
+	//------------------------------------------------------------------
+	
+	function update($assignment_id, $label){
+		
+		$this->database->start_transaction();
+		
+		$result =
+			$this->insert_label_if_not_exists($label)
+			&& ($label_id = $this->select_label_id($label))
+			&& $this->update_label_assignment($assignment_id, $label_id)
+			&& $this->delete_orphaned_labels();
 		
 		if($result === false){
 			$this->database->rollback_transaction();
@@ -129,7 +153,7 @@ abstract class MySQL_Label extends MySQL_Mapper {
 	
 	//------------------------------------------------------------------
 	
-	protected function replace_label_assignment_by_node_id($parent_node_id, $label_id){
+	protected function replace_label_assignment($parent_node_id, $label_id){
 		$query =
 			"REPLACE node_$this->table_name" .
 			' SET' .
@@ -144,12 +168,12 @@ abstract class MySQL_Label extends MySQL_Mapper {
 	
 	//------------------------------------------------------------------
 	
-	protected function replace_label_assignment_by_assignment_id($assignment_id, $label_id){
+	protected function update_label_assignment($assignment_id, $label_id){
 		$query =
-			"REPLACE node_$this->table_name" .
+			"UPDATE node_$this->table_name" .
 			' SET' .
-			"  {$this->element_name}_id = $label_id," .
-			"  node_{$this->element_name}_id = $assignment_id" .
+			"  {$this->element_name}_id = $label_id" .
+			" WHERE node_{$this->element_name}_id = $assignment_id" .
 			';';
 		
 		$result = $this->database->execute($query);
