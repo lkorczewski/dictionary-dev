@@ -1,4 +1,15 @@
 ----------------------------------------
+ 0.13.2
+----------------------------------------
+ * unification of single values
+ * unification of labels, change of id source (compatibility breaker)
+
+----------------------------------------
+ 0.13.1
+----------------------------------------
+ * unification and abstraction of value mappers
+
+----------------------------------------
  0.13.0
 ----------------------------------------
  * separation of mappers (compatibility breaker)
