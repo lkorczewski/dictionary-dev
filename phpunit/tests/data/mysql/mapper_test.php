@@ -24,4 +24,11 @@ abstract class Mapper_Test extends PHPUnit_Framework_TestCase
 		$this->data = new MySQL_Data($this->database);
 	}
 	
+	protected function assert_table_content($table, array $content){
+		$query = "SELECT * FROM `$table`;";
+		$labels = $this->database->fetch_all($query);
+		
+		$this->assertEquals($labels, $content);
+	}
+	
 }

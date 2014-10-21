@@ -47,7 +47,7 @@ abstract class MySQL_Label extends MySQL_Mapper {
 			" `node_category_label_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'assignment identifier'," .
 			' `parent_node_id` int(10) unsigned NOT NULL COMMENT \'parent node identifier\',' .
 			" `{$this->element_name}_id` int(10) unsigned NOT NULL COMMENT 'label identifier'," .
-			" PRIMARY KEY (`node_{$this->element_name}_id`)" .
+			" PRIMARY KEY (`node_{$this->element_name}_id`)," .
 			' UNIQUE KEY `parent_node_id` (`parent_node_id`),' .
 			" KEY `{$this->element_name}_id` (`{$this->element_name}_id`)" .
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin' .
@@ -152,13 +152,16 @@ abstract class MySQL_Label extends MySQL_Mapper {
 	}
 	
 	//------------------------------------------------------------------
+	// @todo: renaming
 	
 	protected function replace_label_assignment($parent_node_id, $label_id){
 		$query =
-			"REPLACE node_$this->table_name" .
+			"INSERT node_$this->table_name" .
 			' SET' .
-			"  {$this->element_name}_id = $label_id," .
-			"  parent_node_id = $parent_node_id" .
+			"  parent_node_id = $parent_node_id," .
+			"  {$this->element_name}_id = $label_id" .
+			' ON DUPLICATE KEY UPDATE' .
+			"  {$this->element_name}_id = $label_id" .
 			';';
 		
 		$result = $this->database->execute($query);
