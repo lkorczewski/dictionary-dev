@@ -103,6 +103,21 @@ abstract class MySQL_Label extends MySQL_Mapper {
 	}
 	
 	//------------------------------------------------------------------
+	// listing all labels
+	//------------------------------------------------------------------
+	
+	function list_all(){
+		$query =
+			"SELECT label"
+			. " FROM $this->table_name"
+			. " ORDER BY label"
+			. ";";
+		$category_labels = $this->database->fetch_column($query);
+		
+		return $category_labels;
+	}
+	
+	//------------------------------------------------------------------
 	// updating existing label
 	//------------------------------------------------------------------
 	
