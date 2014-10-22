@@ -73,7 +73,7 @@ class MySQL_Form extends MySQL_Mapper {
 	
 	function add($parent_node_id, $label = '', $form = ''){
 		
-		// inserting new translation
+		// inserting new form
 		
 		$query =
 			'INSERT forms (parent_node_id, `order`, label, form)' .
