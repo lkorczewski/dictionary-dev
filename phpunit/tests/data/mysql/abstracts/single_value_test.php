@@ -10,7 +10,7 @@ abstract class MySQL_Single_Value_Test extends Mapper_Test {
 	/** @var Dictionary\MySQL_Node $node_access */
 	protected $node_access;
 	
-	/** @var Dictionary\MySQL_Multiple_Value $value_access */
+	/** @var Dictionary\MySQL_Single_Value $value_access */
 	protected $value_access;
 	
 	function setup(){
@@ -47,6 +47,24 @@ abstract class MySQL_Single_Value_Test extends Mapper_Test {
 				static::$value_name.'_id'   => 2,
 				'parent_node_id'            => 2,
 				static::$value_name         => "test value 2",
+			],
+		]);
+	}
+	
+	function test_setting_existing(){
+		$this->fill();
+		$this->value_access->set(2, "updated test value 2");
+		
+		$this->assert_table_content(static::$values_name, [
+			[
+				static::$value_name.'_id'   => 1,
+				'parent_node_id'            => 1,
+				static::$value_name         => "test value 1",
+			],
+			[
+				static::$value_name.'_id'   => 2,
+				'parent_node_id'            => 2,
+				static::$value_name         => "updated test value 2",
 			],
 		]);
 	}
