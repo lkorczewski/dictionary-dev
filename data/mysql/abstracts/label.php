@@ -99,7 +99,7 @@ abstract class MySQL_Label extends MySQL_Mapper {
 		
 		$this->database->commit_transaction();
 		
-		return true;
+		return $label_id;
 	}
 	
 	//------------------------------------------------------------------
