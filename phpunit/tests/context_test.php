@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/value_test.php';
 
-use \Dictionary\Context;
-
 class Context_Test extends Value_Test {
 	
 	protected $class_name       = 'Context';

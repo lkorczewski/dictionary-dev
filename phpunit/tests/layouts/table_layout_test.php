@@ -24,7 +24,7 @@ class Table_Layout_Test extends PHPUnit_Framework_TestCase {
 	
 	function setup(){
 		$this->xml_layout = new Table_Layout();
-
+		
 		$this->data        = $this->getMock('Dictionary\Data');
 		$this->dictionary  = $this->getMock('Dictionary\Dictionary', [], [$this->data]);
 	}

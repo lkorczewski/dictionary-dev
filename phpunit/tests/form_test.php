@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/element_test.php';
 
-use \Dictionary\Form;
-
 class Form_Test extends Element_Test {
 	
 	protected $class_name       = 'Form';

@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/element_test.php';
 
-use \Dictionary\Element;
-
 class Node_Test extends Element_Test {
 	
 	protected $class_name = 'Node';

@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/node_test.php';
 
-use \Dictionary\Entry;
-
 class Entry_Test extends Node_Test {
 	
 	protected $class_name       = 'Entry';
