@@ -195,4 +195,18 @@ class MySQL_Entry extends MySQL_Mapper {
 		return $node_id;
 	}
 	
+	//------------------------------------------------------------------
+	// deleting entries
+	//------------------------------------------------------------------
+	
+	function delete($node_id){
+		$result =  $this->data->access('node')->delete($node_id);
+		
+		if($result === false){
+			return false;
+		}
+		
+		return $result;
+	}
+	
 }
