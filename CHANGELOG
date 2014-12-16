@@ -1,4 +1,12 @@
 ----------------------------------------
+ 0.13.3
+----------------------------------------
+ * method for listing all labels
+ * bugfix: returning label id in MySQL_Label::set
+ * method for deleting entries
+ * handling empty result in MySQL_Entry::find_by_id
+
+----------------------------------------
  0.13.2
 ----------------------------------------
  * unification of single values
