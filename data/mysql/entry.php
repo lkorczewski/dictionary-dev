@@ -90,6 +90,10 @@ class MySQL_Entry extends MySQL_Mapper {
 			return false;
 		}
 		
+		if($entry_result == []){
+			return null;
+		}
+		
 		$entry = $this->make($dictionary, $entry_result);
 		
 		return $entry;
