@@ -2,9 +2,9 @@
 
 namespace Dictionary;
 
-require_once __DIR__ . '/abstracts/label.php';
+require_once __DIR__ . '/abstracts/single_label.php';
 
-class MySQL_Category_Label extends MySQL_Label {
+class MySQL_Category_Label extends MySQL_Single_Label {
 	
 	protected $table_name    = 'category_labels';
 	protected $element_name  = 'category_label';

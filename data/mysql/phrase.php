@@ -4,7 +4,7 @@ namespace Dictionary;
 
 require_once __DIR__ . '/abstracts/mapper.php';
 
-class MySQL_Phrase extends MySQL_Mapper{
+class MySQL_Phrase extends MySQL_Mapper {
 	
 	//------------------------------------------------------------------
 	// creating translation storage (table)
